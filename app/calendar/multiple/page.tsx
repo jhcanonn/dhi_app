@@ -5,8 +5,6 @@ export const metadata: Metadata = {
   title: 'DHI | Calendario multiple',
 };
 
-const MultipleCalendarPage = () => {
-  return <MultipleCalendar />;
-};
+const MultipleCalendarPage = () => <MultipleCalendar />;
 
 export default MultipleCalendarPage;
