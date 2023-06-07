@@ -1,0 +1,56 @@
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from 'primereact/button';
+import { useAside } from '@contexts';
+import { PAGE_PATH } from '@utils';
+
+const Nav = () => {
+  const isUserLoggedIn = true;
+  const { toggleVisible } = useAside();
+
+  return (
+    <nav className="flex justify-between">
+      <div className="flex w-full gap-3">
+        <button className="layout-topbar-button" onClick={toggleVisible}>
+          <i className="pi pi-bars" />
+        </button>
+        <Link
+          href={PAGE_PATH.home}
+          as={PAGE_PATH.home}
+          className="flex items-center gap-2"
+        >
+          <Image
+            className="object-contain"
+            src="/assets/logo.svg"
+            alt="DHI Logo"
+            priority={true}
+            width={80}
+            height={80}
+          />
+        </Link>
+      </div>
+      <div className="flex w-full justify-end">
+        {isUserLoggedIn ? (
+          <div className="sm:flex hidden gap-2 items-center">
+            <Button label="Cerrar sesión" className="p-button-rounded" />
+            <Link href={PAGE_PATH.profile}>
+              <Image
+                className="rounded-full w-auto h-auto"
+                src="/demo/avatar/profile.jpg"
+                alt="Profile photo"
+                width={45}
+                height={45}
+              />
+            </Link>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default Nav;

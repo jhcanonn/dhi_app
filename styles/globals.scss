@@ -1,0 +1,14 @@
+/* Tailwind base */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PrimeReact */
+@import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
+@import 'primeflex/primeflex.css';
+
+/* Custom */
+@import 'layers.scss';
+@import 'components/components.scss';

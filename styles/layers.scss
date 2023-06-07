@@ -1,0 +1,51 @@
+@layer base {
+  :root {
+    --transition-duration: 0.2s;
+  }
+
+  section.scheduler * {
+    @apply box-content
+    [&_div.css-1w6ojv3]:z-[1001]
+    [&_div.css-1nmp99l]:z-[1002]
+    [&_div.css-anhyye]:z-[1002]
+    [&_div.css-xkctyi]:z-[1003]
+    [&_div.css-1mrufi>div]:w-[50rem]
+    [&.css-yp0i15-MuiPaper-root]:w-full;
+
+    & .rs__cell > button {
+      @apply box-border;
+    }
+  }
+
+  html {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-[var(--surface-ground)] text-[var(--text-color)] mr-0 p-0 min-h-full;
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    @apply text-[var(--primary-color)] no-underline;
+  }
+
+  .layout-wrapper {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .focused {
+    @apply shadow-md 
+    transition-shadow 
+    duration-[var(--transition-duration)] 
+    outline-0 
+    outline-offset-0;
+  }
+
+  .tooltip {
+  }
+}

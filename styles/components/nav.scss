@@ -1,0 +1,18 @@
+.layout-topbar-button {
+  @apply inline-flex 
+  justify-center 
+  items-center 
+  relative 
+  text-[color:var(--text-color-secondary)]
+  rounded-full
+  w-12
+  h-12
+  transition-bg
+  duration-[var(--transition-duration)]
+  hover:text-[color:var(--text-color)]
+  hover:bg-[var(--surface-hover)]
+  [&_i]:text-2xl
+  [&_span]:text-base
+  [&_span]:hidden
+  focus:focused;
+}
