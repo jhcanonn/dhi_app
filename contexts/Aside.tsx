@@ -14,7 +14,7 @@ const asideContextDefaultValues: AsideContextType = {
 
 const AsideContext = createContext<AsideContextType>(asideContextDefaultValues);
 
-export const useAside = () => {
+export const useAsideContext = () => {
   return useContext(AsideContext);
 };
 

@@ -14,7 +14,6 @@ type Props = {
 
 const CalendarEditor = ({ scheduler }: Props) => {
   const event = scheduler.edited;
-  console.log(event);
 
   // Make your own form/state
   const [state, setState] = useState({

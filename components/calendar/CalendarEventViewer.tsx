@@ -50,7 +50,7 @@ const CalendarEventViewer = ({ event, closeFn, scheduler }: Props) => {
   };
 
   const rowInfo = (text: string, iconName: string) => (
-    <span className="inline-block">
+    <span>
       <i className={`pi pi-${iconName}`} /> {text}
     </span>
   );

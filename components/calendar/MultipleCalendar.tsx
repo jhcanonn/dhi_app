@@ -1,10 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import es from 'date-fns/locale/es';
+import { useEffect, useRef } from 'react';
 import { Scheduler } from '@aldabil/react-scheduler';
 import {
-  DefaultRecourse,
   EventRendererProps,
   ProcessedEvent,
   SchedulerHelpers,
@@ -13,7 +11,6 @@ import {
 import {
   EVENTS,
   PROFESSIONALS,
-  MultipleCalendarMode,
   calendarDay,
   calendarFieldsMapper,
   calendarMonth,
@@ -26,15 +23,15 @@ import {
   CalendarEventViewer,
   CalendarEvent,
 } from '.';
-import { Button } from '@mui/material';
+import { CalendarHeaderProps } from '@models';
+import { useMultipleCalendarContext } from '@contexts';
+import es from 'date-fns/locale/es';
 
 const MultipleCalendar = () => {
   const calendarRef = useRef<SchedulerRef>(null);
-  const [mode, setMode] = useState<MultipleCalendarMode>(
-    MultipleCalendarMode.DEFAULT
-  );
+  const { setScheduler } = useMultipleCalendarContext();
 
-  const handlerCustomHeader = (resource: DefaultRecourse) => (
+  const handlerCustomHeader = (resource: CalendarHeaderProps) => (
     <CalendarHeader {...resource} />
   );
 
@@ -54,39 +51,12 @@ const MultipleCalendar = () => {
     <CalendarEvent {...evetProps} />
   );
 
+  useEffect(() => {
+    setScheduler(calendarRef.current?.scheduler!);
+  }, []);
+
   return (
-    <section className="scheduler grow">
-      <div style={{ textAlign: 'center' }}>
-        <span>Resource View Mode: </span>
-        <Button
-          color={mode === MultipleCalendarMode.DEFAULT ? 'primary' : 'inherit'}
-          variant={mode === MultipleCalendarMode.DEFAULT ? 'contained' : 'text'}
-          size="small"
-          onClick={() => {
-            setMode(MultipleCalendarMode.DEFAULT);
-            calendarRef.current?.scheduler?.handleState(
-              MultipleCalendarMode.DEFAULT,
-              'resourceViewMode'
-            );
-          }}
-        >
-          Default
-        </Button>
-        <Button
-          color={mode === MultipleCalendarMode.TABS ? 'primary' : 'inherit'}
-          variant={mode === MultipleCalendarMode.TABS ? 'contained' : 'text'}
-          size="small"
-          onClick={() => {
-            setMode(MultipleCalendarMode.TABS);
-            calendarRef.current?.scheduler?.handleState(
-              MultipleCalendarMode.TABS,
-              'resourceViewMode'
-            );
-          }}
-        >
-          Tabs
-        </Button>
-      </div>
+    <section className="scheduler grow px-1">
       <Scheduler
         view="week"
         ref={calendarRef}
