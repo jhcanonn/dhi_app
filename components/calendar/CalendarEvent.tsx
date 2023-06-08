@@ -9,7 +9,6 @@ const CalendarEvent = ({
   ...dragProps
 }: EventRendererProps) => {
   const { title, state_color } = event;
-  console.log(event.event_id, event.start, event.end);
 
   return (
     <ButtonBase

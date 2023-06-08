@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from 'primereact/button';
-import { useAside } from '@contexts';
+import { useAsideContext } from '@contexts';
 import { PAGE_PATH } from '@utils';
 
 const Nav = () => {
   const isUserLoggedIn = true;
-  const { toggleVisible } = useAside();
+  const { toggleVisible } = useAsideContext();
 
   return (
     <nav className="flex justify-between">
@@ -34,7 +34,10 @@ const Nav = () => {
       <div className="flex w-full justify-end">
         {isUserLoggedIn ? (
           <div className="sm:flex hidden gap-2 items-center">
-            <Button label="Cerrar sesión" className="p-button-rounded" />
+            <Button
+              label="Cerrar sesión"
+              className="p-button-rounded p-button-sm"
+            />
             <Link href={PAGE_PATH.profile}>
               <Image
                 className="rounded-full w-auto h-auto"

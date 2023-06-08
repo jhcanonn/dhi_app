@@ -231,7 +231,8 @@ export type Professional = {
   professional_id: number;
   name: string;
   mobile: string;
-  avatar: string;
+  avatar?: string;
+  color?: string;
 };
 
 export const PROFESSIONALS: Professional[] = [
@@ -245,7 +246,7 @@ export const PROFESSIONALS: Professional[] = [
     professional_id: 2,
     name: 'Sarah',
     mobile: '545678354',
-    avatar: '/assets/avatar-2.png',
+    color: 'darkgreen',
   },
   {
     professional_id: 3,
@@ -257,6 +258,6 @@ export const PROFESSIONALS: Professional[] = [
     professional_id: 4,
     name: 'Mera',
     mobile: '507487620',
-    avatar: '/assets/avatar-4.png',
+    color: 'red',
   },
 ];

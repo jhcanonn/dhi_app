@@ -2,13 +2,13 @@
 
 import { Sidebar } from 'primereact/sidebar';
 import { SlideMenu } from 'primereact/slidemenu';
-import { useAside } from '@contexts';
+import { useAsideContext } from '@contexts';
 import { useWindowHeight } from '@react-hook/window-size';
 import { useRouter } from 'next/navigation';
 import { PAGE_PATH } from '@utils';
 
 const Aside = () => {
-  const { visible, toggleVisible } = useAside();
+  const { visible, toggleVisible } = useAsideContext();
   const router = useRouter();
   const wh = useWindowHeight();
 
