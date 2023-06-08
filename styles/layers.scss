@@ -5,6 +5,7 @@
 
   section.scheduler * {
     @apply box-content
+    [&_div.calendar-event]:box-border
     [&_div.css-1w6ojv3]:z-[1001]
     [&_div.css-1nmp99l]:z-[1002]
     [&_div.css-anhyye]:z-[1002]
@@ -47,5 +48,10 @@
   }
 
   .tooltip {
+    @apply text-sm;
+  }
+
+  .event-tooltip {
+    @apply text-xs;
   }
 }
