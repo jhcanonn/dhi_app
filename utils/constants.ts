@@ -79,6 +79,8 @@ export type EditFn = (
   event?: ProcessedEvent | SelectedRange | undefined
 ) => void;
 
+export const bgEventColor = '#fff';
+
 export const EVENTS = [
   {
     event_id: 1,
@@ -143,7 +145,7 @@ export const EVENTS = [
   {
     event_id: 6,
     title: 'Event 6',
-    start: new Date(new Date(new Date().setHours(11)).setMinutes(0)),
+    start: new Date(new Date(new Date().setHours(10)).setMinutes(0)),
     end: new Date(new Date(new Date().setHours(12)).setMinutes(0)),
     professional_id: 2,
   },
