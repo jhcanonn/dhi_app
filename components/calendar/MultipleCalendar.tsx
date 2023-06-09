@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
+import es from 'date-fns/locale/es';
 import { useEffect, useRef } from 'react';
 import { Scheduler } from '@aldabil/react-scheduler';
 import {
@@ -23,24 +25,19 @@ import {
   CalendarEventViewer,
   CalendarEvent,
 } from '.';
-import { CalendarHeaderProps } from '@models';
-import { useMultipleCalendarContext } from '@contexts';
-import es from 'date-fns/locale/es';
+import { DhiResource } from '@models';
+import { useCalendarContext } from '@contexts';
 
 const MultipleCalendar = () => {
   const calendarRef = useRef<SchedulerRef>(null);
-  const { setScheduler } = useMultipleCalendarContext();
+  const { setMultipleCalendarScheduler, resourceType } = useCalendarContext();
 
-  const handlerCustomHeader = (resource: CalendarHeaderProps) => (
+  const handlerCustomHeader = (resource: DhiResource) => (
     <CalendarHeader {...resource} />
   );
 
   const handlerCustomViewer = (event: ProcessedEvent, closeFn: () => void) => (
-    <CalendarEventViewer
-      event={event}
-      closeFn={closeFn}
-      scheduler={calendarRef.current?.scheduler!}
-    />
+    <CalendarEventViewer event={event} closeFn={closeFn} />
   );
 
   const handlerCustomEditor = (schedulerHelpers: SchedulerHelpers) => (
@@ -52,7 +49,7 @@ const MultipleCalendar = () => {
   );
 
   useEffect(() => {
-    setScheduler(calendarRef.current?.scheduler!);
+    setMultipleCalendarScheduler(calendarRef);
   }, []);
 
   return (
@@ -67,11 +64,11 @@ const MultipleCalendar = () => {
         locale={es}
         events={EVENTS}
         resources={PROFESSIONALS}
-        resourceFields={calendarFieldsMapper}
+        resourceFields={calendarFieldsMapper(resourceType)}
         recourseHeaderComponent={handlerCustomHeader}
+        eventRenderer={handlerCustomEvent}
         customViewer={handlerCustomViewer}
         customEditor={handlerCustomEditor}
-        eventRenderer={handlerCustomEvent}
       />
     </section>
   );

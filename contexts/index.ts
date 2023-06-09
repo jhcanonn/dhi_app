@@ -1,2 +1,2 @@
 export * from './Aside';
-export * from './MultipleCalendar';
+export * from './Calendar';

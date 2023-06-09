@@ -1,23 +1,48 @@
-import { Store } from '@aldabil/react-scheduler/store/types';
-import { ProcessedEvent } from '@aldabil/react-scheduler/types';
-import { EditFn, PROFESSIONALS } from '@utils';
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
+
+import { useCalendarContext } from '@contexts';
+import { useFormattedEventInfo } from '@hooks';
 import { Button } from 'primereact/button';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { EventTags } from '.';
+import { DhiEvent, EditFn } from '@models';
+import { BOXES, PROFESSIONALS } from '@utils';
 
 type Props = {
-  event: ProcessedEvent;
+  event: DhiEvent;
   closeFn: () => void;
-  scheduler: Store;
 };
 
-const CalendarEventViewer = ({ event, closeFn, scheduler }: Props) => {
-  const { professional_id } = event;
+const CalendarEventViewer = ({ event, closeFn }: Props) => {
+  const { multipleCalendarScheduler } = useCalendarContext();
+  const { formatedTime } = useFormattedEventInfo(event);
+
+  const { professional_id, box_id } = event;
+  const scheduler = multipleCalendarScheduler?.current?.scheduler!;
   const editFn: EditFn = scheduler.triggerDialog!;
 
   const professionalName = PROFESSIONALS.find(
-    (p) => p.professional_id === +professional_id
-  )?.name;
+    (p) => p.professional_id === +professional_id!
+  )?.name!;
 
-  const handleDelete = async () => {
+  const boxName = BOXES.find((b) => b.box_id === +box_id!)?.name!;
+
+  const confirmDelete = () => {
+    confirmDialog({
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      message: 'Quieres eliminar esta cita?',
+      header: 'Confirmación',
+      icon: 'pi pi-info-circle',
+      acceptClassName: 'p-button-danger',
+      async accept() {
+        await handlerDelete();
+      },
+    });
+  };
+
+  const handlerDelete = async () => {
     try {
       scheduler.triggerLoading(true);
       let deletedId = event.event_id;
@@ -44,62 +69,68 @@ const CalendarEventViewer = ({ event, closeFn, scheduler }: Props) => {
     }
   };
 
-  const handleEdit = () => {
+  const handlerEdit = () => {
     editFn(true, event);
     closeFn();
   };
 
-  const rowInfo = (text: string, iconName: string) => (
-    <span>
-      <i className={`pi pi-${iconName}`} /> {text}
-    </span>
-  );
+  const rowInfo = (text: string, iconName: string) =>
+    text && (
+      <span>
+        <i className={`pi pi-${iconName}`} /> {text}
+      </span>
+    );
 
   return (
-    <div className="flex flex-col sm:w-96">
-      <section className="flex text-white items-center justify-between p-1 pl-3 bg-[var(--primary-color)]">
-        <h2 className="font-bold">Infomacion de la cita</h2>
-        <div className="flex">
-          <Button
-            onClick={handleEdit}
-            className="rounded-full"
-            tooltip="Editar"
-            tooltipOptions={{
-              className: 'tooltip',
-              position: 'top',
-            }}
-          >
-            <i className="pi pi-user-edit" />
-          </Button>
-          <Button
-            onClick={handleDelete}
-            className="rounded-full"
-            tooltip="Eliminar"
-            tooltipOptions={{
-              className: 'tooltip',
-              position: 'top',
-            }}
-          >
-            <i className="pi pi-trash" />
-          </Button>
-          <Button
-            onClick={closeFn}
-            className="rounded-full"
-            tooltip="Cerrar"
-            tooltipOptions={{
-              className: 'tooltip',
-              position: 'top',
-            }}
-          >
-            <i className="pi pi-times" />
-          </Button>
-        </div>
-      </section>
-      <section className="flex flex-col py-2 px-3">
-        {rowInfo(professionalName!, 'user')}
-        {rowInfo('10:30am - 11:00am', 'calendar')}
-      </section>
-    </div>
+    <>
+      <ConfirmDialog />
+      <div className="flex flex-col sm:w-96">
+        <section className="header-event-viewer">
+          <h2 className="font-bold">Infomacion de la cita</h2>
+          <div className="flex">
+            <Button
+              onClick={handlerEdit}
+              className="rounded-full"
+              tooltip="Editar"
+              tooltipOptions={{
+                className: 'tooltip',
+                position: 'top',
+              }}
+            >
+              <i className="pi pi-user-edit" />
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              className="rounded-full"
+              tooltip="Eliminar"
+              tooltipOptions={{
+                className: 'tooltip',
+                position: 'top',
+              }}
+            >
+              <i className="pi pi-trash" />
+            </Button>
+            <Button
+              onClick={closeFn}
+              className="rounded-full"
+              tooltip="Cerrar"
+              tooltipOptions={{
+                className: 'tooltip',
+                position: 'top',
+              }}
+            >
+              <i className="pi pi-times" />
+            </Button>
+          </div>
+        </section>
+        <section className="flex flex-col py-2 px-3">
+          <EventTags label />
+          {rowInfo(professionalName, 'user')}
+          {rowInfo(boxName, 'box')}
+          {rowInfo(formatedTime, 'calendar')}
+        </section>
+      </div>
+    </>
   );
 };
 

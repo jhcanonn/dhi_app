@@ -5,8 +5,9 @@ import {
   ProcessedEvent,
   SchedulerHelpers,
 } from '@aldabil/react-scheduler/types';
-import { DialogActions, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
 
 type Props = {
   scheduler: SchedulerHelpers;
@@ -14,6 +15,7 @@ type Props = {
 
 const CalendarEditor = ({ scheduler }: Props) => {
   const event = scheduler.edited;
+  console.log(event);
 
   // Make your own form/state
   const [state, setState] = useState({
@@ -66,30 +68,47 @@ const CalendarEditor = ({ scheduler }: Props) => {
     }
   };
 
-  return (
-    <div>
-      <div style={{ padding: '1rem' }}>
-        <p>Load your custom form/fields</p>
-        <TextField
-          label="Title"
-          value={state.title}
-          onChange={(e) => handleChange(e.target.value, 'title')}
-          error={!!error}
-          helperText={error}
-          fullWidth
-        />
-        <TextField
-          label="Description"
-          value={state.description}
-          onChange={(e) => handleChange(e.target.value, 'description')}
-          fullWidth
-        />
-      </div>
-      <DialogActions>
-        <Button onClick={scheduler.close}>Cancel</Button>
-        <Button onClick={handleSubmit}>Confirm</Button>
-      </DialogActions>
+  const Header = ({ isEdit }: { isEdit: boolean }) => (
+    <div className="flex justify-between items-center">
+      <h2 className="font-bold">{`${isEdit ? 'Editar' : 'Crear'} cita`}</h2>
+      <Button
+        icon="pi pi-times"
+        severity="danger"
+        size="small"
+        rounded
+        onClick={scheduler.close}
+        aria-label="Cancel"
+      />
     </div>
+  );
+
+  const Footer = () => (
+    <div className="flex justify-center items-center">
+      <Button label="Agendar" severity="success" onClick={handleSubmit} />
+    </div>
+  );
+
+  return (
+    <Card
+      title={<Header isEdit={!!event} />}
+      footer={<Footer />}
+      className="flex justify-between items-center"
+    >
+      <TextField
+        label="Title"
+        value={state.title}
+        onChange={(e) => handleChange(e.target.value, 'title')}
+        error={!!error}
+        helperText={error}
+        fullWidth
+      />
+      <TextField
+        label="Description"
+        value={state.description}
+        onChange={(e) => handleChange(e.target.value, 'description')}
+        fullWidth
+      />
+    </Card>
   );
 };
 
