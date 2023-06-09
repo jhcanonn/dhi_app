@@ -5,7 +5,7 @@ import { EVENTS, calendarWeek } from '@utils';
 
 const IndividualCalendar = () => {
   return (
-    <section className="scheduler grow">
+    <section className="scheduler grow px-1">
       <Scheduler events={EVENTS} week={calendarWeek} />
     </section>
   );

@@ -1,9 +1,5 @@
 .layout-footer {
-  @apply pb-2;
+  @apply flex justify-center items-center pt-4 pb-2;
   transition: margin-left var(--transition-duration);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 1rem;
   border-top: 1px solid var(--surface-border);
 }

@@ -1,18 +1,10 @@
-import Image from 'next/image';
-import { CalendarHeaderProps } from '@models';
-import { useMultipleCalendarContext } from '@contexts';
-import { MultipleCalendarMode } from '@utils';
+import { DhiResource, ResourceMode } from '@models';
+import { useCalendarContext } from '@contexts';
+import { Avatar } from 'primereact/avatar';
 
-const CalendarHeader = ({
-  avatar,
-  name,
-  mobile,
-  color,
-}: CalendarHeaderProps) => {
-  const { mode } = useMultipleCalendarContext();
-
-  const avatarSize = 40;
-  const isDefault = mode === MultipleCalendarMode.DEFAULT;
+const CalendarHeader = ({ avatar, name, mobile, color }: DhiResource) => {
+  const { resourceMode } = useCalendarContext();
+  const isDefault = resourceMode === ResourceMode.DEFAULT;
 
   return (
     <div
@@ -22,26 +14,14 @@ const CalendarHeader = ({
       }}
       className="calendar-custom-header flex gap-3 min-w-[300px] bg-[var(--surface-card)]"
     >
-      {avatar ? (
-        <Image
-          src={avatar}
-          alt={name!}
-          width={avatarSize}
-          height={avatarSize}
-          className="object-contain"
-        />
-      ) : (
-        <div
-          style={{
-            backgroundColor: color ?? '#007bff',
-            width: `${avatarSize}px`,
-            height: `${avatarSize}px`,
-          }}
-          className={`rounded-[50%] flex items-center justify-center text-white text-xl`}
-        >
-          <span>{name.slice(0, 1)}</span>
-        </div>
-      )}
+      <Avatar
+        image={avatar}
+        label={name.slice(0, 1)}
+        className="mr-2"
+        size="large"
+        shape="circle"
+        style={{ backgroundColor: color ?? '#007bff', color: '#ffffff' }}
+      />
       <section className="flex flex-col items-start justify-center">
         <h2 className="font-bold">{name}</h2>
         <h3>{mobile}</h3>
