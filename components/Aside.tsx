@@ -26,21 +26,16 @@ const Aside = () => {
       icon: 'pi pi-fw pi-calendar',
       items: [
         {
-          label: 'Agenda Individual',
-          icon: 'pi pi-fw pi-calendar-minus',
-          command: () => goToPage(PAGE_PATH.individualCalendar),
-        },
-        {
-          label: 'Agenda Multiple',
-          icon: 'pi pi-fw pi-calendar-plus',
-          command: () => goToPage(PAGE_PATH.multipleCalendar),
+          label: 'Agenda Individual/Multiple',
+          icon: 'pi pi-fw pi-calendar',
+          command: () => goToPage(PAGE_PATH.calendar),
         },
         {
           separator: true,
         },
         {
           label: 'Agenda del día',
-          icon: 'pi pi-fw pi-calendar',
+          icon: 'pi pi-fw pi-plus',
           command: () => goToPage(PAGE_PATH.dayCalendar),
         },
         {

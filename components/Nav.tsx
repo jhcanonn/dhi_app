@@ -7,7 +7,6 @@ import { useAsideContext } from '@contexts';
 import { PAGE_PATH } from '@utils';
 
 const Nav = () => {
-  const isUserLoggedIn = true;
   const { toggleVisible } = useAsideContext();
 
   return (
@@ -31,26 +30,20 @@ const Nav = () => {
           />
         </Link>
       </div>
-      <div className="flex w-full justify-end">
-        {isUserLoggedIn ? (
-          <div className="sm:flex hidden gap-2 items-center">
-            <Button
-              label="Cerrar sesión"
-              className="p-button-rounded p-button-sm"
-            />
-            <Link href={PAGE_PATH.profile}>
-              <Image
-                className="rounded-full w-auto h-auto"
-                src="/demo/avatar/profile.jpg"
-                alt="Profile photo"
-                width={45}
-                height={45}
-              />
-            </Link>
-          </div>
-        ) : (
-          <></>
-        )}
+      <div className="flex w-full gap-2 items-center justify-end">
+        <Button
+          label="Cerrar sesión"
+          className="p-button-rounded p-button-sm"
+        />
+        <Link href={PAGE_PATH.profile}>
+          <Image
+            className="rounded-full w-auto h-auto"
+            src="/demo/avatar/profile.jpg"
+            alt="Profile photo"
+            width={45}
+            height={45}
+          />
+        </Link>
       </div>
     </nav>
   );

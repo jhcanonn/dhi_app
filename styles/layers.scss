@@ -24,10 +24,18 @@
   }
 
   body {
-    @apply bg-[var(--surface-ground)] text-[var(--text-color)] mr-0 p-0 min-h-full;
     font-family: var(--font-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    @apply mr-0 p-0 min-h-full
+    bg-[var(--surface-ground)] 
+    text-[var(--text-color)]
+    [&_.p-dropdown-panel]:text-sm
+    [&_.p-dropdown-filter]:text-sm
+    [&_.p-multiselect]:text-sm
+    [&_.p-multiselect-panel]:text-sm
+    [&_.p-multiselect-filter]:text-sm;
+    @apply [&_.p-dropdown-panel]:z-[1003] [&_.p-multiselect-panel]:z-[1003] #{!important};
   }
 
   a {
@@ -54,5 +62,10 @@
 
   .event-tooltip {
     @apply text-xs;
+  }
+
+  .calendar-filters-container {
+    @apply flex flex-col gap-2 sm:justify-center;
+    @apply sm:flex-row #{!important};
   }
 }
