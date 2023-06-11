@@ -28,6 +28,11 @@ export enum ResourceType {
   PROFESSIONAL = 'professional',
 }
 
+export enum CalendarType {
+  INDIVIDUAL = 'individual',
+  MULTIPLE = 'multiple',
+}
+
 export enum ResourceMode {
   DEFAULT = 'default',
   TABS = 'tabs',

@@ -9,8 +9,7 @@ export const bgEventColor = '#fff';
 export const PAGE_PATH = {
   home: '/',
   profile: '/profile',
-  individualCalendar: '/calendar/individual',
-  multipleCalendar: '/calendar/multiple',
+  calendar: '/calendar',
   dayCalendar: '/calendar/day',
   dateListCalendar: '/calendar/date-list',
   clientList: '/client',

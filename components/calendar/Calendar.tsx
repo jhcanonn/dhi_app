@@ -12,7 +12,6 @@ import {
 } from '@aldabil/react-scheduler/types';
 import {
   EVENTS,
-  PROFESSIONALS,
   calendarDay,
   calendarFieldsMapper,
   calendarMonth,
@@ -28,9 +27,16 @@ import {
 import { DhiResource } from '@models';
 import { useCalendarContext } from '@contexts';
 
-const MultipleCalendar = () => {
+const Calendar = () => {
   const calendarRef = useRef<SchedulerRef>(null);
-  const { setMultipleCalendarScheduler, resourceType } = useCalendarContext();
+  const { setCalendarScheduler, resourceType, calendarType, professionals } =
+    useCalendarContext();
+
+  const resources = calendarType
+    ? professionals.length
+      ? [professionals[0]]
+      : []
+    : professionals;
 
   const handlerCustomHeader = (resource: DhiResource) => (
     <CalendarHeader {...resource} />
@@ -49,7 +55,7 @@ const MultipleCalendar = () => {
   );
 
   useEffect(() => {
-    setMultipleCalendarScheduler(calendarRef);
+    setCalendarScheduler(calendarRef);
   }, []);
 
   return (
@@ -63,7 +69,7 @@ const MultipleCalendar = () => {
         translations={calendarTranslations}
         locale={es}
         events={EVENTS}
-        resources={PROFESSIONALS}
+        resources={resources}
         resourceFields={calendarFieldsMapper(resourceType)}
         recourseHeaderComponent={handlerCustomHeader}
         eventRenderer={handlerCustomEvent}
@@ -74,4 +80,4 @@ const MultipleCalendar = () => {
   );
 };
 
-export default MultipleCalendar;
+export default Calendar;

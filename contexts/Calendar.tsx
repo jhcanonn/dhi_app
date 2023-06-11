@@ -8,30 +8,49 @@ import {
   useContext,
   useState,
 } from 'react';
-import { ResourceMode, ResourceType } from '@models';
+import {
+  Box,
+  CalendarType,
+  Professional,
+  ResourceMode,
+  ResourceType,
+} from '@models';
 import { SchedulerRef } from '@aldabil/react-scheduler/types';
+import { BOXES, PROFESSIONALS } from '@utils';
 
-type CalendarType = {
+type CalendarContextType = {
   resourceMode: ResourceMode;
   setResourceMode: Dispatch<SetStateAction<ResourceMode>>;
   resourceType: ResourceType;
   setResourceType: Dispatch<SetStateAction<ResourceType>>;
-  multipleCalendarScheduler: RefObject<SchedulerRef> | null;
-  setMultipleCalendarScheduler: Dispatch<
+  calendarType: CalendarType;
+  setCalendarType: Dispatch<SetStateAction<CalendarType>>;
+  professionals: Professional[];
+  setProfessionals: Dispatch<SetStateAction<Professional[]>>;
+  boxes: Box[];
+  setBoxes: Dispatch<SetStateAction<Box[]>>;
+  calendarScheduler: RefObject<SchedulerRef> | null;
+  setCalendarScheduler: Dispatch<
     SetStateAction<RefObject<SchedulerRef> | null>
   >;
 };
 
-const calendarDefaultValues: CalendarType = {
+const calendarDefaultValues: CalendarContextType = {
   resourceMode: ResourceMode.DEFAULT,
   setResourceMode: () => {},
   resourceType: ResourceType.PROFESSIONAL,
   setResourceType: () => {},
-  multipleCalendarScheduler: null,
-  setMultipleCalendarScheduler: () => {},
+  calendarType: CalendarType.INDIVIDUAL,
+  setCalendarType: () => {},
+  professionals: PROFESSIONALS,
+  setProfessionals: () => {},
+  boxes: BOXES,
+  setBoxes: () => {},
+  calendarScheduler: null,
+  setCalendarScheduler: () => {},
 };
 
-const Calendar = createContext<CalendarType>(calendarDefaultValues);
+const Calendar = createContext<CalendarContextType>(calendarDefaultValues);
 
 export const useCalendarContext = () => {
   return useContext(Calendar);
@@ -44,7 +63,10 @@ export const CalendarProvider = ({
 }) => {
   const [resourceMode, setResourceMode] = useState(ResourceMode.DEFAULT);
   const [resourceType, setResourceType] = useState(ResourceType.PROFESSIONAL);
-  const [multipleCalendarScheduler, setMultipleCalendarScheduler] =
+  const [calendarType, setCalendarType] = useState(CalendarType.INDIVIDUAL);
+  const [professionals, setProfessionals] = useState(PROFESSIONALS);
+  const [boxes, setBoxes] = useState(BOXES);
+  const [calendarScheduler, setCalendarScheduler] =
     useState<RefObject<SchedulerRef> | null>(null);
 
   return (
@@ -53,10 +75,16 @@ export const CalendarProvider = ({
         value={{
           resourceMode,
           setResourceMode,
-          multipleCalendarScheduler,
-          setMultipleCalendarScheduler,
           resourceType,
           setResourceType,
+          calendarType,
+          setCalendarType,
+          professionals,
+          setProfessionals,
+          boxes,
+          setBoxes,
+          calendarScheduler,
+          setCalendarScheduler,
         }}
       >
         {children}

@@ -15,11 +15,11 @@ type Props = {
 };
 
 const CalendarEventViewer = ({ event, closeFn }: Props) => {
-  const { multipleCalendarScheduler } = useCalendarContext();
+  const { calendarScheduler } = useCalendarContext();
   const { formatedTime } = useFormattedEventInfo(event);
 
   const { professional_id, box_id } = event;
-  const scheduler = multipleCalendarScheduler?.current?.scheduler!;
+  const scheduler = calendarScheduler?.current?.scheduler!;
   const editFn: EditFn = scheduler.triggerDialog!;
 
   const professionalName = PROFESSIONALS.find(

@@ -1,8 +1,7 @@
 export { default as LoadingSkeleton } from './LoadingSkeleton';
 export { default as HomeSkeleton } from './HomeSkeleton';
 export { default as DayCalendarSkeleton } from './DayCalendarSkeleton';
-export { default as IndividualCalendarSkeleton } from './IndividualCalendarSkeleton';
-export { default as MultipleCalendarSkeleton } from './MultipleCalendarSkeleton';
+export { default as CalendarSkeleton } from './CalendarSkeleton';
 export { default as DateListCalendarSkeleton } from './DateListCalendarSkeleton';
 export { default as ClientGallerySkeleton } from './ClientGallerySkeleton';
 export { default as ClientSkeleton } from './ClientSkeleton';

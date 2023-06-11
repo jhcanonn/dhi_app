@@ -1,10 +1,6 @@
 import { FilterBar } from '@components';
 
-const MultipleCalendarLayout = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const CalendarLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <section className="grow flex flex-col">
       <FilterBar />
@@ -13,4 +9,4 @@ const MultipleCalendarLayout = ({
   );
 };
 
-export default MultipleCalendarLayout;
+export default CalendarLayout;
