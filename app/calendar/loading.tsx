@@ -1,4 +1,4 @@
-import { CalendarSkeleton } from '@components';
+import { CalendarSkeleton } from '@components/molecules';
 
 const Loading = () => <CalendarSkeleton />;
 

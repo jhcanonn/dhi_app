@@ -1,4 +1,4 @@
-import { DayCalendarSkeleton } from '@components';
+import { DayCalendarSkeleton } from '@components/molecules';
 
 const Loading = () => <DayCalendarSkeleton />;
 

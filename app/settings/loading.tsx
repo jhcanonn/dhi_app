@@ -1,4 +1,4 @@
-import { SettingsSkeleton } from '@components';
+import { SettingsSkeleton } from '@components/molecules';
 
 const Loading = () => <SettingsSkeleton />;
 

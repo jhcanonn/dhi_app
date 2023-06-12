@@ -1,13 +1,19 @@
 import { SelectedRange } from '@aldabil/react-scheduler/store/types';
+import { FieldValues, PathValue, UseFormReturn } from 'react-hook-form';
 import {
   DefaultRecourse,
   ProcessedEvent,
 } from '@aldabil/react-scheduler/types';
 
 export type DhiEvent = ProcessedEvent & {
-  state_color?: string;
   professional_id?: number;
   box_id?: number;
+  state_color?: string;
+  identification?: number;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  last_name_2?: string;
 };
 
 export type CommonData = DefaultRecourse & {
@@ -42,3 +48,14 @@ export type EditFn = (
   status: boolean,
   event?: ProcessedEvent | SelectedRange | undefined
 ) => void;
+
+export type FieldProps<T> = {
+  handleForm: UseFormReturn<T extends FieldValues ? any : any, any, undefined>;
+  name: string;
+  label: string;
+  icon?: string;
+  required?: boolean;
+  validate?: (
+    value: PathValue<T extends FieldValues ? any : any, any>
+  ) => boolean;
+};

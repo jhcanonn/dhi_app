@@ -1,4 +1,4 @@
-import { ClientSkeleton } from '@components';
+import { ClientSkeleton } from '@components/molecules';
 
 const Loading = () => <ClientSkeleton />;
 

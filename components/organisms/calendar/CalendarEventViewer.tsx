@@ -5,9 +5,9 @@ import { useCalendarContext } from '@contexts';
 import { useFormattedEventInfo } from '@hooks';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { EventTags } from '.';
 import { DhiEvent, EditFn } from '@models';
 import { BOXES, PROFESSIONALS } from '@utils';
+import { EventTags } from '@components/molecules';
 
 type Props = {
   event: DhiEvent;
@@ -37,12 +37,12 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
       icon: 'pi pi-info-circle',
       acceptClassName: 'p-button-danger',
       async accept() {
-        await handlerDelete();
+        await handleDelete();
       },
     });
   };
 
-  const handlerDelete = async () => {
+  const handleDelete = async () => {
     try {
       scheduler.triggerLoading(true);
       let deletedId = event.event_id;
@@ -69,7 +69,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
     }
   };
 
-  const handlerEdit = () => {
+  const handleEdit = () => {
     editFn(true, event);
     closeFn();
   };
@@ -89,7 +89,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
           <h2 className="font-bold">Infomacion de la cita</h2>
           <div className="flex">
             <Button
-              onClick={handlerEdit}
+              onClick={handleEdit}
               className="rounded-full"
               tooltip="Editar"
               tooltipOptions={{

@@ -34,12 +34,12 @@ const FilterBar = () => {
     Professional[] | null
   >(professionals);
   // Boxes fields
-  const [selectedBox, setSelectedBox] = useState<Box | null>(boxes[0]);
+  const [selectedBox, setSelectedBox] = useState<Box>(boxes[0]);
   const [selectedBoxes, setSelectedBoxes] = useState<Box[] | null>(boxes);
 
   const scheduler = calendarScheduler?.current?.scheduler!;
 
-  const handlerCalendarTypeChange = (e: ToggleButtonChangeEvent) => {
+  const handleCalendarTypeChange = (e: ToggleButtonChangeEvent) => {
     setCheckedCalendarType(e.value);
     setCalendarType(
       checkedCalendarType ? CalendarType.INDIVIDUAL : CalendarType.MULTIPLE
@@ -47,14 +47,14 @@ const FilterBar = () => {
     setSchedulerResources(!checkedCalendarType, !checkedResourceType);
   };
 
-  const handlerModeChange = (e: ToggleButtonChangeEvent) => {
+  const handleModeChange = (e: ToggleButtonChangeEvent) => {
     const modeToggle = checkedMode ? ResourceMode.DEFAULT : ResourceMode.TABS;
     setCheckedMode(e.value);
     setResourceMode(modeToggle);
     scheduler.handleState(modeToggle, 'resourceViewMode');
   };
 
-  const handlerResourceTypeChange = (e: ToggleButtonChangeEvent) => {
+  const handleResourceTypeChange = (e: ToggleButtonChangeEvent) => {
     setCheckedResourceType(e.value);
     setResourceType(
       checkedResourceType ? ResourceType.PROFESSIONAL : ResourceType.BOX
@@ -91,21 +91,21 @@ const FilterBar = () => {
           onLabel="Ver agenda individual"
           offLabel="Ver agenda multiple"
           checked={checkedCalendarType}
-          onChange={handlerCalendarTypeChange}
+          onChange={handleCalendarTypeChange}
           className={'p-button-sm sm:w-52'}
         />
         <ToggleButton
           onLabel="Ver completo"
           offLabel="Ver por pestañas"
           checked={checkedMode}
-          onChange={handlerModeChange}
+          onChange={handleModeChange}
           className={'p-button-sm sm:w-40'}
         />
         <ToggleButton
           onLabel="Ver por profesional"
           offLabel="Ver por box"
           checked={checkedResourceType}
-          onChange={handlerResourceTypeChange}
+          onChange={handleResourceTypeChange}
           className={'p-button-sm sm:w-40'}
         />
       </div>

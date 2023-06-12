@@ -1,4 +1,4 @@
-import { StatisticsSkeleton } from '@components';
+import { StatisticsSkeleton } from '@components/molecules';
 
 const Loading = () => <StatisticsSkeleton />;
 

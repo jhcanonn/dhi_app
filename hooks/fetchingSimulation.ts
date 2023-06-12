@@ -1,7 +1,7 @@
-export const fetchingSimulation = () => {
-  return new Promise<boolean>((resolve) => {
+export const fetchingSimulation = (value: any, secs: number = 1000) => {
+  return new Promise<any>((resolve) => {
     setTimeout(() => {
-      resolve(true);
-    }, 3000);
+      resolve(value);
+    }, secs);
   });
 };
