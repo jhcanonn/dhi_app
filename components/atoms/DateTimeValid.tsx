@@ -1,29 +1,31 @@
 import { ErrorText } from '.';
 import { Controller, FieldValues } from 'react-hook-form';
 import { classNames as cx } from 'primereact/utils';
-import { InputNumber } from 'primereact/inputnumber';
 import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { errorMessages, localeOptions } from '@utils';
+import { Calendar } from 'primereact/calendar';
+import { useCalendarContext } from '@contexts';
+import { addLocale } from 'primereact/api';
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string;
-  icon?: string;
-  minLength?: number;
 };
 
-const InputNumberValid = <T extends FieldValues>({
+const DateTimeValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
-  icon,
-  minLength,
   required,
   validate,
 }: Props<T>) => {
+  const { calendarScheduler } = useCalendarContext();
+  const localeCode = calendarScheduler?.current?.scheduler.locale.code || 'es';
   const {
     formState: { errors },
     control,
   } = handleForm;
+
+  addLocale(localeCode, localeOptions);
 
   return (
     <Controller
@@ -33,34 +35,28 @@ const InputNumberValid = <T extends FieldValues>({
         required: required ? errorMessages.mandatoryField : false,
         validate: (value) =>
           validate ? validate(value) || errorMessages.invalidValue : true,
-        minLength: minLength && {
-          value: minLength,
-          message: `${errorMessages.minLength} ${minLength}`,
-        },
       }}
       render={({
-        field: { onChange, onBlur, value, name, ref },
+        field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
         <div className="flex flex-col">
-          <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
-            {icon && (
-              <i
-                className={cx(`pi pi-${icon}`)}
-                style={{ color: error ? invalidColor : '' }}
-              />
-            )}
-            <InputNumber
-              id={name}
+          <span className="p-float-label">
+            <Calendar
+              ref={ref}
+              inputId={name}
               value={value}
-              inputRef={ref}
-              onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
-              }}
-              onChange={(e) => onChange(e.value)}
-              inputClassName={cx({ 'p-invalid': error })}
-              useGrouping={false}
+              onBlur={onBlur}
+              onChange={onChange}
+              locale={localeCode}
+              dateFormat="dd/mm/yy"
+              hourFormat="12"
+              showIcon
+              showTime
+              className={cx(
+                { 'p-invalid': error },
+                '[&_button]:bg-[var(--primary-color)]'
+              )}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
@@ -73,4 +69,4 @@ const InputNumberValid = <T extends FieldValues>({
   );
 };
 
-export default InputNumberValid;
+export default DateTimeValid;

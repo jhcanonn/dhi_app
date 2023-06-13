@@ -1,22 +1,22 @@
 import { ErrorText } from '.';
 import { Controller, FieldValues } from 'react-hook-form';
 import { classNames as cx } from 'primereact/utils';
-import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
 import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { errorMessages } from '@utils';
 
 export type Props<T> = FieldCommonProps<T> & {
+  list: any[];
+  showClear?: boolean;
   label?: string;
-  icon?: string;
-  minLength?: number;
 };
 
-const InputNumberValid = <T extends FieldValues>({
+const DropdownValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
-  icon,
-  minLength,
+  list,
+  showClear = false,
   required,
   validate,
 }: Props<T>) => {
@@ -33,34 +33,27 @@ const InputNumberValid = <T extends FieldValues>({
         required: required ? errorMessages.mandatoryField : false,
         validate: (value) =>
           validate ? validate(value) || errorMessages.invalidValue : true,
-        minLength: minLength && {
-          value: minLength,
-          message: `${errorMessages.minLength} ${minLength}`,
-        },
       }}
       render={({
-        field: { onChange, onBlur, value, name, ref },
+        field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
         <div className="flex flex-col">
-          <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
-            {icon && (
-              <i
-                className={cx(`pi pi-${icon}`)}
-                style={{ color: error ? invalidColor : '' }}
-              />
-            )}
-            <InputNumber
+          <span className="p-float-label">
+            <Dropdown
               id={name}
               value={value}
-              inputRef={ref}
-              onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
-              }}
+              optionLabel="name"
+              options={list}
+              focusInputRef={ref}
+              onBlur={onBlur}
               onChange={(e) => onChange(e.value)}
-              inputClassName={cx({ 'p-invalid': error })}
-              useGrouping={false}
+              className={cx(
+                { 'p-invalid': error },
+                { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error }
+              )}
+              filter
+              showClear={showClear}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
@@ -73,4 +66,4 @@ const InputNumberValid = <T extends FieldValues>({
   );
 };
 
-export default InputNumberValid;
+export default DropdownValid;

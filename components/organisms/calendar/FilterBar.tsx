@@ -128,7 +128,7 @@ const FilterBar = () => {
               maxSelectedLabels={1}
               selectedItemsLabel="{0} boxes"
               placeholder="Seleccione boxes"
-              className="p-multiselect-sm sm:w-56"
+              className="p-multiselect-sm sm:!w-56"
             />
           ) : (
             <MultiSelect
@@ -149,7 +149,7 @@ const FilterBar = () => {
               maxSelectedLabels={1}
               selectedItemsLabel="{0} profesionales"
               placeholder="Seleccione profesionales"
-              className="p-multiselect-sm sm:w-56"
+              className="p-multiselect-sm sm:!w-56"
             />
           )
         ) : checkedResourceType ? (
@@ -164,7 +164,7 @@ const FilterBar = () => {
             optionLabel="name"
             filter
             placeholder="Seleccione un box"
-            className="p-inputtext-sm sm:w-56"
+            className="p-inputtext-sm sm:!w-56"
           />
         ) : (
           <Dropdown
@@ -178,7 +178,7 @@ const FilterBar = () => {
             optionLabel="name"
             filter
             placeholder="Seleccione un profesional"
-            className="p-inputtext-sm sm:w-56"
+            className="p-inputtext-sm sm:!w-56"
           />
         )}
       </div>

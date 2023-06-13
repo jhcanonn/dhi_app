@@ -1,4 +1,18 @@
-import { Box, DhiEvent, Professional } from '@models';
+import { Box, Country, DhiEvent, Professional, Service } from '@models';
+
+export const COUNTRIES: Country[] = [
+  { name: 'Colombia', code: 'CO', dialling: '+57' },
+  { name: 'Australia', code: 'AU', dialling: '+61' },
+  { name: 'Brazil', code: 'BR', dialling: '+55' },
+  { name: 'China', code: 'CN', dialling: '+86' },
+  { name: 'Egypt', code: 'EG', dialling: '+20' },
+  { name: 'France', code: 'FR', dialling: '+33' },
+  { name: 'Germany', code: 'DE', dialling: '+49' },
+  { name: 'India', code: 'IN', dialling: '+91' },
+  { name: 'Japan', code: 'JP', dialling: '+81' },
+  { name: 'Spain', code: 'ES', dialling: '+34' },
+  { name: 'United States', code: 'US', dialling: '+1' },
+];
 
 export const PROFESSIONALS: Professional[] = [
   {
@@ -51,6 +65,29 @@ export const BOXES: Box[] = [
     box_id: 5,
     name: 'Terapias capilares',
     color: 'darkblue',
+  },
+];
+
+export const SERVICES: Service[] = [
+  {
+    service_id: 1,
+    name: 'Servicio 1',
+  },
+  {
+    service_id: 2,
+    name: 'Servicio 2',
+  },
+  {
+    service_id: 3,
+    name: 'Servicio 3',
+  },
+  {
+    service_id: 4,
+    name: 'Servicio 4',
+  },
+  {
+    service_id: 5,
+    name: 'Servicio 5',
   },
 ];
 

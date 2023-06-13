@@ -9,11 +9,21 @@ export type DhiEvent = ProcessedEvent & {
   professional_id?: number;
   box_id?: number;
   state_color?: string;
+  data_sheet?: string;
   identification?: number;
   first_name?: string;
   middle_name?: string;
   last_name?: string;
   last_name_2?: string;
+  phone?: string;
+  phone_2?: string;
+  dialling?: Country;
+  dialling_2?: Country;
+  email?: string;
+  sent_email?: boolean;
+  professional?: Professional;
+  box?: Box;
+  service?: Service;
 };
 
 export type CommonData = DefaultRecourse & {
@@ -26,6 +36,8 @@ export type Professional = CommonData & {
 };
 
 export type Box = CommonData & { box_id: number };
+
+export type Service = CommonData & { service_id: number };
 
 export type DhiResource = Box & Professional;
 
@@ -49,13 +61,17 @@ export type EditFn = (
   event?: ProcessedEvent | SelectedRange | undefined
 ) => void;
 
-export type FieldProps<T> = {
+export type FieldCommonProps<T> = {
   handleForm: UseFormReturn<T extends FieldValues ? any : any, any, undefined>;
   name: string;
-  label: string;
-  icon?: string;
   required?: boolean;
   validate?: (
     value: PathValue<T extends FieldValues ? any : any, any>
   ) => boolean;
+};
+
+export type Country = {
+  name: string;
+  code: string;
+  dialling: string;
 };

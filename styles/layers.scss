@@ -35,9 +35,14 @@
     [&_.p-dropdown-filter]:text-sm
     [&_.p-multiselect]:text-sm
     [&_.p-multiselect-panel]:text-sm
-    [&_.p-multiselect-filter]:text-sm;
+    [&_.p-multiselect-filter]:text-sm
+    [&_.p-inputwrapper]:w-full
+    [&_.p-card-body]:w-full
+    [&_.p-inputswitch_.p-inputswitch-slider]:rounded-[2rem]
+    [&_.p-inputswitch_.p-inputswitch-slider:before]:rounded-[2rem];
 
-    @apply [&_.p-dropdown-panel]:z-[1003] 
+    @apply [&_.p-dropdown-panel]:z-[1300] 
+    [&_.p-datepicker]:z-[1300] 
     [&_.p-multiselect-panel]:z-[1003] 
     [&_.p-input-icon-left_input]:pl-10 #{!important};
 
@@ -49,7 +54,7 @@
     .p-float-label .p-inputwrapper-focus ~ label,
     .p-float-label .p-inputwrapper-filled ~ label,
     .p-float-label .p-tooltip-target-wrapper ~ label {
-      @apply px-[0.4rem] mt-[0.4rem] bg-white left-2;
+      @apply px-[0.4rem] mt-[0.4rem] bg-white left-2 rounded-lg;
     }
   }
 
