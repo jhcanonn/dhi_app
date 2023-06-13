@@ -2,9 +2,14 @@ import { Translations } from '@aldabil/react-scheduler/types';
 import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
-import { ResourceType } from '@models';
 
-export const bgEventColor = '#fff';
+export const bgEventColor = '#ffffff';
+export const invalidColor = '#dc3545';
+
+export const errorMessages = {
+  mandatoryField: 'Este campo es obligatorio.',
+  invalidValue: 'Ingrese un valor válido.',
+};
 
 export const PAGE_PATH = {
   home: '/',
@@ -67,5 +72,8 @@ export const calendarDay: DayProps = {
 
 /* Los campos que se mapean son del Evento */
 export const calendarFieldsMapper = (resource: string) => {
-  return { idField: `${resource}_id`, textField: 'title' };
+  return {
+    idField: `${resource}_id`,
+    textField: 'title',
+  };
 };

@@ -19,11 +19,11 @@ import {
   calendarWeek,
 } from '@utils';
 import {
-  CalendarHeader,
   CalendarEditor,
   CalendarEventViewer,
   CalendarEvent,
-} from '.';
+} from '@components/organisms';
+import { CalendarHeader } from '@components/molecules';
 import { DhiResource } from '@models';
 import { useCalendarContext } from '@contexts';
 
@@ -38,19 +38,19 @@ const Calendar = () => {
       : []
     : professionals;
 
-  const handlerCustomHeader = (resource: DhiResource) => (
+  const handleCustomHeader = (resource: DhiResource) => (
     <CalendarHeader {...resource} />
   );
 
-  const handlerCustomViewer = (event: ProcessedEvent, closeFn: () => void) => (
+  const handleCustomViewer = (event: ProcessedEvent, closeFn: () => void) => (
     <CalendarEventViewer event={event} closeFn={closeFn} />
   );
 
-  const handlerCustomEditor = (schedulerHelpers: SchedulerHelpers) => (
+  const handleCustomEditor = (schedulerHelpers: SchedulerHelpers) => (
     <CalendarEditor scheduler={schedulerHelpers} />
   );
 
-  const handlerCustomEvent = (evetProps: EventRendererProps) => (
+  const handleCustomEvent = (evetProps: EventRendererProps) => (
     <CalendarEvent {...evetProps} />
   );
 
@@ -71,10 +71,10 @@ const Calendar = () => {
         events={EVENTS}
         resources={resources}
         resourceFields={calendarFieldsMapper(resourceType)}
-        recourseHeaderComponent={handlerCustomHeader}
-        eventRenderer={handlerCustomEvent}
-        customViewer={handlerCustomViewer}
-        customEditor={handlerCustomEditor}
+        recourseHeaderComponent={handleCustomHeader}
+        eventRenderer={handleCustomEvent}
+        customViewer={handleCustomViewer}
+        customEditor={handleCustomEditor}
       />
     </section>
   );

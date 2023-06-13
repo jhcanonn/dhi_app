@@ -27,6 +27,7 @@
     font-family: var(--font-family);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
     @apply mr-0 p-0 min-h-full
     bg-[var(--surface-ground)] 
     text-[var(--text-color)]
@@ -35,7 +36,21 @@
     [&_.p-multiselect]:text-sm
     [&_.p-multiselect-panel]:text-sm
     [&_.p-multiselect-filter]:text-sm;
-    @apply [&_.p-dropdown-panel]:z-[1003] [&_.p-multiselect-panel]:z-[1003] #{!important};
+
+    @apply [&_.p-dropdown-panel]:z-[1003] 
+    [&_.p-multiselect-panel]:z-[1003] 
+    [&_.p-input-icon-left_input]:pl-10 #{!important};
+
+    .p-float-label input:focus ~ label,
+    .p-float-label input:-webkit-autofill ~ label,
+    .p-float-label input.p-filled ~ label,
+    .p-float-label textarea:focus ~ label,
+    .p-float-label textarea.p-filled ~ label,
+    .p-float-label .p-inputwrapper-focus ~ label,
+    .p-float-label .p-inputwrapper-filled ~ label,
+    .p-float-label .p-tooltip-target-wrapper ~ label {
+      @apply px-[0.4rem] mt-[0.4rem] bg-white left-2;
+    }
   }
 
   a {

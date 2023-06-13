@@ -1,4 +1,4 @@
-import { CrmSkeleton } from '@components';
+import { CrmSkeleton } from '@components/molecules';
 
 const Loading = () => <CrmSkeleton />;
 

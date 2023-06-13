@@ -1,4 +1,4 @@
-import { FilterBar } from '@components';
+import { FilterBar } from '@components/organisms';
 
 const CalendarLayout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -1,5 +1,6 @@
 'use client';
 
+import { PrimeIcons } from 'primereact/api';
 import { Sidebar } from 'primereact/sidebar';
 import { SlideMenu } from 'primereact/slidemenu';
 import { useAsideContext } from '@contexts';
@@ -23,11 +24,11 @@ const Aside = () => {
   const asideItems = [
     {
       label: 'Agenda',
-      icon: 'pi pi-fw pi-calendar',
+      icon: PrimeIcons.CALENDAR,
       items: [
         {
           label: 'Agenda Individual/Multiple',
-          icon: 'pi pi-fw pi-calendar',
+          icon: PrimeIcons.CALENDAR,
           command: () => goToPage(PAGE_PATH.calendar),
         },
         {
@@ -35,40 +36,40 @@ const Aside = () => {
         },
         {
           label: 'Agenda del día',
-          icon: 'pi pi-fw pi-plus',
+          icon: PrimeIcons.PLUS,
           command: () => goToPage(PAGE_PATH.dayCalendar),
         },
         {
           label: 'Listado de citas',
-          icon: 'pi pi-fw pi-list',
+          icon: PrimeIcons.LIST,
           command: () => goToPage(PAGE_PATH.dateListCalendar),
         },
       ],
     },
     {
       label: 'Clientes',
-      icon: 'pi pi-fw pi-users',
+      icon: PrimeIcons.USERS,
       items: [
         {
           label: 'Lista de Clientes',
-          icon: 'pi pi-fw pi-users',
+          icon: PrimeIcons.USERS,
           command: () => goToPage(PAGE_PATH.clientList),
         },
         {
           label: 'Galería',
-          icon: 'pi pi-fw pi-images',
+          icon: PrimeIcons.IMAGES,
           command: () => goToPage(PAGE_PATH.clientGallery),
         },
       ],
     },
     {
       label: 'CRM',
-      icon: 'pi pi-fw pi-heart',
+      icon: PrimeIcons.HEART,
       command: () => goToPage(PAGE_PATH.crm),
     },
     {
       label: 'Finanzas',
-      icon: 'pi pi-fw pi-dollar',
+      icon: PrimeIcons.DOLLAR,
       command: () => goToPage(PAGE_PATH.finance),
     },
     {
@@ -76,7 +77,7 @@ const Aside = () => {
     },
     {
       label: 'Configuración',
-      icon: 'pi pi-fw pi-cog',
+      icon: PrimeIcons.COG,
       command: () => goToPage(PAGE_PATH.settings),
     },
   ];

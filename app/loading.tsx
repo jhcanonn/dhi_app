@@ -1,4 +1,4 @@
-import { HomeSkeleton } from '@components';
+import { HomeSkeleton } from '@components/molecules';
 
 const Loading = () => <HomeSkeleton />;
 

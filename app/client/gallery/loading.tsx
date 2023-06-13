@@ -1,4 +1,4 @@
-import { ClientGallerySkeleton } from '@components';
+import { ClientGallerySkeleton } from '@components/molecules';
 
 const Loading = () => <ClientGallerySkeleton />;
 

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
-import { Aside, Footer, Header, Providers } from '@components';
 import '@styles/globals.scss';
+import { Providers } from '@components/templates';
+import { Aside, Footer, Header } from '@components/organisms';
 
 export const metadata: Metadata = {
   title: 'DHI | Home',

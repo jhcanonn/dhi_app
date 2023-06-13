@@ -1,4 +1,4 @@
-import { FinanceSkeleton } from '@components';
+import { FinanceSkeleton } from '@components/molecules';
 
 const Loading = () => <FinanceSkeleton />;
 

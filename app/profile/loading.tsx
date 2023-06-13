@@ -1,4 +1,4 @@
-import { ProfileSkeleton } from '@components';
+import { ProfileSkeleton } from '@components/molecules';
 
 const Loading = () => <ProfileSkeleton />;
 

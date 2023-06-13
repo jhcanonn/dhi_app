@@ -1,4 +1,4 @@
-import { ComingSoon } from '@components';
+import { ComingSoon } from '@components/templates';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

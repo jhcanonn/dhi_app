@@ -1,4 +1,4 @@
-import { DateListCalendarSkeleton } from '@components';
+import { DateListCalendarSkeleton } from '@components/molecules';
 
 const Loading = () => <DateListCalendarSkeleton />;
 

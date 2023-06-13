@@ -1,4 +1,4 @@
-import { ComingSoon } from '@components';
+import { ComingSoon } from '@components/templates';
 
 const Home = () => <ComingSoon page="Home" />;
 
