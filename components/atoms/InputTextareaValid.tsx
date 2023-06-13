@@ -1,23 +1,19 @@
 import { ErrorText } from '.';
 import { Controller, FieldValues } from 'react-hook-form';
 import { classNames as cx } from 'primereact/utils';
-import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
 import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { errorMessages } from '@utils';
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string;
-  icon?: string;
-  disabled?: boolean;
   pattern?: RegExp;
 };
 
-const InputTextValid = <T extends FieldValues>({
+const InputTextareaValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
-  icon,
-  disabled = false,
   pattern,
   required,
   validate,
@@ -40,29 +36,15 @@ const InputTextValid = <T extends FieldValues>({
           message: errorMessages.invalidFormat,
         },
       }}
-      render={({
-        field: { value, name, ref, onBlur, onChange },
-        fieldState: { error },
-      }) => (
+      render={({ field, fieldState: { error } }) => (
         <div className="flex flex-col">
-          <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
-            {icon && (
-              <i
-                className={`pi pi-${icon}`}
-                style={{ color: error ? invalidColor : '' }}
-              />
-            )}
-            <InputText
-              id={name}
-              value={value}
-              ref={ref}
-              onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
-              }}
-              onChange={(e) => onChange(e.target.value)}
+          <span className="p-float-label">
+            <InputTextarea
+              id={field.name}
+              {...field}
+              rows={4}
               className={cx({ 'p-invalid': error }, 'w-full')}
-              disabled={disabled}
+              autoResize
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
@@ -75,4 +57,4 @@ const InputTextValid = <T extends FieldValues>({
   );
 };
 
-export default InputTextValid;
+export default InputTextareaValid;
