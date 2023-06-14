@@ -187,20 +187,20 @@ export const SERVICES: Service[] = [
 export const STATES: EventState[] = [
   { state_id: 1, name: 'Atendido', color: '#FF5733' },
   { state_id: 2, name: 'Confirmado', color: '#9AE51F' },
-  { state_id: 3, name: 'Eliminado', color: '#1FC7E5' },
-  { state_id: 4, name: 'Lista en espera', color: '#B21FE5' },
-  { state_id: 5, name: 'Listo para ser atendido', color: '#A60142' },
-  { state_id: 6, name: 'Llegó', color: '#AA854F' },
-  { state_id: 7, name: 'No confirmado', color: '#81948B' },
-  { state_id: 8, name: 'No pagó', color: '#1708A8' },
-  { state_id: 9, name: 'Descartado', color: '#17bbff' },
-  { state_id: 10, name: 'Suspendio', color: '#ff23A8' },
+  { state_id: 3, name: 'No confirmado', color: '#81948B' },
+  { state_id: 4, name: 'No llegó', color: '#34df8B' },
+  { state_id: 5, name: 'Suspendio', color: '#ff23A8' },
+  { state_id: 6, name: 'Pago descartado', color: '#17bbff' },
+  { state_id: 7, name: 'Llegó', color: '#AA854F' },
+  { state_id: 8, name: 'Lista en espera', color: '#B21FE5' },
+  { state_id: 9, name: 'Listo para ser atendido', color: '#A60142' },
 ];
 
 export const PAYS: Pay[] = [
-  { pay_id: 1, name: 'Plan' },
-  { pay_id: 2, name: 'Pagado' },
-  { pay_id: 3, name: 'Abono' },
+  { pay_id: 1, name: 'Plan', code: 'PL' },
+  { pay_id: 2, name: 'Pagado', code: 'P' },
+  { pay_id: 3, name: 'No Pagado', code: 'NP' },
+  { pay_id: 4, name: 'Pago Descartado', code: 'PD' },
 ];
 
 export const EVENTS: DhiEvent[] = [

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCalendarContext } from '@contexts';
+import { useCalendarContext, useGlobalContext } from '@contexts';
 import {
   Box,
   CalendarType,
@@ -12,39 +12,57 @@ import {
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
+import { useGetResources } from '@hooks';
+import { errorMessages } from '@utils';
 
 const FilterBar = () => {
-  // Calendar context
+  // Contexts
+  const { professionals, boxes } = useGlobalContext();
   const {
     calendarScheduler,
-    professionals,
-    boxes,
+    resourceMode,
     setResourceMode,
+    resourceType,
     setResourceType,
+    calendarType,
     setCalendarType,
+    selectedProfessional,
+    setSelectedProfessional,
+    selectedProfessionals,
+    setSelectedProfessionals,
+    selectedBox,
+    setSelectedBox,
+    selectedBoxes,
+    setSelectedBoxes,
   } = useCalendarContext();
+
   // Toggles buttons
-  const [checkedMode, setCheckedMode] = useState(false);
-  const [checkedCalendarType, setCheckedCalendarType] = useState(false);
-  const [checkedResourceType, setCheckedResourceType] = useState(false);
-  // Professionals fields
-  const [selectedProfessional, setSelectedProfessional] =
-    useState<Professional>(professionals[0]);
-  const [selectedProfessionals, setSelectedProfessionals] = useState<
-    Professional[] | null
-  >(professionals);
-  // Boxes fields
-  const [selectedBox, setSelectedBox] = useState<Box>(boxes[0]);
-  const [selectedBoxes, setSelectedBoxes] = useState<Box[] | null>(boxes);
+  const isIndividual = calendarType === CalendarType.INDIVIDUAL;
+  const isProfessional = resourceType === ResourceType.PROFESSIONAL;
+  const [checkedCalendarType, setCheckedCalendarType] = useState(!isIndividual);
+  const [checkedResourceType, setCheckedResourceType] = useState(
+    !isProfessional
+  );
+  const [checkedMode, setCheckedMode] = useState(
+    resourceMode !== ResourceMode.DEFAULT
+  );
 
   const scheduler = calendarScheduler?.current?.scheduler!;
+  const calendarTypeChangeResources = useGetResources(
+    !isIndividual,
+    isProfessional
+  );
+  const ResourceTypeChangeResources = useGetResources(
+    isIndividual,
+    !isProfessional
+  );
 
   const handleCalendarTypeChange = (e: ToggleButtonChangeEvent) => {
     setCheckedCalendarType(e.value);
     setCalendarType(
       checkedCalendarType ? CalendarType.INDIVIDUAL : CalendarType.MULTIPLE
     );
-    setSchedulerResources(!checkedCalendarType, !checkedResourceType);
+    scheduler.handleState(calendarTypeChangeResources, 'resources');
   };
 
   const handleModeChange = (e: ToggleButtonChangeEvent) => {
@@ -59,29 +77,7 @@ const FilterBar = () => {
     setResourceType(
       checkedResourceType ? ResourceType.PROFESSIONAL : ResourceType.BOX
     );
-    setSchedulerResources(checkedCalendarType, checkedResourceType);
-  };
-
-  const setSchedulerResources = (
-    calendarType: boolean,
-    resourceType: boolean
-  ) => {
-    const selProfessionals = calendarType
-      ? selectedProfessionals?.length
-        ? selectedProfessionals
-        : professionals
-      : [selectedProfessional];
-
-    const selBoxes = calendarType
-      ? selectedBoxes?.length
-        ? selectedBoxes
-        : boxes
-      : [selectedBox];
-
-    scheduler.handleState(
-      resourceType ? selProfessionals : selBoxes,
-      'resources'
-    );
+    scheduler.handleState(ResourceTypeChangeResources, 'resources');
   };
 
   return (
@@ -129,6 +125,7 @@ const FilterBar = () => {
               selectedItemsLabel="{0} boxes"
               placeholder="Seleccione boxes"
               className="p-multiselect-sm sm:!w-56"
+              emptyFilterMessage={errorMessages.noExists}
             />
           ) : (
             <MultiSelect
@@ -150,6 +147,7 @@ const FilterBar = () => {
               selectedItemsLabel="{0} profesionales"
               placeholder="Seleccione profesionales"
               className="p-multiselect-sm sm:!w-56"
+              emptyFilterMessage={errorMessages.noExists}
             />
           )
         ) : checkedResourceType ? (
@@ -165,6 +163,8 @@ const FilterBar = () => {
             filter
             placeholder="Seleccione un box"
             className="p-inputtext-sm sm:!w-56"
+            emptyMessage={errorMessages.noBoxes}
+            emptyFilterMessage={errorMessages.noExists}
           />
         ) : (
           <Dropdown
@@ -178,6 +178,8 @@ const FilterBar = () => {
             optionLabel="name"
             filter
             placeholder="Seleccione un profesional"
+            emptyMessage={errorMessages.noProfessionals}
+            emptyFilterMessage={errorMessages.noExists}
             className="p-inputtext-sm sm:!w-56"
           />
         )}

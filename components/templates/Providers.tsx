@@ -1,12 +1,14 @@
 'use client';
 
-import { AsideProvider, CalendarProvider } from '@contexts';
+import { AsideProvider, CalendarProvider, GlobalProvider } from '@contexts';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <CalendarProvider>
-      <AsideProvider>{children}</AsideProvider>
-    </CalendarProvider>
+    <GlobalProvider>
+      <CalendarProvider>
+        <AsideProvider>{children}</AsideProvider>
+      </CalendarProvider>
+    </GlobalProvider>
   );
 };
 

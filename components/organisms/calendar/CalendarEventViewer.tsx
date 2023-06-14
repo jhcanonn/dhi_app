@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useCalendarContext } from '@contexts';
+import { useCalendarContext, useGlobalContext } from '@contexts';
 import { useFormattedEventInfo } from '@hooks';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { DhiEvent, EditFn } from '@models';
-import { BOXES, PROFESSIONALS } from '@utils';
 import { EventTags } from '@components/molecules';
 
 type Props = {
@@ -15,18 +14,19 @@ type Props = {
 };
 
 const CalendarEventViewer = ({ event, closeFn }: Props) => {
+  const { boxes, professionals } = useGlobalContext();
   const { calendarScheduler } = useCalendarContext();
   const { formatedTime, formatedDateTime } = useFormattedEventInfo(event);
 
-  const { professional_id, box_id, allDay, first_name, last_name } = event;
+  const { professional_id, box_id, allDay, first_name, last_name, pay } = event;
   const scheduler = calendarScheduler?.current?.scheduler!;
   const editFn: EditFn = scheduler.triggerDialog!;
 
-  const professionalName = PROFESSIONALS.find(
+  const professionalName = professionals.find(
     (p) => p.professional_id === +professional_id!
   )?.name!;
 
-  const boxName = BOXES.find((b) => b.box_id === +box_id!)?.name!;
+  const boxName = boxes.find((b) => b.box_id === +box_id!)?.name!;
 
   const confirmDelete = () => {
     confirmDialog({
@@ -74,7 +74,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
     closeFn();
   };
 
-  const rowInfo = (text: string, iconName: string) =>
+  const rowInfo = (text: string | undefined, iconName: string) =>
     text && (
       <span>
         <i className={`pi pi-${iconName}`} /> {text}
@@ -124,9 +124,10 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
           </div>
         </section>
         <section className="flex flex-col py-2 px-3">
-          <EventTags label />
+          <EventTags label event={event} />
           {rowInfo(professionalName, 'user')}
           {rowInfo(`${first_name} ${last_name}`, 'user')}
+          {rowInfo(pay?.name, 'dollar')}
           {rowInfo(boxName, 'box')}
           {rowInfo(allDay ? formatedDateTime : formatedTime, 'calendar')}
         </section>
