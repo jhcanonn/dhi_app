@@ -55,7 +55,6 @@ const Calendar = () => {
   );
 
   useEffect(() => {
-    console.log({ resourceType, events });
     setCalendarScheduler(calendarRef);
   }, []);
 
