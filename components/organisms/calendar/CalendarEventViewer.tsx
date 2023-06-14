@@ -14,7 +14,7 @@ type Props = {
 };
 
 const CalendarEventViewer = ({ event, closeFn }: Props) => {
-  const { boxes, professionals } = useGlobalContext();
+  const { boxes, professionals, setEvents } = useGlobalContext();
   const { calendarScheduler } = useCalendarContext();
   const { formatedTime, formatedDateTime } = useFormattedEventInfo(event);
 
@@ -61,6 +61,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
           (e) => e.event_id !== deletedId
         );
         scheduler.handleState(updatedEvents, 'events');
+        setEvents(updatedEvents);
       }
     } catch (error) {
       console.error(error);

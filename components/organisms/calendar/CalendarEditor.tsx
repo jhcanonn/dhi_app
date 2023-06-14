@@ -14,7 +14,7 @@ import {
   InputTextareaValid,
 } from '@components/atoms';
 import { Box, DhiEvent, EventState, Service } from '@models';
-import { fetchingSimulation } from '@hooks';
+import { fetchingSimulation, eventIdSimulation } from '@hooks';
 import { useCalendarContext, useGlobalContext } from '@contexts';
 import {
   PAGE_PATH,
@@ -36,8 +36,8 @@ type Props = {
 const CalendarEditor = ({ scheduler }: Props) => {
   const toast = useRef<Toast>(null);
   const router = useRouter();
-  const { professionals, boxes, services } = useGlobalContext();
-  const { resourceType } = useCalendarContext();
+  const { professionals, boxes, services, setEvents } = useGlobalContext();
+  const { resourceType, calendarScheduler } = useCalendarContext();
 
   const resourceField = calendarFieldsMapper(resourceType).idField;
   const event: DhiEvent | undefined = scheduler.edited;
@@ -88,18 +88,18 @@ const CalendarEditor = ({ scheduler }: Props) => {
     if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
       try {
         scheduler.loading(true);
-        const addedUpdatedEvent: DhiEvent = await fetchingSimulation(
-          data,
-          2000
-        );
+        const addedUpdatedEvent: DhiEvent = await fetchingSimulation(data, 500);
         /** Esto deberia hacerse en el backend */
-        if (!addedUpdatedEvent.event_id) addedUpdatedEvent.event_id = 1234;
-        if (!addedUpdatedEvent.client_id) addedUpdatedEvent.client_id = 1234;
+        if (!addedUpdatedEvent.event_id)
+          addedUpdatedEvent.event_id = eventIdSimulation(11, 1000);
+        if (!addedUpdatedEvent.client_id)
+          addedUpdatedEvent.client_id = eventIdSimulation(11, 1000);
         if (!addedUpdatedEvent.title)
           addedUpdatedEvent.title = `${addedUpdatedEvent?.first_name} ${addedUpdatedEvent?.last_name}`;
         /***/
         const action: EventActions = event ? 'edit' : 'create';
         scheduler.onConfirm(addedUpdatedEvent, action);
+        setEvents((preEvents) => [...preEvents, addedUpdatedEvent]);
         scheduler.close();
       } finally {
         scheduler.loading(false);
