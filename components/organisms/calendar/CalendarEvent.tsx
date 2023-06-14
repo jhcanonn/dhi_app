@@ -6,12 +6,13 @@ import { EventRendererProps } from '@aldabil/react-scheduler/types';
 import { useDragAttributes, useFormattedEventInfo } from '@hooks';
 import { bgEventColor } from '@utils';
 import { EventTags } from '@components/molecules';
+import { DhiEvent } from '@models';
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const customDragProps = useDragAttributes(event);
   const { formatedTime } = useFormattedEventInfo(event);
 
-  const { title, state_color, event_id } = event;
+  const { event_id, state, first_name, last_name } = event as DhiEvent;
   const classEventId = 'event-' + event_id;
 
   return (
@@ -29,10 +30,12 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
       >
         <div
           className={`calendar-event ${classEventId}`}
-          style={{ border: `3px solid ${state_color ?? 'black'}` }}
+          style={{ border: `3px solid ${state?.color ?? 'black'}` }}
         >
           <EventTags />
-          <span className="font-bold">{title}</span>
+          <span className="font-bold">
+            {first_name} {last_name}
+          </span>
           <span>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita,
             ipsam ratione ipsa magni nulla accusamus, dolorum omnis voluptatum

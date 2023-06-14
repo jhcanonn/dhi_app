@@ -16,9 +16,9 @@ type Props = {
 
 const CalendarEventViewer = ({ event, closeFn }: Props) => {
   const { calendarScheduler } = useCalendarContext();
-  const { formatedTime } = useFormattedEventInfo(event);
+  const { formatedTime, formatedDateTime } = useFormattedEventInfo(event);
 
-  const { professional_id, box_id } = event;
+  const { professional_id, box_id, allDay, first_name, last_name } = event;
   const scheduler = calendarScheduler?.current?.scheduler!;
   const editFn: EditFn = scheduler.triggerDialog!;
 
@@ -126,8 +126,9 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
         <section className="flex flex-col py-2 px-3">
           <EventTags label />
           {rowInfo(professionalName, 'user')}
+          {rowInfo(`${first_name} ${last_name}`, 'user')}
           {rowInfo(boxName, 'box')}
-          {rowInfo(formatedTime, 'calendar')}
+          {rowInfo(allDay ? formatedDateTime : formatedTime, 'calendar')}
         </section>
       </div>
     </>

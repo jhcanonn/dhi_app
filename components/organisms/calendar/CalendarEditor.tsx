@@ -13,19 +13,22 @@ import {
   DropdownValid,
   InputTextareaValid,
 } from '@components/atoms';
-import { DhiEvent } from '@models';
+import { Box, DhiEvent, Service } from '@models';
 import { fetchingSimulation } from '@hooks';
 import { useCalendarContext } from '@contexts';
 import {
   PAGE_PATH,
+  PAYS,
   SERVICES,
+  STATES,
   calendarFieldsMapper,
   getResourceData,
   mandatoryAppointmentFields,
 } from '@utils';
 import { useRouter } from 'next/navigation';
 import { Toast } from 'primereact/toast';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { DropdownChangeEvent } from 'primereact/dropdown';
 
 type Props = {
   scheduler: SchedulerHelpers;
@@ -35,19 +38,27 @@ const CalendarEditor = ({ scheduler }: Props) => {
   const toast = useRef<Toast>(null);
   const router = useRouter();
   const { resourceType, professionals, boxes } = useCalendarContext();
-  const resourceField = calendarFieldsMapper(resourceType).idField;
 
+  const resourceField = calendarFieldsMapper(resourceType).idField;
   const event: DhiEvent | undefined = scheduler.edited;
   const resourceId = event
     ? Number(event[resourceField])
     : Number(scheduler[resourceField]);
 
   const eventData: DhiEvent = {
-    event_id: event?.event_id || 100,
-    title: event?.title || 'Evento por defecto',
+    event_id: event?.event_id!,
+    title: event?.title!,
     start: event?.start || scheduler.state.start.value,
     end: event?.end || scheduler.state.end.value,
     [resourceField]: resourceId,
+    professional:
+      event?.professional ||
+      getResourceData(professionals, resourceField, resourceId),
+    box: event?.box || getResourceData(boxes, resourceField, resourceId),
+    service: event?.service,
+    client_id: event?.client_id,
+    state: event?.state,
+    pay: event?.pay,
     data_sheet: event?.data_sheet || 'Sin ficha',
     identification: event?.identification,
     first_name: event?.first_name,
@@ -60,13 +71,14 @@ const CalendarEditor = ({ scheduler }: Props) => {
     dialling_2: event?.dialling_2,
     email: event?.email,
     sent_email: event?.sent_email,
-    professional:
-      event?.professional ||
-      getResourceData(professionals, resourceField, resourceId),
-    box: event?.box || getResourceData(boxes, resourceField, resourceId),
-    service: event?.service,
   };
 
+  const getSubServices = (boxId: number) =>
+    SERVICES.filter((s) => s.box_id === boxId);
+
+  const [subServices, setSubServices] = useState<Service[]>(
+    getSubServices(eventData.box?.box_id!)
+  );
   const handleForm = useForm({ defaultValues: eventData });
   const { reset, handleSubmit } = handleForm;
 
@@ -79,6 +91,12 @@ const CalendarEditor = ({ scheduler }: Props) => {
           data,
           2000
         );
+        /** Esto deberia hacerse en el backend */
+        if (!addedUpdatedEvent.event_id) addedUpdatedEvent.event_id = 1234;
+        if (!addedUpdatedEvent.client_id) addedUpdatedEvent.client_id = 1234;
+        if (!addedUpdatedEvent.title)
+          addedUpdatedEvent.title = `${addedUpdatedEvent?.first_name} ${addedUpdatedEvent?.last_name}`;
+        /***/
         const action: EventActions = event ? 'edit' : 'create';
         scheduler.onConfirm(addedUpdatedEvent, action);
         scheduler.close();
@@ -97,11 +115,15 @@ const CalendarEditor = ({ scheduler }: Props) => {
     });
   };
 
+  const handleBoxChange = (e: DropdownChangeEvent) => {
+    const box: Box = e.value;
+    setSubServices(getSubServices(box.box_id));
+  };
+
   const Header = () => (
     <div className="flex justify-between items-center">
       <div className="flex flex-col">
         <h2 className="font-bold">{`${event ? 'Editar' : 'Crear'} cita`}</h2>
-        <span className="text-sm">{eventData.title}</span>
       </div>
       <Button
         icon="pi pi-times"
@@ -202,6 +224,24 @@ const CalendarEditor = ({ scheduler }: Props) => {
               />
             </div>
             <div className="flex flex-col gap-2">
+              {event && (
+                <>
+                  <DropdownValid
+                    name="state"
+                    label="Estado"
+                    handleForm={handleForm}
+                    list={STATES}
+                    required
+                  />
+                  <DropdownValid
+                    name="pay"
+                    label="Pago"
+                    handleForm={handleForm}
+                    list={PAYS}
+                    required
+                  />
+                </>
+              )}
               <DateTimeValid
                 name="start"
                 label="Fecha inicio"
@@ -227,12 +267,14 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 handleForm={handleForm}
                 list={boxes}
                 required
+                onCustomChange={handleBoxChange}
               />
               <DropdownValid
                 name="service"
                 label="Servicio"
                 handleForm={handleForm}
-                list={SERVICES}
+                list={subServices!}
+                emptyMessage={'Seleccione un Box'}
               />
               <InputTextareaValid
                 name="description"
@@ -256,7 +298,11 @@ const CalendarEditor = ({ scheduler }: Props) => {
                   type="button"
                   severity="info"
                   rounded
-                  onClick={() => router.push(PAGE_PATH.clientList)}
+                  onClick={() =>
+                    router.push(
+                      `${PAGE_PATH.clientList}/${eventData.client_id}`
+                    )
+                  }
                 />
                 <Button
                   label={'Historico'}

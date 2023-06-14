@@ -1,14 +1,21 @@
 import { ErrorText } from '.';
 import { Controller, FieldValues } from 'react-hook-form';
 import { classNames as cx } from 'primereact/utils';
-import { Dropdown } from 'primereact/dropdown';
+import {
+  Dropdown,
+  DropdownChangeEvent,
+  DropdownProps,
+} from 'primereact/dropdown';
 import { FieldCommonProps } from '@models';
 import { errorMessages } from '@utils';
+import { ReactNode } from 'react';
 
 export type Props<T> = FieldCommonProps<T> & {
   list: any[];
   showClear?: boolean;
   label?: string;
+  emptyMessage?: ReactNode | ((props: DropdownProps) => ReactNode);
+  onCustomChange?: (e: DropdownChangeEvent) => void;
 };
 
 const DropdownValid = <T extends FieldValues>({
@@ -19,6 +26,8 @@ const DropdownValid = <T extends FieldValues>({
   showClear = false,
   required,
   validate,
+  emptyMessage,
+  onCustomChange,
 }: Props<T>) => {
   const {
     formState: { errors },
@@ -47,13 +56,17 @@ const DropdownValid = <T extends FieldValues>({
               options={list}
               focusInputRef={ref}
               onBlur={onBlur}
-              onChange={(e) => onChange(e.value)}
+              onChange={(e) => {
+                onChange(e.value);
+                onCustomChange && onCustomChange(e);
+              }}
               className={cx(
                 { 'p-invalid': error },
                 { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error }
               )}
               filter
               showClear={showClear}
+              emptyMessage={emptyMessage}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
