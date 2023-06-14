@@ -129,6 +129,7 @@ const PhoneNumberValid = <T extends FieldValues>({
                   onChange(e.target.value);
                 }}
                 onChange={(e) => onChange(e.value)}
+                onInput={onChange}
                 inputClassName={cx({ 'p-invalid': error })}
                 useGrouping={false}
                 aria-autocomplete="none"

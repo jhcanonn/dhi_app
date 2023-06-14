@@ -4,11 +4,17 @@ import {
   DefaultRecourse,
   ProcessedEvent,
 } from '@aldabil/react-scheduler/types';
+import { type } from 'os';
 
 export type DhiEvent = ProcessedEvent & {
   professional_id?: number;
   box_id?: number;
-  state_color?: string;
+  professional?: Professional;
+  box?: Box;
+  service?: Service;
+  client_id?: number;
+  state?: EventState;
+  pay?: Pay;
   data_sheet?: string;
   identification?: number;
   first_name?: string;
@@ -21,9 +27,17 @@ export type DhiEvent = ProcessedEvent & {
   dialling_2?: Country;
   email?: string;
   sent_email?: boolean;
-  professional?: Professional;
-  box?: Box;
-  service?: Service;
+};
+
+export type EventState = {
+  state_id: number;
+  name: string;
+  color: string;
+};
+
+export type Pay = {
+  pay_id: number;
+  name: string;
 };
 
 export type CommonData = DefaultRecourse & {
@@ -37,7 +51,7 @@ export type Professional = CommonData & {
 
 export type Box = CommonData & { box_id: number };
 
-export type Service = CommonData & { service_id: number };
+export type Service = CommonData & { service_id: number; box_id: number };
 
 export type DhiResource = Box & Professional;
 

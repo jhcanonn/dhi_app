@@ -7,9 +7,16 @@ export const useFormattedEventInfo = ({ start, end }: ProcessedEvent) => {
 
   const scheduler = calendarScheduler?.current?.scheduler;
   const hFormat = scheduler?.hourFormat === '12' ? 'hh:mm a' : 'HH:mm';
-  const formatedTime = `${format(start, hFormat, {
-    locale: scheduler?.locale,
-  })} - ${format(end, hFormat, { locale: scheduler?.locale })}`;
 
-  return { formatedTime };
+  const formatedTime = (onlyTime: boolean = true) => {
+    const formatString = (onlyTime ? '' : 'dd MMMM ') + hFormat;
+    return `${format(start, formatString, {
+      locale: scheduler?.locale,
+    })} - ${format(end, formatString, { locale: scheduler?.locale })}`;
+  };
+
+  return {
+    formatedTime: formatedTime(),
+    formatedDateTime: formatedTime(false),
+  };
 };

@@ -5,6 +5,7 @@ export { default as CalendarSkeleton } from './CalendarSkeleton';
 export { default as DateListCalendarSkeleton } from './DateListCalendarSkeleton';
 export { default as ClientGallerySkeleton } from './ClientGallerySkeleton';
 export { default as ClientSkeleton } from './ClientSkeleton';
+export { default as ClientDetailSkeleton } from './ClientDetailSkeleton';
 export { default as CrmSkeleton } from './CrmSkeleton';
 export { default as FinanceSkeleton } from './FinanceSkeleton';
 export { default as ProfileSkeleton } from './ProfileSkeleton';
