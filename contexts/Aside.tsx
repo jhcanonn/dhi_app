@@ -26,10 +26,8 @@ export const AsideProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <>
-      <AsideContext.Provider value={{ visible, toggleVisible }}>
-        {children}
-      </AsideContext.Provider>
-    </>
+    <AsideContext.Provider value={{ visible, toggleVisible }}>
+      {children}
+    </AsideContext.Provider>
   );
 };

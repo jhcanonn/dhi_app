@@ -32,7 +32,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
           className={`calendar-event ${classEventId}`}
           style={{ border: `3px solid ${state?.color ?? 'black'}` }}
         >
-          <EventTags />
+          <EventTags event={event} />
           <span className="font-bold">
             {first_name} {last_name}
           </span>

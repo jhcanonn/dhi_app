@@ -14,7 +14,12 @@ export type Props<T> = FieldCommonProps<T> & {
   list: any[];
   showClear?: boolean;
   label?: string;
+  placeholder?: string;
   emptyMessage?: ReactNode | ((props: DropdownProps) => ReactNode);
+  itemTemplate?: ReactNode | ((option: any) => ReactNode);
+  valueTemplate?:
+    | ReactNode
+    | ((option: any, props: DropdownProps) => ReactNode);
   onCustomChange?: (e: DropdownChangeEvent) => void;
 };
 
@@ -22,11 +27,14 @@ const DropdownValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
+  placeholder,
   list,
   showClear = false,
   required,
   validate,
   emptyMessage,
+  itemTemplate,
+  valueTemplate,
   onCustomChange,
 }: Props<T>) => {
   const {
@@ -65,8 +73,11 @@ const DropdownValid = <T extends FieldValues>({
                 { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error }
               )}
               filter
+              placeholder={placeholder}
               showClear={showClear}
               emptyMessage={emptyMessage}
+              itemTemplate={itemTemplate}
+              valueTemplate={valueTemplate}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}

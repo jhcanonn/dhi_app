@@ -11,7 +11,6 @@ import {
   SchedulerRef,
 } from '@aldabil/react-scheduler/types';
 import {
-  EVENTS,
   calendarDay,
   calendarFieldsMapper,
   calendarMonth,
@@ -24,19 +23,20 @@ import {
   CalendarEvent,
 } from '@components/organisms';
 import { CalendarHeader } from '@components/molecules';
-import { DhiResource } from '@models';
-import { useCalendarContext } from '@contexts';
+import { CalendarType, DhiResource, ResourceType } from '@models';
+import { useCalendarContext, useGlobalContext } from '@contexts';
+import { useGetResources } from '@hooks';
 
 const Calendar = () => {
   const calendarRef = useRef<SchedulerRef>(null);
-  const { setCalendarScheduler, resourceType, calendarType, professionals } =
+  const { events } = useGlobalContext();
+  const { setCalendarScheduler, calendarType, resourceType, resourceMode } =
     useCalendarContext();
 
-  const resources = calendarType
-    ? professionals.length
-      ? [professionals[0]]
-      : []
-    : professionals;
+  const resources = useGetResources(
+    calendarType === CalendarType.INDIVIDUAL,
+    resourceType === ResourceType.PROFESSIONAL
+  );
 
   const handleCustomHeader = (resource: DhiResource) => (
     <CalendarHeader {...resource} />
@@ -55,6 +55,7 @@ const Calendar = () => {
   );
 
   useEffect(() => {
+    console.log({ resourceType, events });
     setCalendarScheduler(calendarRef);
   }, []);
 
@@ -68,8 +69,9 @@ const Calendar = () => {
         day={calendarDay}
         translations={calendarTranslations}
         locale={es}
-        events={EVENTS}
+        events={events}
         resources={resources}
+        resourceViewMode={resourceMode}
         resourceFields={calendarFieldsMapper(resourceType)}
         recourseHeaderComponent={handleCustomHeader}
         eventRenderer={handleCustomEvent}

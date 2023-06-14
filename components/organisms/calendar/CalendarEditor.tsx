@@ -13,13 +13,12 @@ import {
   DropdownValid,
   InputTextareaValid,
 } from '@components/atoms';
-import { Box, DhiEvent, Service } from '@models';
+import { Box, DhiEvent, EventState, Service } from '@models';
 import { fetchingSimulation } from '@hooks';
-import { useCalendarContext } from '@contexts';
+import { useCalendarContext, useGlobalContext } from '@contexts';
 import {
   PAGE_PATH,
   PAYS,
-  SERVICES,
   STATES,
   calendarFieldsMapper,
   getResourceData,
@@ -37,7 +36,8 @@ type Props = {
 const CalendarEditor = ({ scheduler }: Props) => {
   const toast = useRef<Toast>(null);
   const router = useRouter();
-  const { resourceType, professionals, boxes } = useCalendarContext();
+  const { professionals, boxes, services } = useGlobalContext();
+  const { resourceType } = useCalendarContext();
 
   const resourceField = calendarFieldsMapper(resourceType).idField;
   const event: DhiEvent | undefined = scheduler.edited;
@@ -71,10 +71,11 @@ const CalendarEditor = ({ scheduler }: Props) => {
     dialling_2: event?.dialling_2,
     email: event?.email,
     sent_email: event?.sent_email,
+    description: event?.description,
   };
 
   const getSubServices = (boxId: number) =>
-    SERVICES.filter((s) => s.box_id === boxId);
+    services.filter((s) => s.box_id === boxId);
 
   const [subServices, setSubServices] = useState<Service[]>(
     getSubServices(eventData.box?.box_id!)
@@ -133,6 +134,36 @@ const CalendarEditor = ({ scheduler }: Props) => {
         onClick={scheduler.close}
         aria-label="Cancel"
       />
+    </div>
+  );
+
+  const ItemColor = ({ color }: { color: string }) => (
+    <div
+      className="!w-[0.8rem] !h-[0.8rem] rounded-full mr-2"
+      style={{
+        border: `1px solid ${color}`,
+        backgroundColor: color,
+      }}
+    />
+  );
+
+  const stateValueTemplate = (option: EventState, props: any) => (
+    <div className="flex items-center">
+      {option ? (
+        <>
+          <ItemColor color={option.color} />
+          <div>{option.name}</div>
+        </>
+      ) : (
+        <div>&nbsp;</div>
+      )}
+    </div>
+  );
+
+  const stateItemTemplate = (option: EventState) => (
+    <div className="flex items-center">
+      <ItemColor color={option.color} />
+      <div>{option.name}</div>
     </div>
   );
 
@@ -232,6 +263,8 @@ const CalendarEditor = ({ scheduler }: Props) => {
                     handleForm={handleForm}
                     list={STATES}
                     required
+                    itemTemplate={stateItemTemplate}
+                    valueTemplate={stateValueTemplate}
                   />
                   <DropdownValid
                     name="pay"

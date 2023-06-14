@@ -7,6 +7,9 @@ export const errorMessages = {
   invalidValue: 'Ingrese un valor válido.',
   invalidFormat: 'El formato no es válido.',
   minLength: 'Longitud minima:',
+  noProfessionals: 'No hay profesionales',
+  noBoxes: 'No hay boxes',
+  noExists: 'No existe',
 };
 
 export const PAGE_PATH = {
