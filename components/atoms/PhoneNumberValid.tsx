@@ -58,7 +58,7 @@ const PhoneNumberValid = <T extends FieldValues>({
 
   return (
     <div className="flex flex-col">
-      <div className="p-inputgroup flex [&>*:nth-child(1)]:w-[30%] [&>*:nth-child(2)]:w-[70%]">
+      <div className="p-inputgroup flex [&>*:nth-child(1)]:!w-[30%] [&>*:nth-child(2)]:!w-[70%]">
         {/* Dailling field */}
         <Controller
           name={diallingName as any}

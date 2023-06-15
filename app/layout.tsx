@@ -1,7 +1,11 @@
 import { Metadata } from 'next';
-import '@styles/globals.scss';
 import { Providers } from '@components/templates';
 import { Aside, Footer, Header } from '@components/organisms';
+import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
+import '@styles/globals.scss';
 
 export const metadata: Metadata = {
   title: 'DHI | Home',
