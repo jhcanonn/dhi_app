@@ -52,7 +52,7 @@ const FilterBar = () => {
     !isIndividual,
     isProfessional
   );
-  const ResourceTypeChangeResources = useGetResources(
+  const resourceTypeChangeResources = useGetResources(
     isIndividual,
     !isProfessional
   );
@@ -77,7 +77,7 @@ const FilterBar = () => {
     setResourceType(
       checkedResourceType ? ResourceType.PROFESSIONAL : ResourceType.BOX
     );
-    scheduler.handleState(ResourceTypeChangeResources, 'resources');
+    scheduler.handleState(resourceTypeChangeResources, 'resources');
   };
 
   return (

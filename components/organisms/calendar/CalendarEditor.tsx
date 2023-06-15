@@ -88,6 +88,8 @@ const CalendarEditor = ({ scheduler }: Props) => {
     if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
       try {
         scheduler.loading(true);
+        data['professional_id'] = data.professional?.professional_id;
+        data['box_id'] = data.box?.box_id;
         const addedUpdatedEvent: DhiEvent = await fetchingSimulation(data, 500);
         /** Esto deberia hacerse en el backend */
         if (!addedUpdatedEvent.event_id)

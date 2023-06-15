@@ -17,7 +17,7 @@ const CalendarHeader = ({ avatar, name, mobile, color }: DhiResource) => {
       <Avatar
         image={avatar}
         label={name.slice(0, 1)}
-        className="mr-2"
+        className="mr-2 !rounded-full"
         size="large"
         shape="circle"
         style={{ backgroundColor: color ?? '#007bff', color: '#ffffff' }}
