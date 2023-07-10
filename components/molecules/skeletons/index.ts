@@ -11,3 +11,4 @@ export { default as FinanceSkeleton } from './FinanceSkeleton';
 export { default as ProfileSkeleton } from './ProfileSkeleton';
 export { default as SettingsSkeleton } from './SettingsSkeleton';
 export { default as StatisticsSkeleton } from './StatisticsSkeleton';
+export { default as LoginSkeleton } from './LoginSkeleton';
