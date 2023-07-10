@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aldabil/react-scheduler": "^2.7.10",
+    "@apollo/client": "^3.7.16",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",
@@ -24,6 +25,8 @@
     "date-fns": "^2.30.0",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
+    "graphql": "^16.7.1",
+    "jose": "^4.14.4",
     "next": "13.4.4",
     "next-auth": "^4.22.1",
     "postcss": "8.4.24",
@@ -32,9 +35,11 @@
     "primereact": "^9.5.0",
     "react": "18.2.0",
     "react-content-loader": "^6.2.1",
+    "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.44.3",
     "sass": "^1.62.1",
+    "sharp": "^0.32.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.3"
   }

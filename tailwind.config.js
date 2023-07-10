@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        brand: '#427D8D',
+        invalid: '#dc3435',
+      },
       transitionProperty: {
         bg: 'background-color',
         shadow: 'box-shadow',

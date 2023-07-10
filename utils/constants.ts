@@ -14,6 +14,7 @@ export const errorMessages = {
 
 export const PAGE_PATH = {
   home: '/',
+  login: '/login',
   profile: '/profile',
   calendar: '/calendar',
   dayCalendar: '/calendar/day',
@@ -25,3 +26,5 @@ export const PAGE_PATH = {
   statistics: '/statistics',
   settings: '/settings',
 };
+
+export const DHI_SESSION = 'dhi_session';
