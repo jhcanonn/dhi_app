@@ -1,7 +1,7 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
 const ClientDetailSkeleton = () => (
-  <LoadingSkeleton page="Detalle del Cliente" />
-);
+  <LoadingSkeleton page='Detalle del Cliente' />
+)
 
-export default ClientDetailSkeleton;
+export default ClientDetailSkeleton

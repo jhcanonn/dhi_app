@@ -1,5 +1,5 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
-const SettingsSkeleton = () => <LoadingSkeleton page="Configuración" />;
+const SettingsSkeleton = () => <LoadingSkeleton page='Configuración' />
 
-export default SettingsSkeleton;
+export default SettingsSkeleton

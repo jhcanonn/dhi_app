@@ -1,10 +1,10 @@
-import { ComingSoon } from '@components/templates';
-import { Metadata } from 'next';
+import { ComingSoon } from '@components/templates'
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'DHI | Estadisticas',
-};
+}
 
-const Statistics = () => <ComingSoon page="Estadisticas" />;
+const Statistics = () => <ComingSoon page='Estadisticas' />
 
-export default Statistics;
+export default Statistics

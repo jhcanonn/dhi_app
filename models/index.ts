@@ -1,3 +1,4 @@
-export * from './CalendarHeader';
-export * from './Calendar';
-export * from './Auth';
+export * from './CalendarHeader'
+export * from './Calendar'
+export * from './Auth'
+export * from './Directus'

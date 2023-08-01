@@ -1,5 +1,5 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
-const StatisticsSkeleton = () => <LoadingSkeleton page="Estadisticas" />;
+const StatisticsSkeleton = () => <LoadingSkeleton page='Estadisticas' />
 
-export default StatisticsSkeleton;
+export default StatisticsSkeleton

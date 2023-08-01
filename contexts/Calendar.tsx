@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Dispatch,
@@ -7,37 +7,40 @@ import {
   createContext,
   useContext,
   useState,
-} from 'react';
+} from 'react'
 import {
   Box,
   CalendarType,
+  EventState,
+  Pay,
   Professional,
   ResourceMode,
   ResourceType,
-} from '@models';
-import { SchedulerRef } from '@aldabil/react-scheduler/types';
-import { useGlobalContext } from './Global';
+} from '@models'
+import { SchedulerRef } from '@aldabil/react-scheduler/types'
 
 type CalendarContextType = {
-  calendarScheduler: RefObject<SchedulerRef> | null;
-  setCalendarScheduler: Dispatch<
-    SetStateAction<RefObject<SchedulerRef> | null>
-  >;
-  calendarType: CalendarType;
-  setCalendarType: Dispatch<SetStateAction<CalendarType>>;
-  resourceMode: ResourceMode;
-  setResourceMode: Dispatch<SetStateAction<ResourceMode>>;
-  resourceType: ResourceType;
-  setResourceType: Dispatch<SetStateAction<ResourceType>>;
-  selectedProfessional: Professional | null;
-  setSelectedProfessional: Dispatch<SetStateAction<Professional | null>>;
-  selectedProfessionals: Professional[];
-  setSelectedProfessionals: Dispatch<SetStateAction<Professional[]>>;
-  selectedBox: Box | null;
-  setSelectedBox: Dispatch<SetStateAction<Box | null>>;
-  selectedBoxes: Box[];
-  setSelectedBoxes: Dispatch<SetStateAction<Box[]>>;
-};
+  calendarScheduler: RefObject<SchedulerRef> | null
+  setCalendarScheduler: Dispatch<SetStateAction<RefObject<SchedulerRef> | null>>
+  calendarType: CalendarType
+  setCalendarType: Dispatch<SetStateAction<CalendarType>>
+  resourceMode: ResourceMode
+  setResourceMode: Dispatch<SetStateAction<ResourceMode>>
+  resourceType: ResourceType
+  setResourceType: Dispatch<SetStateAction<ResourceType>>
+  selectedProfessional: Professional | null
+  setSelectedProfessional: Dispatch<SetStateAction<Professional | null>>
+  selectedProfessionals: Professional[]
+  setSelectedProfessionals: Dispatch<SetStateAction<Professional[]>>
+  selectedBox: Box | null
+  setSelectedBox: Dispatch<SetStateAction<Box | null>>
+  selectedBoxes: Box[]
+  setSelectedBoxes: Dispatch<SetStateAction<Box[]>>
+  eventStates: EventState[]
+  setEventStates: Dispatch<SetStateAction<EventState[]>>
+  pays: Pay[]
+  setPays: Dispatch<SetStateAction<Pay[]>>
+}
 
 const calendarDefaultValues: CalendarContextType = {
   calendarScheduler: null,
@@ -56,39 +59,41 @@ const calendarDefaultValues: CalendarContextType = {
   setSelectedBox: () => {},
   selectedBoxes: [],
   setSelectedBoxes: () => {},
-};
+  eventStates: [],
+  setEventStates: () => {},
+  pays: [],
+  setPays: () => {},
+}
 
-const Calendar = createContext<CalendarContextType>(calendarDefaultValues);
+const Calendar = createContext<CalendarContextType>(calendarDefaultValues)
 
 export const useCalendarContext = () => {
-  return useContext(Calendar);
-};
+  return useContext(Calendar)
+}
 
 export const CalendarProvider = ({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) => {
-  const { professionals, boxes } = useGlobalContext();
-
   const [calendarScheduler, setCalendarScheduler] =
-    useState<RefObject<SchedulerRef> | null>(null);
+    useState<RefObject<SchedulerRef> | null>(null)
   // Toggle filters
-  const [calendarType, setCalendarType] = useState(CalendarType.INDIVIDUAL);
-  const [resourceMode, setResourceMode] = useState(ResourceMode.DEFAULT);
-  const [resourceType, setResourceType] = useState(ResourceType.PROFESSIONAL);
+  const [calendarType, setCalendarType] = useState(CalendarType.INDIVIDUAL)
+  const [resourceMode, setResourceMode] = useState(ResourceMode.DEFAULT)
+  const [resourceType, setResourceType] = useState(ResourceType.PROFESSIONAL)
   // Professionals filters
   const [selectedProfessional, setSelectedProfessional] =
-    useState<Professional | null>(
-      professionals.length ? professionals[0] : null
-    );
-  const [selectedProfessionals, setSelectedProfessionals] =
-    useState<Professional[]>(professionals);
+    useState<Professional | null>(null)
+  const [selectedProfessionals, setSelectedProfessionals] = useState<
+    Professional[]
+  >([])
   // Boxes filters
-  const [selectedBox, setSelectedBox] = useState<Box | null>(
-    boxes.length ? boxes[0] : null
-  );
-  const [selectedBoxes, setSelectedBoxes] = useState<Box[]>(boxes);
+  const [selectedBox, setSelectedBox] = useState<Box | null>(null)
+  const [selectedBoxes, setSelectedBoxes] = useState<Box[]>([])
+  // EventStates and Pays
+  const [eventStates, setEventStates] = useState<EventState[]>([])
+  const [pays, setPays] = useState<Pay[]>([])
 
   return (
     <Calendar.Provider
@@ -109,9 +114,13 @@ export const CalendarProvider = ({
         setSelectedBox,
         selectedBoxes,
         setSelectedBoxes,
+        eventStates,
+        setEventStates,
+        pays,
+        setPays,
       }}
     >
       {children}
     </Calendar.Provider>
-  );
-};
+  )
+}

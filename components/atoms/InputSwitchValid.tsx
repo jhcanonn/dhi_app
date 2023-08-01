@@ -1,13 +1,13 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { InputSwitch } from 'primereact/inputswitch';
-import { FieldCommonProps } from '@models';
-import { errorMessages } from '@utils';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { InputSwitch } from 'primereact/inputswitch'
+import { FieldCommonProps } from '@models'
+import { errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  acceptMessage?: string;
-};
+  acceptMessage?: string
+}
 
 const InputSwitchValid = <T extends FieldValues>({
   handleForm,
@@ -19,7 +19,7 @@ const InputSwitchValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   return (
     <Controller
@@ -34,8 +34,8 @@ const InputSwitchValid = <T extends FieldValues>({
         field: { value, name, ref, onChange },
         fieldState: { error },
       }) => (
-        <div className="flex flex-col">
-          <div className="flex gap-2">
+        <div className='flex flex-col'>
+          <div className='flex gap-2'>
             <InputSwitch
               inputId={name}
               checked={value}
@@ -51,7 +51,7 @@ const InputSwitchValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputSwitchValid;
+export default InputSwitchValid

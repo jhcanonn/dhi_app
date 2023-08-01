@@ -1,2 +1,2 @@
-export * from './calendar';
-export * from './skeletons';
+export * from './calendar'
+export * from './skeletons'

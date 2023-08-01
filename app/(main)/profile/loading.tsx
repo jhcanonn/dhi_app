@@ -1,5 +1,5 @@
-import { ProfileSkeleton } from '@components/molecules';
+import { ProfileSkeleton } from '@components/molecules'
 
-const Loading = () => <ProfileSkeleton />;
+const Loading = () => <ProfileSkeleton />
 
-export default Loading;
+export default Loading

@@ -1,5 +1,5 @@
-import { LoginSkeleton } from '@components/molecules';
+import { LoginSkeleton } from '@components/molecules'
 
-const Login = () => <LoginSkeleton />;
+const Login = () => <LoginSkeleton />
 
-export default Login;
+export default Login

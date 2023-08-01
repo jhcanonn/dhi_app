@@ -1,5 +1,5 @@
-import { DayCalendarSkeleton } from '@components/molecules';
+import { DayCalendarSkeleton } from '@components/molecules'
 
-const Loading = () => <DayCalendarSkeleton />;
+const Loading = () => <DayCalendarSkeleton />
 
-export default Loading;
+export default Loading

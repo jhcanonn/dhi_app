@@ -1,7 +1,7 @@
-import { Translations } from '@aldabil/react-scheduler/types';
-import { DayProps } from '@aldabil/react-scheduler/views/Day';
-import { MonthProps } from '@aldabil/react-scheduler/views/Month';
-import { WeekProps } from '@aldabil/react-scheduler/views/Week';
+import { Translations } from '@aldabil/react-scheduler/types'
+import { DayProps } from '@aldabil/react-scheduler/views/Day'
+import { MonthProps } from '@aldabil/react-scheduler/views/Month'
+import { WeekProps } from '@aldabil/react-scheduler/views/Week'
 
 export const calendarTranslations: Translations = {
   navigation: {
@@ -25,14 +25,14 @@ export const calendarTranslations: Translations = {
   },
   moreEvents: 'Más...',
   loading: 'Cargando...',
-};
+}
 
 export const calendarMonth: MonthProps = {
   weekDays: [1, 2, 3, 4, 5, 6],
   weekStartOn: 0,
   startHour: 7,
   endHour: 20,
-};
+}
 
 export const calendarWeek: WeekProps = {
   weekDays: [1, 2, 3, 4, 5, 6],
@@ -40,13 +40,13 @@ export const calendarWeek: WeekProps = {
   startHour: 7,
   endHour: 19,
   step: 30,
-};
+}
 
 export const calendarDay: DayProps = {
   startHour: 7,
   endHour: 19,
   step: 30,
-};
+}
 
 export const localeOptions = {
   firstDayOfWeek: 0,
@@ -91,7 +91,7 @@ export const localeOptions = {
   ],
   today: 'Hoy',
   clear: 'Limpiar',
-};
+}
 
 export const mandatoryAppointmentFields = [
   'start',
@@ -104,4 +104,4 @@ export const mandatoryAppointmentFields = [
   'email',
   'professional',
   'box',
-];
+]

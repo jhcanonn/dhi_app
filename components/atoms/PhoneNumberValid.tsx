@@ -1,18 +1,18 @@
-import Image from 'next/image';
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { InputNumber } from 'primereact/inputnumber';
-import { Dropdown } from 'primereact/dropdown';
-import { Country, FieldCommonProps } from '@models';
-import { COUNTRIES, errorMessages, invalidColor } from '@utils';
+import Image from 'next/image'
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { InputNumber } from 'primereact/inputnumber'
+import { Dropdown } from 'primereact/dropdown'
+import { Country, FieldCommonProps } from '@models'
+import { COUNTRIES, errorMessages, invalidColor } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  diallingName?: string;
-  label?: string;
-  icon?: string;
-  minLength?: number;
-};
+  diallingName?: string
+  label?: string
+  icon?: string
+  minLength?: number
+}
 
 const PhoneNumberValid = <T extends FieldValues>({
   handleForm,
@@ -27,24 +27,24 @@ const PhoneNumberValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   const selectedCountryTemplate = (option: Country, props: any) => {
     if (option) {
       return (
-        <div className="flex items-center">
+        <div className='flex items-center'>
           <div>{option.dialling}</div>
         </div>
-      );
+      )
     }
-    return <span>{props.placeholder}</span>;
-  };
+    return <span>{props.placeholder}</span>
+  }
 
   const countryOptionTemplate = (option: Country) => {
     return (
-      <div className="flex items-center">
+      <div className='flex items-center'>
         <Image
-          src="/assets/logo-secondary.png"
+          src='/assets/logo-secondary.png'
           alt={option.name}
           priority={true}
           width={40}
@@ -53,12 +53,12 @@ const PhoneNumberValid = <T extends FieldValues>({
         />
         <div>{option.name}</div>
       </div>
-    );
-  };
+    )
+  }
 
   return (
-    <div className="flex flex-col">
-      <div className="p-inputgroup flex [&>*:nth-child(1)]:!w-[30%] [&>*:nth-child(2)]:!w-[70%]">
+    <div className='flex flex-col'>
+      <div className='p-inputgroup flex [&>*:nth-child(1)]:!w-[30%] [&>*:nth-child(2)]:!w-[70%]'>
         {/* Dailling field */}
         <Controller
           name={diallingName as any}
@@ -73,8 +73,8 @@ const PhoneNumberValid = <T extends FieldValues>({
             <Dropdown
               id={name}
               value={value}
-              optionLabel="dialling"
-              placeholder="+__"
+              optionLabel='dialling'
+              placeholder='+__'
               options={COUNTRIES}
               focusInputRef={ref}
               onBlur={onBlur}
@@ -82,12 +82,12 @@ const PhoneNumberValid = <T extends FieldValues>({
               className={cx(
                 { 'p-invalid': error },
                 { '[&_.p-placeholder]:!text-[#dc3545]': error },
-                { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error }
+                { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error },
               )}
               valueTemplate={selectedCountryTemplate}
               itemTemplate={countryOptionTemplate}
               filter
-              filterBy="name,dialling"
+              filterBy='name,dialling'
             />
           )}
         />
@@ -111,7 +111,7 @@ const PhoneNumberValid = <T extends FieldValues>({
             <span
               className={cx(
                 'p-float-label [&_input]:!rounded-l-none [&_input]:!border-l-0',
-                { 'p-input-icon-left': icon }
+                { 'p-input-icon-left': icon },
               )}
             >
               {icon && (
@@ -125,14 +125,14 @@ const PhoneNumberValid = <T extends FieldValues>({
                 value={value}
                 inputRef={ref}
                 onBlur={(e) => {
-                  onBlur();
-                  onChange(e.target.value);
+                  onBlur()
+                  onChange(e.target.value)
                 }}
                 onChange={(e) => onChange(e.value)}
                 onInput={onChange}
                 inputClassName={cx({ 'p-invalid': error })}
                 useGrouping={false}
-                aria-autocomplete="none"
+                aria-autocomplete='none'
               />
               <label htmlFor={name} className={cx({ 'p-error': error })}>
                 {label}
@@ -141,12 +141,12 @@ const PhoneNumberValid = <T extends FieldValues>({
           )}
         />
       </div>
-      <div className="flex [&>*:nth-child(1)]:w-[30%] [&>*:nth-child(2)]:w-[70%]">
+      <div className='flex [&>*:nth-child(1)]:w-[30%] [&>*:nth-child(2)]:w-[70%]'>
         <ErrorText name={diallingName!} errors={errors} />
         <ErrorText name={name} errors={errors} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PhoneNumberValid;
+export default PhoneNumberValid

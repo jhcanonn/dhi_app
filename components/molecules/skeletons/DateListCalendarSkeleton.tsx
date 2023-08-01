@@ -1,7 +1,5 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
-const DateListCalendarSkeleton = () => (
-  <LoadingSkeleton page="Lista de Citas" />
-);
+const DateListCalendarSkeleton = () => <LoadingSkeleton page='Lista de Citas' />
 
-export default DateListCalendarSkeleton;
+export default DateListCalendarSkeleton

@@ -1,5 +1,5 @@
-import { HomeSkeleton } from '@components/molecules';
+import { HomeSkeleton } from '@components/molecules'
 
-const Loading = () => <HomeSkeleton />;
+const Loading = () => <HomeSkeleton />
 
-export default Loading;
+export default Loading

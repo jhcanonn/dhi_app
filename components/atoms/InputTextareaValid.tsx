@@ -1,14 +1,14 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { FieldCommonProps } from '@models';
-import { errorMessages } from '@utils';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { FieldCommonProps } from '@models'
+import { errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  label?: string;
-  pattern?: RegExp;
-};
+  label?: string
+  pattern?: RegExp
+}
 
 const InputTextareaValid = <T extends FieldValues>({
   handleForm,
@@ -21,7 +21,7 @@ const InputTextareaValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   return (
     <Controller
@@ -37,8 +37,8 @@ const InputTextareaValid = <T extends FieldValues>({
         },
       }}
       render={({ field, fieldState: { error } }) => (
-        <div className="flex flex-col">
-          <span className="p-float-label">
+        <div className='flex flex-col'>
+          <span className='p-float-label'>
             <InputTextarea
               id={field.name}
               {...field}
@@ -54,7 +54,7 @@ const InputTextareaValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputTextareaValid;
+export default InputTextareaValid

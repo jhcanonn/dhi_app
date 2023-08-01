@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const GET_PROFESSIONALS = gql`
   query {
@@ -6,9 +6,38 @@ export const GET_PROFESSIONALS = gql`
       id
       identificacion
       nombre
+      avatar {
+        filename_download
+      }
+      telefono
+      sexo
+      cargo
+      especialidad
+      correo
+      disponible_agenda
+      estado
     }
   }
-`;
+`
+
+export const GET_BOXES = gql`
+  query {
+    salas {
+      id
+      nombre
+      color
+      estado
+      services {
+        id
+        servicios_id {
+          id
+          nombre
+          estado
+        }
+      }
+    }
+  }
+`
 
 export const GET_USER_BY_ID = gql`
   query GetUser($id: ID!) {
@@ -21,4 +50,26 @@ export const GET_USER_BY_ID = gql`
       }
     }
   }
-`;
+`
+
+export const GET_EVENT_STATE = gql`
+  query {
+    estado_citas {
+      id
+      nombre
+      color
+      estado
+    }
+  }
+`
+
+export const PAYS = gql`
+  query {
+    estado_pago {
+      id
+      code
+      nombre
+      estado
+    }
+  }
+`

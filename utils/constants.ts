@@ -1,5 +1,5 @@
-export const bgEventColor = '#ffffff';
-export const invalidColor = '#dc3545';
+export const bgEventColor = '#ffffff'
+export const invalidColor = '#dc3545'
 
 export const errorMessages = {
   mandatoryField: 'Este campo es obligatorio.',
@@ -10,7 +10,7 @@ export const errorMessages = {
   noProfessionals: 'No hay profesionales',
   noBoxes: 'No hay boxes',
   noExists: 'No existe',
-};
+}
 
 export const PAGE_PATH = {
   home: '/',
@@ -25,6 +25,6 @@ export const PAGE_PATH = {
   finance: '/finance',
   statistics: '/statistics',
   settings: '/settings',
-};
+}
 
-export const DHI_SESSION = 'dhi_session';
+export const DHI_SESSION = 'dhi_session'

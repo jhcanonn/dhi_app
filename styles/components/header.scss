@@ -1,6 +1,8 @@
 .layout-topbar {
   @apply px-4 py-2 w-full fixed top-0 left-0 bg-[var(--surface-card)] z-[997];
   transition: left var(--transition-duration);
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05),
+  box-shadow:
+    0px 3px 5px rgba(0, 0, 0, 0.02),
+    0px 0px 2px rgba(0, 0, 0, 0.05),
     0px 1px 4px rgba(0, 0, 0, 0.08);
 }

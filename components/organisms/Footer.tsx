@@ -1,20 +1,20 @@
-import Image from 'next/image';
+import Image from 'next/image'
 
 const Footer = () => {
   return (
-    <footer className="layout-footer">
+    <footer className='layout-footer'>
       <Image
-        src="/assets/logo-secondary.png"
-        alt="DHI Logo"
+        src='/assets/logo-secondary.png'
+        alt='DHI Logo'
         width={60}
         height={50}
-        className="object-contain"
+        className='object-contain'
       />
-      <span className="font-medium text-sm ml-2">
+      <span className='font-medium text-sm ml-2'>
         by <i>DHI</i>
       </span>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

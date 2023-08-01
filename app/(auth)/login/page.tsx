@@ -1,10 +1,10 @@
-import { Login } from '@components/templates';
-import { Metadata } from 'next';
+import { Login } from '@components/templates'
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'DHI | Login',
-};
+}
 
-const LoginPage = () => <Login />;
+const LoginPage = () => <Login />
 
-export default LoginPage;
+export default LoginPage

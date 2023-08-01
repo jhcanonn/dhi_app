@@ -1,5 +1,5 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
-const DayCalendarSkeleton = () => <LoadingSkeleton page="Calendario del día" />;
+const DayCalendarSkeleton = () => <LoadingSkeleton page='Calendario del día' />
 
-export default DayCalendarSkeleton;
+export default DayCalendarSkeleton

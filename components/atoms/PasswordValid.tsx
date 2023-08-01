@@ -1,15 +1,15 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { Password } from 'primereact/password';
-import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { Password } from 'primereact/password'
+import { FieldCommonProps } from '@models'
+import { errorMessages, invalidColor } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  label?: string;
-  icon?: string;
-  disabled?: boolean;
-};
+  label?: string
+  icon?: string
+  disabled?: boolean
+}
 
 const PasswordValid = <T extends FieldValues>({
   handleForm,
@@ -22,7 +22,7 @@ const PasswordValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   return (
     <Controller
@@ -35,7 +35,7 @@ const PasswordValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className="flex flex-col w-full">
+        <div className='flex flex-col w-full'>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i
@@ -48,23 +48,23 @@ const PasswordValid = <T extends FieldValues>({
               value={value}
               inputRef={ref}
               onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
+                onBlur()
+                onChange(e.target.value)
               }}
               onChange={(e) => onChange(e.target.value)}
               onPaste={(e) => {
-                onChange(e.currentTarget.value);
+                onChange(e.currentTarget.value)
               }}
               className={cx(
                 { 'p-invalid': error },
                 { '[&_svg]:text-invalid': error },
-                'w-full [&_input]:w-full [&_svg]:mt-[-0.7rem]'
+                'w-full [&_input]:w-full [&_svg]:mt-[-0.7rem]',
               )}
               disabled={disabled}
-              promptLabel="Escribe una contraseña"
-              weakLabel="Muy simple"
-              mediumLabel="Complejidad media"
-              strongLabel="Contraseña compleja"
+              promptLabel='Escribe una contraseña'
+              weakLabel='Muy simple'
+              mediumLabel='Complejidad media'
+              strongLabel='Contraseña compleja'
               toggleMask
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
@@ -75,7 +75,7 @@ const PasswordValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default PasswordValid;
+export default PasswordValid

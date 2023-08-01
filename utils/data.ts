@@ -1,12 +1,4 @@
-import {
-  Box,
-  Country,
-  DhiEvent,
-  EventState,
-  Pay,
-  Professional,
-  Service,
-} from '@models';
+import { Country, DhiEvent, EventState } from '@models'
 
 export const COUNTRIES: Country[] = [
   { name: 'Colombia', code: 'CO', dialling: '+57' },
@@ -20,169 +12,7 @@ export const COUNTRIES: Country[] = [
   { name: 'Japan', code: 'JP', dialling: '+81' },
   { name: 'Spain', code: 'ES', dialling: '+34' },
   { name: 'United States', code: 'US', dialling: '+1' },
-];
-
-export const PROFESSIONALS: Professional[] = [
-  {
-    professional_id: 1,
-    name: 'John',
-    mobile: '555666777',
-    avatar: '/assets/avatar-1.png',
-  },
-  {
-    professional_id: 2,
-    name: 'Sarah',
-    mobile: '545678354',
-    color: 'darkgreen',
-  },
-  {
-    professional_id: 3,
-    name: 'Joseph',
-    mobile: '543678433',
-    avatar: '/assets/avatar-3.png',
-  },
-  {
-    professional_id: 4,
-    name: 'Mera',
-    mobile: '507487620',
-    color: 'red',
-  },
-];
-
-export const BOXES: Box[] = [
-  {
-    box_id: 1,
-    name: 'Consulta primera vez',
-    color: 'lightblue',
-  },
-  {
-    box_id: 2,
-    name: 'Consulta control',
-    color: 'darkgreen',
-  },
-  {
-    box_id: 3,
-    name: 'Terapias por sesiones',
-    color: 'orange',
-  },
-  {
-    box_id: 4,
-    name: 'Otras terapias',
-    color: 'orange',
-  },
-  {
-    box_id: 5,
-    name: 'Implante capilar',
-  },
-  {
-    box_id: 6,
-    name: 'Peluquería',
-    color: 'cyan',
-  },
-];
-
-export const SERVICES: Service[] = [
-  {
-    service_id: 1,
-    box_id: 1,
-    name: 'Consulta primera vez',
-  },
-  {
-    service_id: 2,
-    box_id: 2,
-    name: 'Consulta control implante',
-  },
-  {
-    service_id: 3,
-    box_id: 2,
-    name: 'Consulta control terapias',
-  },
-  {
-    service_id: 4,
-    box_id: 3,
-    name: 'Laser',
-  },
-  {
-    service_id: 5,
-    box_id: 3,
-    name: 'Plasma',
-  },
-  {
-    service_id: 6,
-    box_id: 3,
-    name: 'Mesoterapia',
-  },
-  {
-    service_id: 7,
-    box_id: 4,
-    name: 'Mascarilla capilar',
-  },
-  {
-    service_id: 8,
-    box_id: 4,
-    name: 'Masaje capilar',
-  },
-  {
-    service_id: 9,
-    box_id: 4,
-    name: 'Sueroterapia capilar',
-  },
-  {
-    service_id: 10,
-    box_id: 5,
-    name: '0-1.500',
-  },
-  {
-    service_id: 11,
-    box_id: 5,
-    name: '1.500-2.000',
-  },
-  {
-    service_id: 12,
-    box_id: 5,
-    name: '1.500-2.000',
-  },
-  {
-    service_id: 13,
-    box_id: 5,
-    name: '2.000-2.500',
-  },
-  {
-    service_id: 14,
-    box_id: 5,
-    name: '2.500--3.000',
-  },
-  {
-    service_id: 15,
-    box_id: 5,
-    name: 'Dutasteride 1 sesión',
-  },
-  {
-    service_id: 16,
-    box_id: 5,
-    name: 'Laserterapia Capilar',
-  },
-  {
-    service_id: 17,
-    box_id: 5,
-    name: 'Mesoteria Capilar',
-  },
-  {
-    service_id: 18,
-    box_id: 6,
-    name: 'Arreglo de Cejas',
-  },
-  {
-    service_id: 19,
-    box_id: 6,
-    name: 'Corte de Pelo + Blower',
-  },
-  {
-    service_id: 20,
-    box_id: 6,
-    name: 'Arreglo Barba',
-  },
-];
+]
 
 export const STATES: EventState[] = [
   { state_id: 1, name: 'Atendido', color: '#FF5733' },
@@ -194,14 +24,7 @@ export const STATES: EventState[] = [
   { state_id: 7, name: 'Llegó', color: '#AA854F' },
   { state_id: 8, name: 'Lista en espera', color: '#B21FE5' },
   { state_id: 9, name: 'Listo para ser atendido', color: '#A60142' },
-];
-
-export const PAYS: Pay[] = [
-  { pay_id: 1, name: 'Plan', code: 'PL' },
-  { pay_id: 2, name: 'Pagado', code: 'P' },
-  { pay_id: 3, name: 'No Pagado', code: 'NP' },
-  { pay_id: 4, name: 'Pago Descartado', code: 'PD' },
-];
+]
 
 export const EVENTS: DhiEvent[] = [
   {
@@ -233,8 +56,8 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 3',
     start: new Date(
       new Date(new Date(new Date().setHours(9)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     end: new Date(new Date(new Date().setHours(10)).setMinutes(0)),
     professional_id: 1,
@@ -250,13 +73,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 4',
     start: new Date(
       new Date(new Date(new Date().setHours(9)).setMinutes(0)).setDate(
-        new Date().getDate() - 2
-      )
+        new Date().getDate() - 2,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(10)).setMinutes(0)).setDate(
-        new Date().getDate() - 2
-      )
+        new Date().getDate() - 2,
+      ),
     ),
     professional_id: 2,
     box_id: 4,
@@ -270,13 +93,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 5',
     start: new Date(
       new Date(new Date(new Date().setHours(10)).setMinutes(0)).setDate(
-        new Date().getDate() - 2
-      )
+        new Date().getDate() - 2,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-        new Date().getDate() + 10
-      )
+        new Date().getDate() + 10,
+      ),
     ),
     professional_id: 4,
     box_id: 5,
@@ -302,13 +125,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 7',
     start: new Date(
       new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(12)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     professional_id: 3,
     box_id: 2,
@@ -322,13 +145,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 8',
     start: new Date(
       new Date(new Date(new Date().setHours(13)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(14)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     professional_id: 4,
     box_id: 3,
@@ -342,13 +165,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 11',
     start: new Date(
       new Date(new Date(new Date().setHours(13)).setMinutes(0)).setDate(
-        new Date().getDate() + 1
-      )
+        new Date().getDate() + 1,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(15)).setMinutes(30)).setDate(
-        new Date().getDate() + 1
-      )
+        new Date().getDate() + 1,
+      ),
     ),
     professional_id: 1,
     box_id: 4,
@@ -361,13 +184,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 9',
     start: new Date(
       new Date(new Date(new Date().setHours(15)).setMinutes(0)).setDate(
-        new Date().getDate() + 1
-      )
+        new Date().getDate() + 1,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(16)).setMinutes(30)).setDate(
-        new Date().getDate() + 1
-      )
+        new Date().getDate() + 1,
+      ),
     ),
     professional_id: 2,
     box_id: 2,
@@ -381,13 +204,13 @@ export const EVENTS: DhiEvent[] = [
     title: 'Event 10',
     start: new Date(
       new Date(new Date(new Date().setHours(11)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     end: new Date(
       new Date(new Date(new Date().setHours(15)).setMinutes(0)).setDate(
-        new Date().getDate() - 1
-      )
+        new Date().getDate() - 1,
+      ),
     ),
     professional_id: 1,
     box_id: 5,
@@ -396,4 +219,4 @@ export const EVENTS: DhiEvent[] = [
     first_name: 'Richard',
     last_name: 'Wilson',
   },
-];
+]
