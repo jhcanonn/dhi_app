@@ -1,5 +1,5 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
-const FinanceSkeleton = () => <LoadingSkeleton page="Finance" />;
+const FinanceSkeleton = () => <LoadingSkeleton page='Finance' />
 
-export default FinanceSkeleton;
+export default FinanceSkeleton

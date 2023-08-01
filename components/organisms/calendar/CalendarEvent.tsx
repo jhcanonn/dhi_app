@@ -1,26 +1,26 @@
-'use client';
+'use client'
 
-import { ButtonBase } from '@mui/material';
-import { Tooltip } from 'primereact/tooltip';
-import { EventRendererProps } from '@aldabil/react-scheduler/types';
-import { useDragAttributes, useFormattedEventInfo } from '@hooks';
-import { bgEventColor } from '@utils';
-import { EventTags } from '@components/molecules';
-import { DhiEvent } from '@models';
+import { ButtonBase } from '@mui/material'
+import { Tooltip } from 'primereact/tooltip'
+import { EventRendererProps } from '@aldabil/react-scheduler/types'
+import { useDragAttributes, useFormattedEventInfo } from '@hooks'
+import { bgEventColor } from '@utils'
+import { EventTags } from '@components/molecules'
+import { DhiEvent } from '@models'
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
-  const customDragProps = useDragAttributes(event);
-  const { formatedTime } = useFormattedEventInfo(event);
+  const customDragProps = useDragAttributes(event)
+  const { formatedTime } = useFormattedEventInfo(event)
 
-  const { event_id, state, first_name, last_name } = event as DhiEvent;
-  const classEventId = 'event-' + event_id;
+  const { event_id, state, first_name, last_name } = event as DhiEvent
+  const classEventId = 'event-' + event_id
 
   return (
     <>
       <Tooltip
-        className="event-tooltip"
+        className='event-tooltip'
         target={`.${classEventId}`}
-        position="top"
+        position='top'
         content={formatedTime}
       />
       <ButtonBase
@@ -33,7 +33,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
           style={{ border: `3px solid ${state?.color ?? 'black'}` }}
         >
           <EventTags event={event} />
-          <span className="font-bold">
+          <span className='font-bold'>
             {first_name} {last_name}
           </span>
           <span>
@@ -45,7 +45,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         </div>
       </ButtonBase>
     </>
-  );
-};
+  )
+}
 
-export default CalendarEvent;
+export default CalendarEvent

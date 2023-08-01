@@ -1,0 +1,44 @@
+name: Deploy DHI to Production
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NEXT_PUBLIC_DIRECTUS_PROTOCOL: ${{ vars.DIRECTUS_PROTOCOL }}
+  NEXT_PUBLIC_DIRECTUS_HOST: ${{ vars.DIRECTUS_HOST }}
+  NEXT_PUBLIC_DIRECTUS_BASE_URL: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    environment: Production
+    env:
+      NEXT_PUBLIC_DIRECTUS_GRAPHQL: ${{ env.NEXT_PUBLIC_DIRECTUS_BASE_URL }}/graphql
+      NEXT_PUBLIC_DIRECTUS_GRAPHQL_SYSTEM: ${{ env.NEXT_PUBLIC_DIRECTUS_BASE_URL }}/graphql/system
+      NEXT_PUBLIC_DIRECTUS_STATIC_TOKEN: ${{ secrets.STATIC_TOKEN }}
+      NEXT_PUBLIC_DIRECTUS_SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+      NEXT_PUBLIC_COOKIE_EXPIRE_DAYS: ${{ vars.COOKIE_EXPIRE_DAYS }}
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+      - name: 📦 Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: 🔨 Build Project
+        run: |
+          yarn
+          yarn build
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          protocol: ftp
+          server: ${{ vars.HOSTINGER_SERVER }}
+          port: ${{ vars.HOSTINGER_PORT }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          local-dir: ./out
+          server-dir: /

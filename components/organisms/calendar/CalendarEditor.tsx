@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import { EventActions, SchedulerHelpers } from '@aldabil/react-scheduler/types';
-import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
-import { useForm } from 'react-hook-form';
+import { EventActions, SchedulerHelpers } from '@aldabil/react-scheduler/types'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
+import { useForm } from 'react-hook-form'
 import {
   InputNumberValid,
   InputTextValid,
@@ -12,38 +12,37 @@ import {
   DateTimeValid,
   DropdownValid,
   InputTextareaValid,
-} from '@components/atoms';
-import { Box, DhiEvent, EventState, Service } from '@models';
-import { fetchingSimulation, eventIdSimulation } from '@hooks';
-import { useCalendarContext, useGlobalContext } from '@contexts';
+} from '@components/atoms'
+import { Box, DhiEvent, EventState, ServiceDirectus } from '@models'
+import { fetchingSimulation, eventIdSimulation } from '@hooks'
+import { useCalendarContext, useGlobalContext } from '@contexts'
 import {
   PAGE_PATH,
-  PAYS,
-  STATES,
   calendarFieldsMapper,
   getResourceData,
   mandatoryAppointmentFields,
-} from '@utils';
-import { useRouter } from 'next/navigation';
-import { Toast } from 'primereact/toast';
-import { useRef, useState } from 'react';
-import { DropdownChangeEvent } from 'primereact/dropdown';
+  servicesMapper,
+} from '@utils'
+import { useRouter } from 'next/navigation'
+import { Toast } from 'primereact/toast'
+import { useRef, useState } from 'react'
+import { DropdownChangeEvent } from 'primereact/dropdown'
 
 type Props = {
-  scheduler: SchedulerHelpers;
-};
+  scheduler: SchedulerHelpers
+}
 
 const CalendarEditor = ({ scheduler }: Props) => {
-  const toast = useRef<Toast>(null);
-  const router = useRouter();
-  const { professionals, boxes, services, setEvents } = useGlobalContext();
-  const { resourceType, calendarScheduler } = useCalendarContext();
+  const toast = useRef<Toast>(null)
+  const router = useRouter()
+  const { professionals, boxes, setEvents } = useGlobalContext()
+  const { resourceType, eventStates, pays } = useCalendarContext()
 
-  const resourceField = calendarFieldsMapper(resourceType).idField;
-  const event: DhiEvent | undefined = scheduler.edited;
+  const resourceField = calendarFieldsMapper(resourceType).idField
+  const event: DhiEvent | undefined = scheduler.edited
   const resourceId = event
     ? Number(event[resourceField])
-    : Number(scheduler[resourceField]);
+    : Number(scheduler[resourceField])
 
   const eventData: DhiEvent = {
     event_id: event?.event_id!,
@@ -72,42 +71,42 @@ const CalendarEditor = ({ scheduler }: Props) => {
     email: event?.email,
     sent_email: event?.sent_email,
     description: event?.description,
-  };
+  }
 
-  const getSubServices = (boxId: number) =>
-    services.filter((s) => s.box_id === boxId);
+  const getServices = (boxId: number) =>
+    boxes.find((b) => b.box_id === boxId)?.services!
 
-  const [subServices, setSubServices] = useState<Service[]>(
-    getSubServices(eventData.box?.box_id!)
-  );
-  const handleForm = useForm({ defaultValues: eventData });
-  const { reset, handleSubmit } = handleForm;
+  const [services, setServices] = useState<ServiceDirectus[]>(
+    getServices(eventData.box?.box_id!),
+  )
+  const handleForm = useForm({ defaultValues: eventData })
+  const { reset, handleSubmit } = handleForm
 
   const onSubmit = async (data: DhiEvent) => {
-    console.log({ data });
+    // console.log({ data });
     if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
       try {
-        scheduler.loading(true);
-        data['professional_id'] = data.professional?.professional_id;
-        data['box_id'] = data.box?.box_id;
-        const addedUpdatedEvent: DhiEvent = await fetchingSimulation(data, 500);
+        scheduler.loading(true)
+        data['professional_id'] = data.professional?.professional_id
+        data['box_id'] = data.box?.box_id
+        const addedUpdatedEvent: DhiEvent = await fetchingSimulation(data, 500)
         /** Esto deberia hacerse en el backend */
         if (!addedUpdatedEvent.event_id)
-          addedUpdatedEvent.event_id = eventIdSimulation(11, 1000);
+          addedUpdatedEvent.event_id = eventIdSimulation(11, 1000)
         if (!addedUpdatedEvent.client_id)
-          addedUpdatedEvent.client_id = eventIdSimulation(11, 1000);
+          addedUpdatedEvent.client_id = eventIdSimulation(11, 1000)
         if (!addedUpdatedEvent.title)
-          addedUpdatedEvent.title = `${addedUpdatedEvent?.first_name} ${addedUpdatedEvent?.last_name}`;
+          addedUpdatedEvent.title = `${addedUpdatedEvent?.first_name} ${addedUpdatedEvent?.last_name}`
         /***/
-        const action: EventActions = event ? 'edit' : 'create';
-        scheduler.onConfirm(addedUpdatedEvent, action);
-        setEvents((preEvents) => [...preEvents, addedUpdatedEvent]);
-        scheduler.close();
+        const action: EventActions = event ? 'edit' : 'create'
+        scheduler.onConfirm(addedUpdatedEvent, action)
+        setEvents((preEvents) => [...preEvents, addedUpdatedEvent])
+        scheduler.close()
       } finally {
-        scheduler.loading(false);
+        scheduler.loading(false)
       }
-    } else reset();
-  };
+    } else reset()
+  }
 
   const showNotification = (text: string) => {
     toast.current?.show({
@@ -115,42 +114,42 @@ const CalendarEditor = ({ scheduler }: Props) => {
       summary: text,
       detail: 'Esta funcionalidad estará disponible proximamente.',
       life: 3000,
-    });
-  };
+    })
+  }
 
   const handleBoxChange = (e: DropdownChangeEvent) => {
-    const box: Box = e.value;
-    setSubServices(getSubServices(box.box_id));
-  };
+    const box: Box = e.value
+    setServices(getServices(box.box_id))
+  }
 
   const Header = () => (
-    <div className="flex justify-between items-center">
-      <div className="flex flex-col">
-        <h2 className="font-bold">{`${event ? 'Editar' : 'Crear'} cita`}</h2>
+    <div className='flex justify-between items-center'>
+      <div className='flex flex-col'>
+        <h2 className='font-bold'>{`${event ? 'Editar' : 'Crear'} cita`}</h2>
       </div>
       <Button
-        icon="pi pi-times"
-        severity="danger"
-        size="small"
+        icon='pi pi-times'
+        severity='danger'
+        size='small'
         rounded
         onClick={scheduler.close}
-        aria-label="Cancel"
+        aria-label='Cancel'
       />
     </div>
-  );
+  )
 
   const ItemColor = ({ color }: { color: string }) => (
     <div
-      className="!w-[0.8rem] !h-[0.8rem] rounded-full mr-2"
+      className='!w-[0.8rem] !h-[0.8rem] rounded-full mr-2'
       style={{
         border: `1px solid ${color}`,
         backgroundColor: color,
       }}
     />
-  );
+  )
 
-  const stateValueTemplate = (option: EventState, props: any) => (
-    <div className="flex items-center">
+  const stateValueTemplate = (option: EventState) => (
+    <div className='flex items-center'>
       {option ? (
         <>
           <ItemColor color={option.color} />
@@ -160,214 +159,214 @@ const CalendarEditor = ({ scheduler }: Props) => {
         <div>&nbsp;</div>
       )}
     </div>
-  );
+  )
 
   const stateItemTemplate = (option: EventState) => (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <ItemColor color={option.color} />
       <div>{option.name}</div>
     </div>
-  );
+  )
 
   return (
     <>
       <Toast ref={toast} />
-      <Card title={<Header />} className="flex [&_.p-card-content]:pb-0">
+      <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
         <form
-          autoComplete="off"
+          autoComplete='off'
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-2"
+          className='flex flex-col gap-2'
         >
-          <div className="flex flex-col md:flex-row gap-4 w-full md:[&>div]:w-80">
-            <div className="flex flex-col gap-2">
+          <div className='flex flex-col md:flex-row gap-4 w-full md:[&>div]:w-80'>
+            <div className='flex flex-col gap-2'>
               {event && (
                 <InputTextValid
-                  name="data_sheet"
-                  label="Ficha"
+                  name='data_sheet'
+                  label='Ficha'
                   handleForm={handleForm}
-                  icon="book"
+                  icon='book'
                   disabled
                 />
               )}
               <InputNumberValid
-                name="identification"
-                label="Identificación"
+                name='identification'
+                label='Identificación'
                 handleForm={handleForm}
-                icon="id-card"
+                icon='id-card'
                 minLength={6}
                 required
               />
               <InputTextValid
-                name="first_name"
-                label="1° Nombre"
+                name='first_name'
+                label='1° Nombre'
                 handleForm={handleForm}
-                icon="user"
+                icon='user'
                 required
               />
               <InputTextValid
-                name="middle_name"
-                label="2° Nombre"
+                name='middle_name'
+                label='2° Nombre'
                 handleForm={handleForm}
-                icon="user"
+                icon='user'
               />
               <InputTextValid
-                name="last_name"
-                label="1° Apellido"
+                name='last_name'
+                label='1° Apellido'
                 handleForm={handleForm}
-                icon="user"
+                icon='user'
                 required
               />
               <InputTextValid
-                name="last_name_2"
-                label="2° Apellido"
+                name='last_name_2'
+                label='2° Apellido'
                 handleForm={handleForm}
-                icon="user"
+                icon='user'
               />
               <PhoneNumberValid
-                name="phone"
-                diallingName="dialling"
-                label="Teléfono"
+                name='phone'
+                diallingName='dialling'
+                label='Teléfono'
                 handleForm={handleForm}
-                icon="phone"
+                icon='phone'
                 minLength={6}
                 required
               />
               {event && (
                 <PhoneNumberValid
-                  name="phone_2"
-                  diallingName="dialling_2"
-                  label="Teléfono 2"
+                  name='phone_2'
+                  diallingName='dialling_2'
+                  label='Teléfono 2'
                   handleForm={handleForm}
-                  icon="phone"
+                  icon='phone'
                   minLength={6}
                 />
               )}
               <InputTextValid
-                name="email"
-                label="Correo electrónico"
+                name='email'
+                label='Correo electrónico'
                 handleForm={handleForm}
-                icon="envelope"
+                icon='envelope'
                 required
                 pattern={/\S+@\S+\.\S+/}
               />
               <InputSwitchValid
-                name="sent_email"
+                name='sent_email'
                 handleForm={handleForm}
-                acceptMessage="Enviar correo."
+                acceptMessage='Enviar correo.'
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className='flex flex-col gap-2'>
               {event && (
                 <>
                   <DropdownValid
-                    name="state"
-                    label="Estado"
+                    name='state'
+                    label='Estado'
                     handleForm={handleForm}
-                    list={STATES}
+                    list={eventStates}
                     required
                     itemTemplate={stateItemTemplate}
                     valueTemplate={stateValueTemplate}
                   />
                   <DropdownValid
-                    name="pay"
-                    label="Pago"
+                    name='pay'
+                    label='Pago'
                     handleForm={handleForm}
-                    list={PAYS}
+                    list={pays}
                     required
                   />
                 </>
               )}
               <DateTimeValid
-                name="start"
-                label="Fecha inicio"
+                name='start'
+                label='Fecha inicio'
                 handleForm={handleForm}
                 required
               />
               <DateTimeValid
-                name="end"
-                label="Fecha fin"
+                name='end'
+                label='Fecha fin'
                 handleForm={handleForm}
                 required
               />
               <DropdownValid
-                name="professional"
-                label="Profesional"
+                name='professional'
+                label='Profesional'
                 handleForm={handleForm}
                 list={professionals}
                 required
               />
               <DropdownValid
-                name="box"
-                label="Box"
+                name='box'
+                label='Box'
                 handleForm={handleForm}
                 list={boxes}
                 required
                 onCustomChange={handleBoxChange}
               />
               <DropdownValid
-                name="service"
-                label="Servicio"
+                name='service'
+                label='Servicio'
                 handleForm={handleForm}
-                list={subServices!}
+                list={servicesMapper(services)}
                 emptyMessage={'Seleccione un Box'}
               />
               <InputTextareaValid
-                name="description"
-                label="Comentario"
+                name='description'
+                label='Comentario'
                 handleForm={handleForm}
               />
             </div>
           </div>
-          <div className="flex justify-center gap-2 flex-wrap [&>button]:w-24">
+          <div className='flex justify-center gap-2 flex-wrap [&>button]:w-24'>
             {event && (
               <>
                 <Button
                   label={'Insumos'}
-                  type="button"
-                  severity="secondary"
+                  type='button'
+                  severity='secondary'
                   rounded
                   onClick={(e: any) => showNotification(e.target.textContent)}
                 />
                 <Button
                   label={'Perfil'}
-                  type="button"
-                  severity="info"
+                  type='button'
+                  severity='info'
                   rounded
                   onClick={() =>
                     router.push(
-                      `${PAGE_PATH.clientList}/${eventData.client_id}`
+                      `${PAGE_PATH.clientList}/${eventData.client_id}`,
                     )
                   }
                 />
                 <Button
                   label={'Historico'}
-                  type="button"
-                  severity="warning"
+                  type='button'
+                  severity='warning'
                   rounded
                   onClick={(e: any) => showNotification(e.target.textContent)}
                 />
                 <Button
                   label={'Repetir'}
-                  type="button"
-                  severity="help"
+                  type='button'
+                  severity='help'
                   rounded
                   onClick={(e: any) => showNotification(e.target.textContent)}
                 />
                 <Button
                   label={'Pagar'}
-                  type="button"
-                  severity="danger"
+                  type='button'
+                  severity='danger'
                   rounded
                   onClick={(e: any) => showNotification(e.target.textContent)}
                 />
               </>
             )}
-            <Button label="Guardar" type="submit" severity="success" rounded />
+            <Button label='Guardar' type='submit' severity='success' rounded />
           </div>
         </form>
       </Card>
     </>
-  );
-};
+  )
+}
 
-export default CalendarEditor;
+export default CalendarEditor

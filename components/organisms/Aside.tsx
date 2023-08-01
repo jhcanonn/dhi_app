@@ -1,25 +1,25 @@
-'use client';
+'use client'
 
-import { PrimeIcons } from 'primereact/api';
-import { Sidebar } from 'primereact/sidebar';
-import { SlideMenu } from 'primereact/slidemenu';
-import { useAsideContext } from '@contexts';
-import { useWindowHeight } from '@react-hook/window-size';
-import { useRouter } from 'next/navigation';
-import { PAGE_PATH } from '@utils';
+import { PrimeIcons } from 'primereact/api'
+import { Sidebar } from 'primereact/sidebar'
+import { SlideMenu } from 'primereact/slidemenu'
+import { useAsideContext } from '@contexts'
+import { useWindowHeight } from '@react-hook/window-size'
+import { useRouter } from 'next/navigation'
+import { PAGE_PATH } from '@utils'
 
 const Aside = () => {
-  const { visible, toggleVisible } = useAsideContext();
-  const router = useRouter();
-  const wh = useWindowHeight();
+  const { visible, toggleVisible } = useAsideContext()
+  const router = useRouter()
+  const wh = useWindowHeight()
 
-  const sideBarWidth = 320;
-  const slideMenuWidth = sideBarWidth - 43;
+  const sideBarWidth = 320
+  const slideMenuWidth = sideBarWidth - 43
 
   const goToPage = (pagePath: string) => {
-    router.push(pagePath);
-    toggleVisible();
-  };
+    router.push(pagePath)
+    toggleVisible()
+  }
 
   const asideItems = [
     {
@@ -80,7 +80,7 @@ const Aside = () => {
       icon: PrimeIcons.COG,
       command: () => goToPage(PAGE_PATH.settings),
     },
-  ];
+  ]
 
   return (
     <Sidebar
@@ -88,7 +88,7 @@ const Aside = () => {
       visible={visible}
       baseZIndex={1000000}
       onHide={() => toggleVisible()}
-      ariaCloseLabel="open"
+      ariaCloseLabel='open'
     >
       <SlideMenu
         style={{ width: `${slideMenuWidth}px` }}
@@ -97,7 +97,7 @@ const Aside = () => {
         menuWidth={slideMenuWidth}
       ></SlideMenu>
     </Sidebar>
-  );
-};
+  )
+}
 
-export default Aside;
+export default Aside

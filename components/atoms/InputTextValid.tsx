@@ -1,16 +1,16 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { InputText } from 'primereact/inputtext';
-import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { InputText } from 'primereact/inputtext'
+import { FieldCommonProps } from '@models'
+import { errorMessages, invalidColor } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  label?: string;
-  icon?: string;
-  disabled?: boolean;
-  pattern?: RegExp;
-};
+  label?: string
+  icon?: string
+  disabled?: boolean
+  pattern?: RegExp
+}
 
 const InputTextValid = <T extends FieldValues>({
   handleForm,
@@ -25,7 +25,7 @@ const InputTextValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   return (
     <Controller
@@ -44,7 +44,7 @@ const InputTextValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className="flex flex-col w-full">
+        <div className='flex flex-col w-full'>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i
@@ -57,8 +57,8 @@ const InputTextValid = <T extends FieldValues>({
               value={value}
               ref={ref}
               onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
+                onBlur()
+                onChange(e.target.value)
               }}
               onChange={(e) => onChange(e.target.value)}
               className={cx({ 'p-invalid': error }, 'w-full')}
@@ -72,7 +72,7 @@ const InputTextValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputTextValid;
+export default InputTextValid

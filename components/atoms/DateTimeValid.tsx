@@ -1,15 +1,15 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { FieldCommonProps } from '@models';
-import { errorMessages, localeOptions } from '@utils';
-import { Calendar } from 'primereact/calendar';
-import { useCalendarContext } from '@contexts';
-import { addLocale } from 'primereact/api';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { FieldCommonProps } from '@models'
+import { errorMessages, localeOptions } from '@utils'
+import { Calendar } from 'primereact/calendar'
+import { useCalendarContext } from '@contexts'
+import { addLocale } from 'primereact/api'
 
 export type Props<T> = FieldCommonProps<T> & {
-  label?: string;
-};
+  label?: string
+}
 
 const DateTimeValid = <T extends FieldValues>({
   handleForm,
@@ -18,14 +18,14 @@ const DateTimeValid = <T extends FieldValues>({
   required,
   validate,
 }: Props<T>) => {
-  const { calendarScheduler } = useCalendarContext();
-  const localeCode = calendarScheduler?.current?.scheduler.locale.code || 'es';
+  const { calendarScheduler } = useCalendarContext()
+  const localeCode = calendarScheduler?.current?.scheduler.locale.code || 'es'
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
-  addLocale(localeCode, localeOptions);
+  addLocale(localeCode, localeOptions)
 
   return (
     <Controller
@@ -40,8 +40,8 @@ const DateTimeValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className="flex flex-col">
-          <span className="p-float-label">
+        <div className='flex flex-col'>
+          <span className='p-float-label'>
             <Calendar
               ref={ref}
               inputId={name}
@@ -49,13 +49,13 @@ const DateTimeValid = <T extends FieldValues>({
               onBlur={onBlur}
               onChange={onChange}
               locale={localeCode}
-              dateFormat="dd/mm/yy"
-              hourFormat="12"
+              dateFormat='dd/mm/yy'
+              hourFormat='12'
               showIcon
               showTime
               className={cx(
                 { 'p-invalid': error },
-                '[&_button]:bg-[var(--primary-color)]'
+                '[&_button]:bg-[var(--primary-color)]',
               )}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
@@ -66,7 +66,7 @@ const DateTimeValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default DateTimeValid;
+export default DateTimeValid

@@ -1,5 +1,5 @@
-import { CrmSkeleton } from '@components/molecules';
+import { CrmSkeleton } from '@components/molecules'
 
-const Loading = () => <CrmSkeleton />;
+const Loading = () => <CrmSkeleton />
 
-export default Loading;
+export default Loading

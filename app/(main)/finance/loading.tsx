@@ -1,5 +1,5 @@
-import { FinanceSkeleton } from '@components/molecules';
+import { FinanceSkeleton } from '@components/molecules'
 
-const Loading = () => <FinanceSkeleton />;
+const Loading = () => <FinanceSkeleton />
 
-export default Loading;
+export default Loading

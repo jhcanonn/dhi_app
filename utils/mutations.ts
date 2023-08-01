@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const GET_TOKEN = gql`
   mutation Login($email: String!, $password: String!) {
@@ -8,4 +8,14 @@ export const GET_TOKEN = gql`
       expires
     }
   }
-`;
+`
+
+export const REFRESH_TOKEN = gql`
+  mutation RefreshToken($refresh_token: String!) {
+    auth_refresh(refresh_token: $refresh_token, mode: json) {
+      access_token
+      refresh_token
+      expires
+    }
+  }
+`

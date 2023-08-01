@@ -1,15 +1,15 @@
-import { ErrorText } from '.';
-import { Controller, FieldValues } from 'react-hook-form';
-import { classNames as cx } from 'primereact/utils';
-import { InputNumber } from 'primereact/inputnumber';
-import { FieldCommonProps } from '@models';
-import { errorMessages, invalidColor } from '@utils';
+import { ErrorText } from '.'
+import { Controller, FieldValues } from 'react-hook-form'
+import { classNames as cx } from 'primereact/utils'
+import { InputNumber } from 'primereact/inputnumber'
+import { FieldCommonProps } from '@models'
+import { errorMessages, invalidColor } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
-  label?: string;
-  icon?: string;
-  minLength?: number;
-};
+  label?: string
+  icon?: string
+  minLength?: number
+}
 
 const InputNumberValid = <T extends FieldValues>({
   handleForm,
@@ -23,7 +23,7 @@ const InputNumberValid = <T extends FieldValues>({
   const {
     formState: { errors },
     control,
-  } = handleForm;
+  } = handleForm
 
   return (
     <Controller
@@ -42,7 +42,7 @@ const InputNumberValid = <T extends FieldValues>({
         field: { onChange, onBlur, value, name, ref },
         fieldState: { error },
       }) => (
-        <div className="flex flex-col">
+        <div className='flex flex-col'>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i
@@ -55,8 +55,8 @@ const InputNumberValid = <T extends FieldValues>({
               value={value}
               inputRef={ref}
               onBlur={(e) => {
-                onBlur();
-                onChange(e.target.value);
+                onBlur()
+                onChange(e.target.value)
               }}
               onChange={(e) => onChange(e.value)}
               inputClassName={cx({ 'p-invalid': error })}
@@ -70,7 +70,7 @@ const InputNumberValid = <T extends FieldValues>({
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputNumberValid;
+export default InputNumberValid

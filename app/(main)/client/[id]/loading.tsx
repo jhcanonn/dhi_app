@@ -1,5 +1,5 @@
-import { ClientDetailSkeleton } from '@components/molecules';
+import { ClientDetailSkeleton } from '@components/molecules'
 
-const Loading = () => <ClientDetailSkeleton />;
+const Loading = () => <ClientDetailSkeleton />
 
-export default Loading;
+export default Loading

@@ -1,5 +1,5 @@
-import { StatisticsSkeleton } from '@components/molecules';
+import { StatisticsSkeleton } from '@components/molecules'
 
-const Loading = () => <StatisticsSkeleton />;
+const Loading = () => <StatisticsSkeleton />
 
-export default Loading;
+export default Loading

@@ -1,10 +1,10 @@
-import { ComingSoon } from '@components/templates';
-import { Metadata } from 'next';
+import { ComingSoon } from '@components/templates'
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'DHI | Configuración',
-};
+}
 
-const Settings = () => <ComingSoon page="Configuración" />;
+const Settings = () => <ComingSoon page='Configuración' />
 
-export default Settings;
+export default Settings

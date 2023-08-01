@@ -1,5 +1,5 @@
-import { NotFound } from '@components/templates';
+import { NotFound } from '@components/templates'
 
-const NotFoundPage = () => <NotFound />;
+const NotFoundPage = () => <NotFound />
 
-export default NotFoundPage;
+export default NotFoundPage

@@ -1,7 +1,7 @@
-import LoadingSkeleton from './LoadingSkeleton';
+import LoadingSkeleton from './LoadingSkeleton'
 
 const CalendarSkeleton = () => (
-  <LoadingSkeleton page="Calendario individual/multiple" />
-);
+  <LoadingSkeleton page='Calendario individual/multiple' />
+)
 
-export default CalendarSkeleton;
+export default CalendarSkeleton
