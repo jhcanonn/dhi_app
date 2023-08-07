@@ -40,5 +40,5 @@ jobs:
           port: ${{ vars.HOSTINGER_PORT }}
           username: ${{ secrets.HOSTINGER_USERNAME }}
           password: ${{ secrets.HOSTINGER_PASSWORD }}
-          local-dir: ./out
-          server-dir: ./public_html
+          local-dir: ./out/
+          server-dir: ./
