@@ -2,14 +2,10 @@ import { DHI_SESSION, PAGE_PATH, expiresCookie, refreshToken } from '@utils'
 import { jwtVerify } from 'jose'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-
 export async function middleware(req: NextRequest) {
   const hasSession = req.cookies.has(DHI_SESSION)
   if (!hasSession)
     return NextResponse.redirect(new URL(PAGE_PATH.login, req.url))
-
-  if (req.nextUrl.pathname === PAGE_PATH.home)
-    return NextResponse.redirect(new URL(PAGE_PATH.calendar, req.url))
 
   const session = req.cookies.get(DHI_SESSION)
   const sessionInfo = session ? JSON.parse(session?.value) : undefined
@@ -19,11 +15,15 @@ export async function middleware(req: NextRequest) {
   )
   try {
     await jwtVerify(access_token, secret)
-    return NextResponse.next()
+    if (req.nextUrl.pathname === PAGE_PATH.home)
+      return NextResponse.redirect(new URL(PAGE_PATH.calendar, req.url))
   } catch (error: any) {
     console.error(error)
     if (error.code === 'ERR_JWT_EXPIRED') {
-      const content = await refreshToken(sessionInfo.refresh_token)
+      const content = await refreshToken(
+        sessionInfo.refresh_token,
+        access_token,
+      )
       if (content) {
         console.info('Refreshing token...')
         const res = NextResponse.next()
@@ -31,6 +31,7 @@ export async function middleware(req: NextRequest) {
           path: '/',
           expires: expiresCookie(),
         })
+        localStorage.setItem('accessToken', content.access_token)
         console.info('Refresh token DONE!')
         return res
       }

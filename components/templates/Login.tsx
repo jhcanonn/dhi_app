@@ -54,6 +54,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   }
 
   const setSessionCookie = (auth: AuthLogin) => {
+    localStorage.setItem('accessToken', auth.access_token)
     cookies.set(DHI_SESSION, auth, {
       path: '/',
       expires: expiresCookie(),
@@ -68,19 +69,20 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
     )
     try {
       await jwtVerify(access_token, secret)
+      router.push(PAGE_PATH.calendar)
     } catch (error: any) {
       console.error(error)
-      if (error.code === 'ERR_JWT_EXPIRED') {
+      if (error.code === 'ERR_JWT_EXPIRED' && access_token) {
         console.info('Refreshing token...')
-        const response = await refreshToken(session.refresh_token)
+        const response = await refreshToken(session.refresh_token, access_token)
         if (response) {
-          cookies.remove(DHI_SESSION)
           setSessionCookie(response as AuthLogin)
+          router.push(PAGE_PATH.calendar)
+          console.info('Refresh token DONE!')
         }
-        console.info('Refresh token DONE!')
+        return
       }
-    } finally {
-      router.push(PAGE_PATH.calendar)
+      cookies.remove(DHI_SESSION)
     }
   }
 
