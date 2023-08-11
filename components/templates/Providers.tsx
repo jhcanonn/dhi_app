@@ -10,8 +10,12 @@ import {
   createHttpLink,
 } from '@apollo/client'
 
+function returnTokenDependingOnOperation() {
+  return localStorage.getItem('accessToken') || ''
+}
+
 const authLink = setContext((_, { headers }) => {
-  const token = process.env.NEXT_PUBLIC_DIRECTUS_STATIC_TOKEN
+  const token = returnTokenDependingOnOperation()
   return {
     headers: {
       ...headers,
