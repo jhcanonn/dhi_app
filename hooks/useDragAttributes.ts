@@ -1,5 +1,5 @@
 import { DragEvent } from 'react'
-import { ProcessedEvent } from '@aldabil/react-scheduler/types'
+import { ProcessedEvent } from 'react-scheduler/src/lib/types'
 import { bgEventColor } from '@utils'
 import { useTheme } from '@mui/material'
 

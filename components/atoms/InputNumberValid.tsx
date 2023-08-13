@@ -1,3 +1,5 @@
+'use client'
+
 import { ErrorText } from '.'
 import { Controller, FieldValues } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'

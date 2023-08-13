@@ -18,6 +18,10 @@ module.exports = {
       boxShadow: {
         md: 'var(--focus-ring)',
       },
+      gridTemplateColumns: {
+        'custom-17-1': '17% repeat(1, 1fr)',
+        'custom-10-7': '10% repeat(7, 1fr)',
+      },
     },
   },
   plugins: [],

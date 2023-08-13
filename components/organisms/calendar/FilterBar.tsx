@@ -13,7 +13,7 @@ import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { useGetResources } from '@hooks'
-import { errorMessages } from '@utils'
+import { calendarMonth, errorMessages } from '@utils'
 
 const FilterBar = () => {
   // Contexts
@@ -48,6 +48,7 @@ const FilterBar = () => {
   )
 
   const scheduler = calendarScheduler?.current?.scheduler!
+
   const calendarTypeChangeResources = useGetResources(
     !isIndividual,
     isProfessional,
@@ -78,6 +79,15 @@ const FilterBar = () => {
       checkedResourceType ? ResourceType.PROFESSIONAL : ResourceType.BOX,
     )
     scheduler.handleState(resourceTypeChangeResources, 'resources')
+    scheduler.handleState(checkedResourceType ? null : calendarMonth, 'month')
+    scheduler.handleState(
+      checkedResourceType
+        ? scheduler?.view === 'month'
+          ? 'week'
+          : scheduler?.view
+        : scheduler?.view,
+      'view',
+    )
   }
 
   return (

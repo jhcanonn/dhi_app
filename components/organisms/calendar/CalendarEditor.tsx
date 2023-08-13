@@ -1,6 +1,6 @@
 'use client'
 
-import { EventActions, SchedulerHelpers } from '@aldabil/react-scheduler/types'
+import { EventActions, SchedulerHelpers } from 'react-scheduler/src/lib/types'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { useForm } from 'react-hook-form'

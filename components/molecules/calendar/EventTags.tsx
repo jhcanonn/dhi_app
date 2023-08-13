@@ -1,3 +1,5 @@
+'use client'
+
 import { DhiEvent } from '@models'
 import { Tag } from 'primereact/tag'
 

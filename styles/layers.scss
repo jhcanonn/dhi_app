@@ -10,9 +10,18 @@
     [&_div.css-1nmp99l]:z-[1002]
     [&_div.css-anhyye]:z-[1002]
     [&_div.css-xkctyi]:z-[1003]
-    [&_div.css-1mrufi>div]:w-[50rem]
+    [&_div.css-1d1h06e]:grid-cols-custom-17-1
+    [&_div.css-1gyej37]:grid-cols-custom-17-1
+    [&_div.css-ess3ih]:grid-cols-custom-10-7
+    [&_div.css-s6u7kg]:grid-cols-custom-10-7
     [&.css-yp0i15-MuiPaper-root]:w-full
-    [&_div.css-19s31ak]:z-[1000];
+    [&_div.css-19s31ak]:z-[1000]
+    [&_.css-73xuqe_.tabs_button.MuiTab-root]:w-[15rem]
+    [&_.css-73xuqe_.tabs_button.MuiTab-root>div]:w-full;
+
+    & div > span.rs__cell.rs__header.rs__time {
+      writing-mode: unset;
+    }
 
     & .rs__cell > button {
       @apply box-border;

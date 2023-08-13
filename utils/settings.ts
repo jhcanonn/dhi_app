@@ -1,7 +1,7 @@
-import { Translations } from '@aldabil/react-scheduler/types'
-import { DayProps } from '@aldabil/react-scheduler/views/Day'
-import { MonthProps } from '@aldabil/react-scheduler/views/Month'
-import { WeekProps } from '@aldabil/react-scheduler/views/Week'
+import { Translations } from 'react-scheduler/src/lib/types'
+import { DayProps } from 'react-scheduler/src/lib/views/Day'
+import { MonthProps } from 'react-scheduler/src/lib/views/Month'
+import { WeekProps } from 'react-scheduler/src/lib/views/Week'
 
 export const calendarTranslations: Translations = {
   navigation: {
@@ -28,15 +28,15 @@ export const calendarTranslations: Translations = {
 }
 
 export const calendarMonth: MonthProps = {
-  weekDays: [1, 2, 3, 4, 5, 6],
-  weekStartOn: 0,
+  weekDays: [0, 1, 2, 3, 4, 5, 6],
+  weekStartOn: 1,
   startHour: 7,
-  endHour: 20,
+  endHour: 19,
 }
 
 export const calendarWeek: WeekProps = {
-  weekDays: [1, 2, 3, 4, 5, 6],
-  weekStartOn: 0,
+  weekDays: [0, 1, 2, 3, 4, 5, 6],
+  weekStartOn: 1,
   startHour: 7,
   endHour: 19,
   step: 30,
