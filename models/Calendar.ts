@@ -87,3 +87,12 @@ export type Country = {
   code: string
   dialling: string
 }
+
+export type Holiday = {
+  date: string
+  start: string
+  end: string
+  name: string
+  type: string
+  rule: string
+}

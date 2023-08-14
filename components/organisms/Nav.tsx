@@ -4,21 +4,19 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from 'primereact/button'
 import { useAsideContext } from '@contexts'
-import { DHI_SESSION, GET_USER_BY_ID, PAGE_PATH } from '@utils'
+import { DHI_SESSION, GET_USER_ME, PAGE_PATH } from '@utils'
 import { Cookies, withCookies } from 'react-cookie'
 import { useQuery } from '@apollo/client'
 import { directusSystemClient } from '@components/templates/Providers'
 import { Avatar } from 'primereact/avatar'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 import { classNames as cx } from 'primereact/utils'
 
-const Nav = ({ userId, cookies }: { userId: string; cookies: Cookies }) => {
+const Nav = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
   const { toggleVisible } = useAsideContext()
 
-  const { data, loading, refetch } = useQuery(GET_USER_BY_ID, {
-    variables: { id: userId },
+  const { data, loading } = useQuery(GET_USER_ME, {
     client: directusSystemClient,
   })
 
@@ -26,10 +24,6 @@ const Nav = ({ userId, cookies }: { userId: string; cookies: Cookies }) => {
     cookies.remove(DHI_SESSION)
     router.push(PAGE_PATH.login)
   }
-
-  useEffect(() => {
-    refetch({ id: userId })
-  }, [data])
 
   return (
     <nav className='flex justify-between items-center h-full'>
@@ -61,13 +55,13 @@ const Nav = ({ userId, cookies }: { userId: string; cookies: Cookies }) => {
         <Link href={PAGE_PATH.profile} className='h-[3rem]'>
           <Avatar
             image={
-              !loading && data.users_by_id.avatar
-                ? `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${data.users_by_id.avatar?.id}`
+              !loading && data.users_me.avatar
+                ? `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${data.users_me.avatar?.id}`
                 : undefined
             }
             label={
-              !loading && data.users_by_id.first_name
-                ? data.users_by_id.first_name.slice(0, 1)
+              !loading && data.users_me.first_name
+                ? data.users_me.first_name.slice(0, 1)
                 : undefined
             }
             className={cx('mr-2 !rounded-full bg-transparent', {

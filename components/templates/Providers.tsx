@@ -1,25 +1,24 @@
 'use client'
 
 import { AsideProvider, CalendarProvider, GlobalProvider } from '@contexts'
-import { CookiesProvider } from 'react-cookie'
+import { CookiesProvider, Cookies } from 'react-cookie'
 import { setContext } from '@apollo/client/link/context'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client'
-
-function returnTokenDependingOnOperation() {
-  return localStorage.getItem('accessToken') || ''
-}
+import { DHI_SESSION } from '@utils'
 
 const authLink = setContext((_, { headers }) => {
-  const token = returnTokenDependingOnOperation()
+  const cookies = new Cookies()
+  const session = cookies.get(DHI_SESSION)
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : '',
+      authorization: session ? `Bearer ${session.access_token}` : '',
     },
   }
 })
@@ -42,15 +41,19 @@ export const directusSystemClient = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
+const queryClient = new QueryClient()
+
 const Providers = ({ children }: { children: React.ReactNode }) => (
   <ApolloProvider client={directusClient}>
-    <CookiesProvider>
-      <GlobalProvider>
-        <CalendarProvider>
-          <AsideProvider>{children}</AsideProvider>
-        </CalendarProvider>
-      </GlobalProvider>
-    </CookiesProvider>
+    <QueryClientProvider client={queryClient}>
+      <CookiesProvider>
+        <GlobalProvider>
+          <CalendarProvider>
+            <AsideProvider>{children}</AsideProvider>
+          </CalendarProvider>
+        </GlobalProvider>
+      </CookiesProvider>
+    </QueryClientProvider>
   </ApolloProvider>
 )
 

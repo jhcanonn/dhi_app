@@ -24,22 +24,6 @@ export const expiresCookie = () => {
   return new Date(new Date().getTime() + daysToMilliseconds(expireDays))
 }
 
-export const refreshToken = async (
-  refresh_token: string,
-  access_token: string,
-) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/auth/refresh`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify({ refresh_token }),
-    },
-  )
-  const content = await response.json()
-  return content?.data
+export const getOnlyDate = (date: Date) => {
+  return date.toISOString().slice(0, 10)
 }

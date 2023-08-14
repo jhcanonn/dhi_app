@@ -9,8 +9,8 @@ import {
   DHI_SESSION,
   GET_TOKEN,
   PAGE_PATH,
+  errorCodes,
   expiresCookie,
-  refreshToken,
 } from '@utils'
 import { directusSystemClient } from './Providers'
 import { AuthLogin, LoginData } from '@models'
@@ -21,7 +21,7 @@ import { Avatar } from 'primereact/avatar'
 import { Message } from 'primereact/message'
 import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
-import { jwtVerify } from 'jose'
+import { fetchRefreshToken, fetchVerifyToken } from '@utils/api'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -54,7 +54,6 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   }
 
   const setSessionCookie = (auth: AuthLogin) => {
-    localStorage.setItem('accessToken', auth.access_token)
     cookies.set(DHI_SESSION, auth, {
       path: '/',
       expires: expiresCookie(),
@@ -64,25 +63,24 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   const verifyCookie = async () => {
     const session = cookies?.get(DHI_SESSION)
     const access_token = session ? session.access_token : undefined
-    const secret = new TextEncoder().encode(
-      process.env.NEXT_PUBLIC_DIRECTUS_SECRET_TOKEN,
-    )
+
     try {
-      const res = await jwtVerify(access_token, secret)
-      console.log('res', res)
+      const { status } = await fetchVerifyToken(access_token)
+      if (status === errorCodes.ERR_JWT_EXPIRED) {
+        console.info('Refreshing token...')
+        const response = await fetchRefreshToken(session.refresh_token)
+        if (response) {
+          setSessionCookie(response as AuthLogin)
+          console.info('Refresh token DONE!')
+          router.push(PAGE_PATH.calendar)
+        } else {
+          cookies.remove(DHI_SESSION)
+          return
+        }
+      }
       router.push(PAGE_PATH.calendar)
     } catch (error: any) {
       console.error(error)
-      if (error.code === 'ERR_JWT_EXPIRED' && access_token) {
-        console.info('Refreshing token...')
-        const response = await refreshToken(session.refresh_token, access_token)
-        if (response) {
-          setSessionCookie(response as AuthLogin)
-          router.push(PAGE_PATH.calendar)
-          console.info('Refresh token DONE!')
-        }
-        return
-      }
       cookies.remove(DHI_SESSION)
     }
   }

@@ -1,5 +1,8 @@
-export const bgEventColor = '#ffffff'
-export const invalidColor = '#dc3545'
+export const colors = {
+  bgEvent: '#ffffff',
+  invalid: '#dc3545',
+  disabled: '#eee',
+}
 
 export const errorMessages = {
   mandatoryField: 'Este campo es obligatorio.',
@@ -10,6 +13,10 @@ export const errorMessages = {
   noProfessionals: 'No hay profesionales',
   noBoxes: 'No hay boxes',
   noExists: 'No existe',
+}
+
+export const errorCodes = {
+  ERR_JWT_EXPIRED: 'ERR_JWT_EXPIRED',
 }
 
 export const PAGE_PATH = {

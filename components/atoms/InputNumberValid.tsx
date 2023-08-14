@@ -5,7 +5,7 @@ import { Controller, FieldValues } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { FieldCommonProps } from '@models'
-import { errorMessages, invalidColor } from '@utils'
+import { colors, errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
@@ -49,7 +49,7 @@ const InputNumberValid = <T extends FieldValues>({
             {icon && (
               <i
                 className={cx(`pi pi-${icon}`)}
-                style={{ color: error ? invalidColor : '' }}
+                style={{ color: error ? colors.invalid : '' }}
               />
             )}
             <InputNumber

@@ -7,7 +7,7 @@ import { classNames as cx } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { Dropdown } from 'primereact/dropdown'
 import { Country, FieldCommonProps } from '@models'
-import { COUNTRIES, errorMessages, invalidColor } from '@utils'
+import { COUNTRIES, colors, errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   diallingName?: string
@@ -119,7 +119,7 @@ const PhoneNumberValid = <T extends FieldValues>({
               {icon && (
                 <i
                   className={cx(`pi pi-${icon}`)}
-                  style={{ color: error ? invalidColor : '' }}
+                  style={{ color: error ? colors.invalid : '' }}
                 />
               )}
               <InputNumber

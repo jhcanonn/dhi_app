@@ -18,7 +18,7 @@ jobs:
     env:
       NEXT_PUBLIC_DIRECTUS_GRAPHQL: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}/graphql
       NEXT_PUBLIC_DIRECTUS_GRAPHQL_SYSTEM: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}/graphql/system
-      NEXT_PUBLIC_DIRECTUS_SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+      NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
       NEXT_PUBLIC_COOKIE_EXPIRE_DAYS: ${{ vars.COOKIE_EXPIRE_DAYS }}
     steps:
       - name: 🚚 Get latest code
