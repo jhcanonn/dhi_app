@@ -1,6 +1,6 @@
-import { SelectedRange } from 'react-scheduler/src/lib/store/types'
+import { SelectedRange } from 'react-scheduler-lib/store/types'
 import { FieldValues, PathValue, UseFormReturn } from 'react-hook-form'
-import { DefaultRecourse, ProcessedEvent } from 'react-scheduler/src/lib/types'
+import { DefaultRecourse, ProcessedEvent } from 'react-scheduler-lib/types'
 import { ServiceDirectus } from './Directus'
 
 export type DhiEvent = ProcessedEvent & {
