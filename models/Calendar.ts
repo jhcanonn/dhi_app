@@ -1,6 +1,6 @@
-import { SelectedRange } from '@aldabil/react-scheduler/store/types'
+import { SelectedRange } from 'react-scheduler/src/lib/store/types'
 import { FieldValues, PathValue, UseFormReturn } from 'react-hook-form'
-import { DefaultRecourse, ProcessedEvent } from '@aldabil/react-scheduler/types'
+import { DefaultRecourse, ProcessedEvent } from 'react-scheduler/src/lib/types'
 import { ServiceDirectus } from './Directus'
 
 export type DhiEvent = ProcessedEvent & {

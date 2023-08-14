@@ -68,7 +68,8 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
       process.env.NEXT_PUBLIC_DIRECTUS_SECRET_TOKEN,
     )
     try {
-      await jwtVerify(access_token, secret)
+      const res = await jwtVerify(access_token, secret)
+      console.log('res', res)
       router.push(PAGE_PATH.calendar)
     } catch (error: any) {
       console.error(error)
@@ -98,7 +99,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   }, [data])
 
   return (
-    <section className='flex justify-center self-center min-w-full sm:!min-w-[33rem]'>
+    <section className='flex justify-center self-center !min-w-[90%] sm:!min-w-[33rem]'>
       <div className='p-1 bg-gradient-to-b from-brand via-transparent to-transparent rounded-[4rem] w-full'>
         <form
           autoComplete='off'

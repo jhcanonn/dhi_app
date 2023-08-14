@@ -2,19 +2,18 @@
 
 import es from 'date-fns/locale/es'
 import { useEffect, useRef } from 'react'
-import { Scheduler } from '@aldabil/react-scheduler'
+import { Scheduler } from 'react-scheduler/src/lib'
 import {
   EventRendererProps,
   ProcessedEvent,
   SchedulerHelpers,
   SchedulerRef,
-} from '@aldabil/react-scheduler/types'
+} from 'react-scheduler/src/lib/types'
 import {
   GET_BOXES,
   GET_PROFESSIONALS,
   calendarDay,
   calendarFieldsMapper,
-  calendarMonth,
   calendarTranslations,
   calendarWeek,
   boxesMapper,
@@ -143,9 +142,10 @@ const Calendar = () => {
         <ProgressSpinner />
       ) : (
         <Scheduler
-          view='week'
+          view='day'
+          hourFormat='24'
           ref={calendarRef}
-          month={calendarMonth}
+          month={null}
           week={calendarWeek}
           day={calendarDay}
           translations={calendarTranslations}

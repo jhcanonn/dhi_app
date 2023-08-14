@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { ErrorText } from '.'
 import { Controller, FieldValues } from 'react-hook-form'

@@ -16,7 +16,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@aldabil/react-scheduler": "^2.7.10",
     "@apollo/client": "^3.7.16",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",

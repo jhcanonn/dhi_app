@@ -17,7 +17,7 @@ import {
   ResourceMode,
   ResourceType,
 } from '@models'
-import { SchedulerRef } from '@aldabil/react-scheduler/types'
+import { SchedulerRef } from 'react-scheduler/src/lib/types'
 
 type CalendarContextType = {
   calendarScheduler: RefObject<SchedulerRef> | null
@@ -45,7 +45,7 @@ type CalendarContextType = {
 const calendarDefaultValues: CalendarContextType = {
   calendarScheduler: null,
   setCalendarScheduler: () => {},
-  calendarType: CalendarType.INDIVIDUAL,
+  calendarType: CalendarType.MULTIPLE,
   setCalendarType: () => {},
   resourceMode: ResourceMode.DEFAULT,
   setResourceMode: () => {},
@@ -79,7 +79,7 @@ export const CalendarProvider = ({
   const [calendarScheduler, setCalendarScheduler] =
     useState<RefObject<SchedulerRef> | null>(null)
   // Toggle filters
-  const [calendarType, setCalendarType] = useState(CalendarType.INDIVIDUAL)
+  const [calendarType, setCalendarType] = useState(CalendarType.MULTIPLE)
   const [resourceMode, setResourceMode] = useState(ResourceMode.DEFAULT)
   const [resourceType, setResourceType] = useState(ResourceType.PROFESSIONAL)
   // Professionals filters
