@@ -1,6 +1,6 @@
 import { DragEvent } from 'react'
 import { ProcessedEvent } from 'react-scheduler/src/lib/types'
-import { bgEventColor } from '@utils'
+import { colors } from '@utils'
 import { useTheme } from '@mui/material'
 
 export const useDragAttributes = (event: ProcessedEvent) => {
@@ -14,7 +14,7 @@ export const useDragAttributes = (event: ProcessedEvent) => {
       e.currentTarget.style.backgroundColor = theme.palette.error.main
     },
     onDragEnd: (e: DragEvent<HTMLElement>) => {
-      e.currentTarget.style.backgroundColor = bgEventColor
+      e.currentTarget.style.backgroundColor = colors.bgEvent
     },
     onDragOver: (e: DragEvent<HTMLElement>) => {
       e.stopPropagation()

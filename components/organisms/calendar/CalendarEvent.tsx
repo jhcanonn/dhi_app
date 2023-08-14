@@ -4,7 +4,7 @@ import { ButtonBase } from '@mui/material'
 import { Tooltip } from 'primereact/tooltip'
 import { EventRendererProps } from 'react-scheduler/src/lib/types'
 import { useDragAttributes, useFormattedEventInfo } from '@hooks'
-import { bgEventColor } from '@utils'
+import { colors } from '@utils'
 import { EventTags } from '@components/molecules'
 import { DhiEvent } from '@models'
 
@@ -24,7 +24,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         content={formatedTime}
       />
       <ButtonBase
-        style={{ backgroundColor: bgEventColor, color: 'black' }}
+        style={{ backgroundColor: colors.bgEvent, color: 'black' }}
         onClick={onClick}
         {...customDragProps}
       >

@@ -5,7 +5,7 @@ import { Controller, FieldValues } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
 import { Password } from 'primereact/password'
 import { FieldCommonProps } from '@models'
-import { errorMessages, invalidColor } from '@utils'
+import { colors, errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
@@ -42,7 +42,7 @@ const PasswordValid = <T extends FieldValues>({
             {icon && (
               <i
                 className={`pi pi-${icon} z-10`}
-                style={{ color: error ? invalidColor : '' }}
+                style={{ color: error ? colors.invalid : '' }}
               />
             )}
             <Password

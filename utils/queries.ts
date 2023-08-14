@@ -39,15 +39,21 @@ export const GET_BOXES = gql`
   }
 `
 
-export const GET_USER_BY_ID = gql`
-  query GetUser($id: ID!) {
-    users_by_id(id: $id) {
+export const GET_USER_ME = gql`
+  query {
+    users_me {
+      id
+      email
       first_name
       last_name
-      email
+      role {
+        id
+        name
+      }
       avatar {
         id
       }
+      status
     }
   }
 `
