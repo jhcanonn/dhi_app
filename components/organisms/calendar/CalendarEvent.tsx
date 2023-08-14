@@ -2,7 +2,7 @@
 
 import { ButtonBase } from '@mui/material'
 import { Tooltip } from 'primereact/tooltip'
-import { EventRendererProps } from 'react-scheduler/src/lib/types'
+import { EventRendererProps } from 'react-scheduler-lib/types'
 import { useDragAttributes, useFormattedEventInfo } from '@hooks'
 import { colors } from '@utils'
 import { EventTags } from '@components/molecules'

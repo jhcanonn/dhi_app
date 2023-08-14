@@ -17,7 +17,7 @@ import {
   ResourceMode,
   ResourceType,
 } from '@models'
-import { SchedulerRef } from 'react-scheduler/src/lib/types'
+import { SchedulerRef } from 'react-scheduler-lib/types'
 
 type CalendarContextType = {
   calendarScheduler: RefObject<SchedulerRef> | null

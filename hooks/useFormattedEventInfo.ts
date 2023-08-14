@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { useCalendarContext } from '@contexts'
-import { ProcessedEvent } from 'react-scheduler/src/lib/types'
+import { ProcessedEvent } from 'react-scheduler-lib/types'
 
 export const useFormattedEventInfo = ({ start, end }: ProcessedEvent) => {
   const { calendarScheduler } = useCalendarContext()

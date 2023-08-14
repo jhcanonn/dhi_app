@@ -1,7 +1,7 @@
-import { Translations } from 'react-scheduler/src/lib/types'
-import { DayProps } from 'react-scheduler/src/lib/views/Day'
-import { MonthProps } from 'react-scheduler/src/lib/views/Month'
-import { WeekProps } from 'react-scheduler/src/lib/views/Week'
+import { Translations } from 'react-scheduler-lib/types'
+import { DayProps } from 'react-scheduler-lib/views/Day'
+import { MonthProps } from 'react-scheduler-lib/views/Month'
+import { WeekProps } from 'react-scheduler-lib/views/Week'
 
 export const calendarTranslations: Translations = {
   navigation: {

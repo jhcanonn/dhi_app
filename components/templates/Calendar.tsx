@@ -2,13 +2,13 @@
 
 import es from 'date-fns/locale/es'
 import { useEffect, useRef } from 'react'
-import { Scheduler } from 'react-scheduler/src/lib'
+import { Scheduler } from 'react-scheduler-lib'
 import {
   EventRendererProps,
   ProcessedEvent,
   SchedulerHelpers,
   SchedulerRef,
-} from 'react-scheduler/src/lib/types'
+} from 'react-scheduler-lib/types'
 import {
   GET_BOXES,
   GET_PROFESSIONALS,

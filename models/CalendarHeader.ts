@@ -1,4 +1,4 @@
-import { DefaultRecourse } from 'react-scheduler/src/lib/types'
+import { DefaultRecourse } from 'react-scheduler-lib/types'
 
 export type CalendarHeaderProps = DefaultRecourse & {
   name: string
