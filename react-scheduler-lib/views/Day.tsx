@@ -36,7 +36,7 @@ export interface DayProps {
   endHour: DayHours;
   step: number;
   cellRenderer?(props: CellRenderedProps): JSX.Element;
-  headRenderer?(day: Date): JSX.Element;
+  headRenderer?(day: Date): JSX.Element | null; // DHI_CODE
   navigation?: boolean;
 }
 
@@ -150,11 +150,11 @@ const Day = () => {
             className={`rs__cell rs__header ${isToday(selectedDate) ? "rs__today_cell" : ""}`}
             style={{ height: headerHeight }}
           >
-            {typeof headRenderer === "function" ? (
-              <div>{headRenderer(selectedDate)}</div>
-            ) : (
-              <TodayTypo date={selectedDate} locale={locale} />
-            )}
+            <TodayTypo 
+              date={selectedDate} 
+              locale={locale} 
+              tootip={typeof headRenderer === "function" ? headRenderer(selectedDate) : null} 
+            /> {/* DHI-CODE */}
             {renderMultiDayEvents(recousedEvents)}
           </span>
         </TableGrid>

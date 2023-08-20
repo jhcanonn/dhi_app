@@ -43,7 +43,7 @@ export interface WeekProps {
   endHour: DayHours;
   step: number;
   cellRenderer?(props: CellRenderedProps): JSX.Element;
-  headRenderer?(day: Date): JSX.Element;
+  headRenderer?(day: Date): JSX.Element | null; // DHI-CODE
   navigation?: boolean;
   disableGoToDay?: boolean;
 }
@@ -204,8 +204,8 @@ const Week = () => {
                 date={date}
                 onClick={!disableGoToDay ? handleGotoDay : undefined}
                 locale={locale}
-              />
-              {typeof headRenderer === "function" && <div>{headRenderer(date)}</div>}
+                tootip={typeof headRenderer === "function" ? headRenderer(date) : null}
+              /> {/* DHI-CODE */}
               {renderMultiDayEvents(recousedEvents, date)}
             </span>
           ))}

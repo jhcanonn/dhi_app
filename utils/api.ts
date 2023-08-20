@@ -1,7 +1,7 @@
 import { Holiday } from '@models'
 import axios from 'axios'
 
-export const getHolidays = (year: number) => () =>
+export const getHolidays = (year: number) =>
   axios
     .get(
       `https://api.generadordni.es/v2/holidays/holidays?country=CO&year=${year}`,

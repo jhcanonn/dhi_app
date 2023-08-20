@@ -1,15 +1,18 @@
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import { format, isToday } from "date-fns";
+
+// DHI-CODE - Tooltip component, Only one Typography
 
 interface TodayTypoProps {
   date: Date;
   onClick?(day: Date): void;
   locale: Locale;
+  tootip?: JSX.Element | null;
 }
 
-const TodayTypo = ({ date, onClick, locale }: TodayTypoProps) => {
+const TodayTypo = ({ date, onClick, locale, tootip }: TodayTypoProps) => {
   return (
-    <div>
+    <Tooltip title={tootip} placement="bottom">
       <Typography
         style={{
           fontWeight: isToday(date) ? "bold" : "inherit",
@@ -23,7 +26,7 @@ const TodayTypo = ({ date, onClick, locale }: TodayTypoProps) => {
       >
         {format(date, "dd", { locale })} <span style={{fontSize: 11}}>- {format(date, "eee", { locale })}</span>
       </Typography>
-    </div> // DHI-CODE
+    </Tooltip>
   );
 };
 
