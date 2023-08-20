@@ -21,6 +21,7 @@ import {
   filterMultiDaySlot,
   filterTodayEvents,
   getResourcedEvents,
+  maxEventsMultiDaySlot,
 } from "../helpers/generals";
 import { WithResources } from "../components/common/WithResources";
 import Cell from "../components/common/Cell";
@@ -139,7 +140,7 @@ const Day = () => {
       selectedDate,
       timeZone
     );
-    const headerHeight = MULTI_DAY_EVENT_HEIGHT * allWeekMulti.length + 45;
+    const headerHeight = MULTI_DAY_EVENT_HEIGHT * (allWeekMulti.length ? maxEventsMultiDaySlot(allWeekMulti, timeZone) : 0) + 28; // DHI-CODE
     return (
       <>
         {/* Header */}

@@ -22,13 +22,14 @@ import {
   GET_EVENT_STATE,
   eventStateMapper,
   paysMapper,
+  ROLES,
   // getOnlyDate,
   // colors,
 } from '@utils'
 import {
   CalendarEditor,
-  CalendarEventViewer,
   CalendarEvent,
+  CalendarEventViewerAvoided,
 } from '@components/organisms'
 import { CalendarHeader } from '@components/molecules'
 import {
@@ -50,7 +51,7 @@ import { PAYS } from '@utils/queries'
 
 const Calendar = () => {
   const calendarRef = useRef<SchedulerRef>(null)
-  const { events, setProfessionals, setBoxes } = useGlobalContext()
+  const { events, user, setProfessionals, setBoxes } = useGlobalContext()
   const {
     setCalendarScheduler,
     calendarType,
@@ -79,6 +80,7 @@ const Calendar = () => {
 
   const { data: boxesFetch, loading: boxesLoading } = useQuery(GET_BOXES)
 
+  const isProfessionalUser = user?.role.id === ROLES.dhi_profesional
   const fetchingFromDirectus =
     // holidaysLoading &&
     eventStateLoading && paysLoading && professionalsLoading && boxesLoading
@@ -93,7 +95,7 @@ const Calendar = () => {
   )
 
   const handleCustomViewer = (event: ProcessedEvent, closeFn: () => void) => (
-    <CalendarEventViewer event={event} closeFn={closeFn} />
+    <CalendarEventViewerAvoided event={event} closeFn={closeFn} />
   )
 
   const handleCustomEditor = (schedulerHelpers: SchedulerHelpers) => (
@@ -125,9 +127,15 @@ const Calendar = () => {
   }, [paysFetch])
 
   useEffect(() => {
-    const professionals =
+    let professionals =
       professionalsFetch?.profesionales as ProfessionalDirectus[]
     if (professionals?.length) {
+      if (isProfessionalUser) {
+        const roleProfessional = professionals.find(
+          (p) => user && +p.id === +user?.profesional?.id,
+        )
+        professionals = roleProfessional ? [roleProfessional] : []
+      }
       const mappedProfessionals = professionalsMapper(professionals)
       setProfessionals(mappedProfessionals)
       setSelectedProfessionals(mappedProfessionals)
@@ -148,7 +156,7 @@ const Calendar = () => {
   }, [boxesFetch])
 
   return (
-    <section className='scheduler [&>div]:w-full flex justify-center items-center grow px-1'>
+    <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
       {fetchingFromDirectus ? (
         <ProgressSpinner />
       ) : (

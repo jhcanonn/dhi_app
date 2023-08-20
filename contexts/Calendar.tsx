@@ -18,6 +18,8 @@ import {
   ResourceType,
 } from '@models'
 import { SchedulerRef } from 'react-scheduler-lib/types'
+import { useGlobalContext } from './Global'
+import { ROLES } from '@utils'
 
 type CalendarContextType = {
   calendarScheduler: RefObject<SchedulerRef> | null
@@ -76,10 +78,15 @@ export const CalendarProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { user } = useGlobalContext()
+  const isProfessionalUser = user?.role.id === ROLES.dhi_profesional
+
   const [calendarScheduler, setCalendarScheduler] =
     useState<RefObject<SchedulerRef> | null>(null)
   // Toggle filters
-  const [calendarType, setCalendarType] = useState(CalendarType.MULTIPLE)
+  const [calendarType, setCalendarType] = useState(
+    isProfessionalUser ? CalendarType.INDIVIDUAL : CalendarType.MULTIPLE,
+  )
   const [resourceMode, setResourceMode] = useState(ResourceMode.DEFAULT)
   const [resourceType, setResourceType] = useState(ResourceType.PROFESSIONAL)
   // Professionals filters

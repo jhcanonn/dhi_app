@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, DhiEvent, Professional } from '@models'
+import { Box, DhiEvent, Professional, User } from '@models'
 import { EVENTS } from '@utils'
 import {
   Dispatch,
@@ -17,6 +17,8 @@ type GlobalContextType = {
   setProfessionals: Dispatch<SetStateAction<Professional[]>>
   boxes: Box[]
   setBoxes: Dispatch<SetStateAction<Box[]>>
+  user: User | null
+  setUser: Dispatch<User | null>
 }
 
 const globalContextDefaultValues: GlobalContextType = {
@@ -26,6 +28,8 @@ const globalContextDefaultValues: GlobalContextType = {
   setProfessionals: () => {},
   boxes: [],
   setBoxes: () => {},
+  user: null,
+  setUser: () => {},
 }
 
 const GlobalContext = createContext<GlobalContextType>(
@@ -40,6 +44,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [events, setEvents] = useState(EVENTS)
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [boxes, setBoxes] = useState<Box[]>([])
+  const [user, setUser] = useState<User | null>(null)
 
   return (
     <GlobalContext.Provider
@@ -50,6 +55,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setProfessionals,
         boxes,
         setBoxes,
+        user,
+        setUser,
       }}
     >
       {children}

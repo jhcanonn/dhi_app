@@ -44,6 +44,8 @@ const CalendarEditor = ({ scheduler }: Props) => {
     ? Number(event[resourceField])
     : Number(scheduler[resourceField])
 
+  // console.log({ event, resourceField, resourceId })
+
   const eventData: DhiEvent = {
     event_id: event?.event_id!,
     title: event?.title!,
@@ -99,6 +101,7 @@ const CalendarEditor = ({ scheduler }: Props) => {
           addedUpdatedEvent.title = `${addedUpdatedEvent?.first_name} ${addedUpdatedEvent?.last_name}`
         /***/
         const action: EventActions = event ? 'edit' : 'create'
+        // console.log({ addedUpdatedEvent })
         scheduler.onConfirm(addedUpdatedEvent, action)
         setEvents((preEvents) => [...preEvents, addedUpdatedEvent])
         scheduler.close()
@@ -177,8 +180,8 @@ const CalendarEditor = ({ scheduler }: Props) => {
           onSubmit={handleSubmit(onSubmit)}
           className='flex flex-col gap-2'
         >
-          <div className='flex flex-col md:flex-row gap-4 w-full md:[&>div]:w-80'>
-            <div className='flex flex-col gap-2'>
+          <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-60'>
+            <div className='flex flex-col gap-1 w-full'>
               {event && (
                 <InputTextValid
                   name='data_sheet'
@@ -222,60 +225,8 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 handleForm={handleForm}
                 icon='user'
               />
-              <PhoneNumberValid
-                name='phone'
-                diallingName='dialling'
-                label='Teléfono'
-                handleForm={handleForm}
-                icon='phone'
-                minLength={6}
-                required
-              />
-              {event && (
-                <PhoneNumberValid
-                  name='phone_2'
-                  diallingName='dialling_2'
-                  label='Teléfono 2'
-                  handleForm={handleForm}
-                  icon='phone'
-                  minLength={6}
-                />
-              )}
-              <InputTextValid
-                name='email'
-                label='Correo electrónico'
-                handleForm={handleForm}
-                icon='envelope'
-                required
-                pattern={/\S+@\S+\.\S+/}
-              />
-              <InputSwitchValid
-                name='sent_email'
-                handleForm={handleForm}
-                acceptMessage='Enviar correo.'
-              />
             </div>
-            <div className='flex flex-col gap-2'>
-              {event && (
-                <>
-                  <DropdownValid
-                    name='state'
-                    label='Estado'
-                    handleForm={handleForm}
-                    list={eventStates}
-                    required
-                    itemTemplate={stateItemTemplate}
-                    valueTemplate={stateValueTemplate}
-                  />
-                  <DropdownValid
-                    name='pay'
-                    label='Pago'
-                    handleForm={handleForm}
-                    list={pays}
-                    required
-                  />
-                </>
-              )}
+            <div className='flex flex-col gap-1 w-full'>
               <DateTimeValid
                 name='start'
                 label='Fecha inicio'
@@ -310,14 +261,69 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 list={servicesMapper(services)}
                 emptyMessage={'Seleccione un Box'}
               />
+              {event && (
+                <DropdownValid
+                  name='pay'
+                  label='Pago'
+                  handleForm={handleForm}
+                  list={pays}
+                  required
+                />
+              )}
+            </div>
+            <div className='flex flex-col gap-1 w-full'>
+              {event && (
+                <DropdownValid
+                  name='state'
+                  label='Estado'
+                  handleForm={handleForm}
+                  list={eventStates}
+                  required
+                  itemTemplate={stateItemTemplate}
+                  valueTemplate={stateValueTemplate}
+                />
+              )}
+              <PhoneNumberValid
+                name='phone'
+                diallingName='dialling'
+                label='Teléfono'
+                handleForm={handleForm}
+                icon='phone'
+                minLength={6}
+                required
+              />
+              {event && (
+                <PhoneNumberValid
+                  name='phone_2'
+                  diallingName='dialling_2'
+                  label='Teléfono 2'
+                  handleForm={handleForm}
+                  icon='phone'
+                  minLength={6}
+                />
+              )}
+              <InputTextValid
+                name='email'
+                label='Correo electrónico'
+                handleForm={handleForm}
+                icon='envelope'
+                required
+                pattern={/\S+@\S+\.\S+/}
+              />
+              <InputSwitchValid
+                name='sent_email'
+                handleForm={handleForm}
+                acceptMessage='Enviar correo.'
+              />
               <InputTextareaValid
                 name='description'
                 label='Comentario'
                 handleForm={handleForm}
+                rows={event ? 2 : 5}
               />
             </div>
           </div>
-          <div className='flex justify-center gap-2 flex-wrap [&>button]:w-24'>
+          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem]'>
             {event && (
               <>
                 <Button
@@ -346,7 +352,7 @@ const CalendarEditor = ({ scheduler }: Props) => {
                   onClick={(e: any) => showNotification(e.target.textContent)}
                 />
                 <Button
-                  label={'Repetir'}
+                  label={'Comentarios'}
                   type='button'
                   severity='help'
                   rounded

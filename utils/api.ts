@@ -36,6 +36,5 @@ export const fetchRefreshToken = async (refresh_token: string) => {
     },
   )
   const content = await response.json()
-  console.log({ content })
   return content?.data
 }

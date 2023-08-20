@@ -21,18 +21,9 @@ const TodayTypo = ({ date, onClick, locale }: TodayTypoProps) => {
           if (onClick) onClick(date);
         }}
       >
-        {format(date, "dd", { locale })}
+        {format(date, "dd", { locale })} <span style={{fontSize: 11}}>- {format(date, "eee", { locale })}</span>
       </Typography>
-      <Typography
-        color={isToday(date) ? "primary" : "inherit"}
-        style={{
-          fontWeight: isToday(date) ? "bold" : "inherit",
-          fontSize: 11,
-        }}
-      >
-        {format(date, "eee", { locale })}
-      </Typography>
-    </div>
+    </div> // DHI-CODE
   );
 };
 

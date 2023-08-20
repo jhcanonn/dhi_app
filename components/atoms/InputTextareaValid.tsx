@@ -9,6 +9,7 @@ import { errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
+  rows?: number
   pattern?: RegExp
 }
 
@@ -16,6 +17,7 @@ const InputTextareaValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
+  rows,
   pattern,
   required,
   validate,
@@ -44,7 +46,7 @@ const InputTextareaValid = <T extends FieldValues>({
             <InputTextarea
               id={field.name}
               {...field}
-              rows={4}
+              rows={rows}
               className={cx({ 'p-invalid': error }, 'w-full')}
               autoResize
             />

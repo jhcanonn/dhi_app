@@ -34,4 +34,12 @@ export const PAGE_PATH = {
   settings: '/settings',
 }
 
+export const ROLES = {
+  admin: '7785388b-e913-4477-89e0-f4473218246a',
+  dhi_admin: '789f50a6-73fb-47a3-b10b-bd74a739f96e',
+  dhi_profesional: '7c2b2916-670a-4a54-b312-abe66f556428',
+  dhi_asistente: '864e0832-dd2c-4d49-b80a-e37438dd51a0',
+  dhi_comercial: '46313e3f-942b-4456-a116-aeb759bb02b0',
+}
+
 export const DHI_SESSION = 'dhi_session'
