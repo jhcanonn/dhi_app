@@ -157,7 +157,7 @@ const Week = () => {
           key={event.event_id}
           className="rs__multi_day"
           style={{
-            top: index * MULTI_SPACE + 45,
+            top: index * MULTI_SPACE + 28, // DHI-CODE
             width: `${99.9 * eventLength}%`,
             overflowX: "hidden",
           }}
@@ -182,7 +182,7 @@ const Week = () => {
       timeZone,
       true
     );
-    const headerHeight = MULTI_SPACE * allWeekMulti.length + 45;
+    const headerHeight = MULTI_SPACE * allWeekMulti.length + 28; // DHI-CODE
 
     return (
       <>

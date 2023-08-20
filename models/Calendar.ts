@@ -47,6 +47,25 @@ export type Professional = CommonData & {
   mobile: string
 }
 
+export type User = {
+  id: string
+  email: string
+  first_name: string
+  last_name: string
+  role: {
+    id: string
+    name: string
+  }
+  profesional: {
+    id: string
+    nombre: string
+  }
+  avatar: {
+    id: string
+  }
+  status: string
+}
+
 export type Box = CommonData & { box_id: number; services: ServiceDirectus[] }
 
 export type Service = { service_id: number; name: string }

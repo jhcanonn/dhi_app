@@ -18,14 +18,14 @@ const WithResources = ({ renderChildren }: WithResourcesProps) => {
 };
 
 const ResourcesTables = ({ renderChildren }: WithResourcesProps) => {
-  const { resources, resourceFields, view } = useStore();
+  const { resources, resourceFields, view } = useStore(); // DHI-CODE
 
   return (
     <>
       {resources.map((res: DefaultRecourse, i: number) => (
         <div
           key={`${res[resourceFields.idField]}_${i}`}
-          style={{ width: resources.length === 1 ? "unset" : view === "day" ? "15rem" : "40rem" }}
+          style={{ width: resources.length === 1 ? "unset" : view === "day" ? "15rem" : "40rem" }} // DHI-CODE
         >
           <ResourceHeader resource={res} />
           {renderChildren(res)}

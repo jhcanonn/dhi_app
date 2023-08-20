@@ -60,7 +60,7 @@ const PhoneNumberValid = <T extends FieldValues>({
 
   return (
     <div className='flex flex-col'>
-      <div className='p-inputgroup flex [&>*:nth-child(1)]:!w-[30%] [&>*:nth-child(2)]:!w-[70%]'>
+      <div className='p-inputgroup flex [&>*:nth-child(1)]:!w-[36%] [&>*:nth-child(2)]:!w-[64%]'>
         {/* Dailling field */}
         <Controller
           name={diallingName as any}
@@ -143,7 +143,7 @@ const PhoneNumberValid = <T extends FieldValues>({
           )}
         />
       </div>
-      <div className='flex [&>*:nth-child(1)]:w-[30%] [&>*:nth-child(2)]:w-[70%]'>
+      <div className='flex [&>*:nth-child(1)]:w-[36%] [&>*:nth-child(2)]:w-[64%]'>
         <ErrorText name={diallingName!} errors={errors} />
         <ErrorText name={name} errors={errors} />
       </div>

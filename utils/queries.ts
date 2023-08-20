@@ -50,6 +50,10 @@ export const GET_USER_ME = gql`
         id
         name
       }
+      profesional {
+        id
+        nombre
+      }
       avatar {
         id
       }

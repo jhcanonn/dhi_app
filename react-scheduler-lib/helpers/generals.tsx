@@ -114,7 +114,7 @@ export const calcMinuteHeight = (cellHeight: number, step: number) => {
 };
 
 export const calcCellHeight = (tableHeight: number, hoursLength: number) => {
-  return tableHeight / hoursLength;
+  return tableHeight / hoursLength; // DHI-CODE
 };
 
 export const differenceInDaysOmitTime = (start: Date, end: Date) => {
@@ -186,6 +186,17 @@ export const filterMultiDaySlot = (
 
   return list;
 };
+
+// DHI-CODE
+export const maxEventsMultiDaySlot = (events: ProcessedEvent[], timeZone?: string) => {
+  const multiPerDay: Record<string, ProcessedEvent[]> = {};
+  for (let i = 0; i < events.length; i++) {
+    const event = convertEventTimeZone(events[i], timeZone);
+    const start = format(event.start, "yyyy-MM-dd");
+    multiPerDay[start] = (multiPerDay[start] || []).concat(event);
+  }
+  return Math.max(...Object.values(multiPerDay).map(e => e.length))
+}
 
 export const convertEventTimeZone = (event: ProcessedEvent, timeZone?: string) => {
   return {
