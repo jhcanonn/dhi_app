@@ -24,7 +24,9 @@ const TodayTypo = ({ date, onClick, locale, tootip }: TodayTypoProps) => {
           if (onClick) onClick(date);
         }}
       >
-        {format(date, "dd", { locale })} <span style={{fontSize: 11}}>- {format(date, "eee", { locale })}</span>
+        <span style={{padding: '2px 5px', display: 'inline-block', boxSizing: 'border-box', width: '100%'}}>
+          {format(date, "dd", { locale })} <span style={{fontSize: 11}}>- {format(date, "eee", { locale })}</span>
+        </span>
       </Typography>
     </Tooltip>
   );

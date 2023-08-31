@@ -3,40 +3,27 @@
 import { ErrorText } from '.'
 import { Controller, FieldValues } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
-import {
-  Dropdown,
-  DropdownChangeEvent,
-  DropdownProps,
-} from 'primereact/dropdown'
 import { FieldCommonProps } from '@models'
 import { errorMessages } from '@utils'
-import { ReactNode } from 'react'
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 
 export type Props<T> = FieldCommonProps<T> & {
   list: any[]
-  showClear?: boolean
   label?: string
-  disabled?: boolean
   placeholder?: string
-  emptyMessage?: ReactNode | ((props: DropdownProps) => ReactNode)
-  itemTemplate?: ReactNode | ((option: any) => ReactNode)
-  valueTemplate?: ReactNode | ((option: any, props: DropdownProps) => ReactNode)
-  onCustomChange?: (e: DropdownChangeEvent) => void
+  selectedItemsLabel?: string
+  onCustomChange?: (e: MultiSelectChangeEvent) => void
 }
 
-const DropdownValid = <T extends FieldValues>({
+const MultiSelectValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
-  disabled,
   placeholder,
+  selectedItemsLabel,
   list,
-  showClear = false,
   required,
   validate,
-  emptyMessage,
-  itemTemplate,
-  valueTemplate,
   onCustomChange,
 }: Props<T>) => {
   const {
@@ -59,28 +46,26 @@ const DropdownValid = <T extends FieldValues>({
       }) => (
         <div className='flex flex-col'>
           <span className='p-float-label'>
-            <Dropdown
+            <MultiSelect
               id={name}
               value={value}
-              optionLabel='name'
               options={list}
-              focusInputRef={ref}
+              ref={ref}
               onBlur={onBlur}
-              onChange={(e) => {
+              onChange={(e: MultiSelectChangeEvent) => {
                 onChange(e.value)
                 onCustomChange && onCustomChange(e)
               }}
+              optionLabel='name'
+              placeholder={placeholder}
+              maxSelectedLabels={1}
+              selectedItemsLabel={selectedItemsLabel}
+              emptyFilterMessage={errorMessages.noExists}
               className={cx(
                 { 'p-invalid': error },
-                { '[&_.p-dropdown-trigger]:!text-[#dc3545]': error },
+                { '[&_.p-multiselect-trigger]:!text-[#dc3545]': error },
               )}
               filter
-              placeholder={placeholder}
-              showClear={showClear}
-              emptyMessage={emptyMessage}
-              itemTemplate={itemTemplate}
-              valueTemplate={valueTemplate}
-              disabled={disabled}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
@@ -93,4 +78,4 @@ const DropdownValid = <T extends FieldValues>({
   )
 }
 
-export default DropdownValid
+export default MultiSelectValid

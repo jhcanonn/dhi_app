@@ -13,6 +13,16 @@ const nextConfig = {
         port: process.env.NEXT_PUBLIC_DIRECTUS_PORT,
         pathname: '/assets/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        port: '',
+      },
     ],
   },
 }

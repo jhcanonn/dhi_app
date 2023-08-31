@@ -83,3 +83,26 @@ export const PAYS = gql`
     }
   }
 `
+
+export const GET_INFO_CLIENT = gql`
+  query ($id: String!) {
+    pacientes(filter: { documento: { _starts_with: $id } }) {
+      id
+      documento
+      tipo_documento
+      primer_nombre
+      segundo_nombre
+      apellido_paterno
+      apellido_materno
+      correo
+      telefono
+      indicativo
+      telefono_2
+      indicativo_2
+      estado_civil
+      registrado
+      fecha_nacimiento
+      genero
+    }
+  }
+`

@@ -105,3 +105,10 @@ export const mandatoryAppointmentFields = [
   'professional',
   'box',
 ]
+
+export const idTypes = [
+  { type: 'CC', name: 'Cédula de ciudadanía' },
+  { type: 'CE', name: 'Cédula de extranjería' },
+  { type: 'PA', name: 'Pasaporte' },
+  { type: 'PEP', name: 'Permiso especial de permanencia' },
+]

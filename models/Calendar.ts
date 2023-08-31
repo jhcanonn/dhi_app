@@ -12,7 +12,8 @@ export type DhiEvent = ProcessedEvent & {
   state?: EventState
   pay?: Pay
   data_sheet?: string
-  identification?: number
+  id_type?: IdType
+  identification?: string
   first_name?: string
   middle_name?: string
   last_name?: string
@@ -24,6 +25,11 @@ export type DhiEvent = ProcessedEvent & {
   email?: string
   sent_email?: boolean
   description?: string
+}
+
+export type IdType = {
+  type: string
+  name: string
 }
 
 export type EventState = {
@@ -66,7 +72,31 @@ export type User = {
   status: string
 }
 
-export type Box = CommonData & { box_id: number; services: ServiceDirectus[] }
+export type Patient = {
+  id: string
+  documento: string
+  tipo_documento: string
+  primer_nombre: string
+  segundo_nombre: string
+  apellido_paterno: string
+  apellido_materno: string
+  correo: string
+  telefono: string
+  indicativo: string
+  telefono_2: string
+  indicativo_2: string
+  estado_civil: string
+  registrado: boolean
+  fecha_nacimiento: string
+  genero: string
+}
+
+export type ServiceDHI = { box_service_id: number } & ServiceDirectus
+
+export type Box = CommonData & {
+  box_id: number
+  services: ServiceDHI[]
+}
 
 export type Service = { service_id: number; name: string }
 
@@ -103,7 +133,7 @@ export type FieldCommonProps<T> = {
 
 export type Country = {
   name: string
-  code: string
+  image_url: string
   dialling: string
 }
 

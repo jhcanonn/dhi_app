@@ -5,21 +5,24 @@ import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { useForm } from 'react-hook-form'
 import {
-  InputNumberValid,
   InputTextValid,
   PhoneNumberValid,
   InputSwitchValid,
   DateTimeValid,
   DropdownValid,
   InputTextareaValid,
+  MultiSelectValid,
+  AutoCompleteValid,
 } from '@components/atoms'
-import { Box, DhiEvent, EventState, ServiceDirectus } from '@models'
+import { Box, DhiEvent, EventState, Patient, ServiceDHI } from '@models'
 import { fetchingSimulation, eventIdSimulation } from '@hooks'
 import { useCalendarContext, useGlobalContext } from '@contexts'
 import {
+  GET_INFO_CLIENT,
   PAGE_PATH,
   calendarFieldsMapper,
   getResourceData,
+  idTypes,
   mandatoryAppointmentFields,
   servicesMapper,
 } from '@utils'
@@ -27,15 +30,24 @@ import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
 import { useRef, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
+import { useQuery } from '@apollo/client'
+import {
+  AutoCompleteChangeEvent,
+  AutoCompleteCompleteEvent,
+} from 'primereact/autocomplete'
 
 type Props = {
   scheduler: SchedulerHelpers
 }
 
 const CalendarEditor = ({ scheduler }: Props) => {
+  const [desabledFields, setDesabledFields] = useState<boolean>(false)
+  const [patients, setPatients] = useState<Patient[]>([])
+  const { refetch } = useQuery(GET_INFO_CLIENT)
+
   const toast = useRef<Toast>(null)
   const router = useRouter()
-  const { professionals, boxes, setEvents } = useGlobalContext()
+  const { professionals, boxes, countries, setEvents } = useGlobalContext()
   const { resourceType, eventStates, pays } = useCalendarContext()
 
   const resourceField = calendarFieldsMapper(resourceType).idField
@@ -43,8 +55,6 @@ const CalendarEditor = ({ scheduler }: Props) => {
   const resourceId = event
     ? Number(event[resourceField])
     : Number(scheduler[resourceField])
-
-  // console.log({ event, resourceField, resourceId })
 
   const eventData: DhiEvent = {
     event_id: event?.event_id!,
@@ -61,6 +71,7 @@ const CalendarEditor = ({ scheduler }: Props) => {
     state: event?.state,
     pay: event?.pay,
     data_sheet: event?.data_sheet || 'Sin ficha',
+    id_type: event?.id_type! || idTypes[0],
     identification: event?.identification,
     first_name: event?.first_name,
     middle_name: event?.middle_name,
@@ -78,14 +89,13 @@ const CalendarEditor = ({ scheduler }: Props) => {
   const getServices = (boxId: number) =>
     boxes.find((b) => b.box_id === boxId)?.services!
 
-  const [services, setServices] = useState<ServiceDirectus[]>(
+  const [services, setServices] = useState<ServiceDHI[]>(
     getServices(eventData.box?.box_id!),
   )
   const handleForm = useForm({ defaultValues: eventData })
-  const { reset, handleSubmit } = handleForm
+  const { reset, handleSubmit, resetField, setValue } = handleForm
 
   const onSubmit = async (data: DhiEvent) => {
-    // console.log({ data });
     if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
       try {
         scheduler.loading(true)
@@ -122,22 +132,87 @@ const CalendarEditor = ({ scheduler }: Props) => {
 
   const handleBoxChange = (e: DropdownChangeEvent) => {
     const box: Box = e.value
+    resetField('service')
     setServices(getServices(box.box_id))
+  }
+
+  const handleBlock = (e: React.MouseEvent<HTMLElement>) => {
+    console.log('block!', e)
+  }
+
+  const handleCleanForm = () => {
+    setDesabledFields(false)
+    setValue('identification', '')
+    setValue('first_name', '')
+    setValue('middle_name', '')
+    setValue('last_name', '')
+    setValue('last_name_2', '')
+    setValue('dialling', { name: '', dialling: '', image_url: '' })
+    setValue('phone', '')
+    setValue('email', '')
+  }
+
+  const handleSetFieldsForm = (e: AutoCompleteChangeEvent) => {
+    const patient: Patient = e.value
+    if (patient && typeof patient === 'object') {
+      setDesabledFields(true)
+      setValue('first_name', patient.primer_nombre)
+      setValue('middle_name', patient.segundo_nombre)
+      setValue('last_name', patient.apellido_paterno)
+      setValue('last_name_2', patient.apellido_materno)
+      setValue(
+        'dialling',
+        countries.find((c) => c.dialling === patient.indicativo),
+      )
+      setValue('phone', patient.telefono)
+      setValue('email', patient.correo)
+    } else {
+      setDesabledFields(false)
+    }
+  }
+
+  const idSearcher = (event: AutoCompleteCompleteEvent) => {
+    refetch({ id: event.query }).then((res) =>
+      setPatients(res?.data?.pacientes),
+    )
   }
 
   const Header = () => (
     <div className='flex justify-between items-center'>
-      <div className='flex flex-col'>
+      <div className='flex justify-start items-center gap-2'>
         <h2 className='font-bold'>{`${event ? 'Editar' : 'Crear'} cita`}</h2>
+        {desabledFields && (
+          <Button
+            severity='success'
+            size='small'
+            rounded
+            text
+            onClick={handleCleanForm}
+            label='Limpiar'
+            aria-label='Limpiar'
+            className='h-[2rem]'
+          />
+        )}
       </div>
-      <Button
-        icon='pi pi-times'
-        severity='danger'
-        size='small'
-        rounded
-        onClick={scheduler.close}
-        aria-label='Cancel'
-      />
+      <div className='flex justify-end items-center gap-2'>
+        <Button
+          severity='secondary'
+          size='small'
+          rounded
+          onClick={handleBlock}
+          label='Bloquear'
+          aria-label='Bloquear'
+          className='h-[2rem]'
+        />
+        <Button
+          icon='pi pi-times'
+          severity='danger'
+          size='small'
+          rounded
+          onClick={scheduler.close}
+          aria-label='Cancel'
+        />
+      </div>
     </div>
   )
 
@@ -171,6 +246,12 @@ const CalendarEditor = ({ scheduler }: Props) => {
     </div>
   )
 
+  const idItemTemplate = (item: Patient) => (
+    <p className='text-[0.8rem]'>
+      {item.documento} - {item.primer_nombre} {item.apellido_paterno}
+    </p>
+  )
+
   return (
     <>
       <Toast ref={toast} />
@@ -191,12 +272,25 @@ const CalendarEditor = ({ scheduler }: Props) => {
                   disabled
                 />
               )}
-              <InputNumberValid
+              <DropdownValid
+                name='id_type'
+                label='Tipo de identificación'
+                handleForm={handleForm}
+                list={idTypes}
+                disabled={desabledFields}
+                required
+              />
+              <AutoCompleteValid
                 name='identification'
                 label='Identificación'
                 handleForm={handleForm}
                 icon='id-card'
-                minLength={6}
+                field='documento'
+                suggestions={patients}
+                itemTemplate={idItemTemplate}
+                completeMethod={idSearcher}
+                onCustomChange={handleSetFieldsForm}
+                disabled={desabledFields}
                 required
               />
               <InputTextValid
@@ -204,12 +298,14 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 label='1° Nombre'
                 handleForm={handleForm}
                 icon='user'
+                disabled={desabledFields}
                 required
               />
               <InputTextValid
                 name='middle_name'
                 label='2° Nombre'
                 handleForm={handleForm}
+                disabled={desabledFields}
                 icon='user'
               />
               <InputTextValid
@@ -217,12 +313,14 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 label='1° Apellido'
                 handleForm={handleForm}
                 icon='user'
+                disabled={desabledFields}
                 required
               />
               <InputTextValid
                 name='last_name_2'
                 label='2° Apellido'
                 handleForm={handleForm}
+                disabled={desabledFields}
                 icon='user'
               />
             </div>
@@ -254,12 +352,14 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 required
                 onCustomChange={handleBoxChange}
               />
-              <DropdownValid
+              <MultiSelectValid
                 name='service'
-                label='Servicio'
+                label='Servicios'
                 handleForm={handleForm}
                 list={servicesMapper(services)}
-                emptyMessage={'Seleccione un Box'}
+                selectedItemsLabel='{0} servicios'
+                placeholder='Seleccione servicios'
+                required
               />
               {event && (
                 <DropdownValid
@@ -319,7 +419,7 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 name='description'
                 label='Comentario'
                 handleForm={handleForm}
-                rows={event ? 2 : 5}
+                rows={4}
               />
             </div>
           </div>
@@ -367,7 +467,12 @@ const CalendarEditor = ({ scheduler }: Props) => {
                 />
               </>
             )}
-            <Button label='Guardar' type='submit' severity='success' rounded />
+            <Button
+              label={event ? 'Guardar' : 'Agendar'}
+              type='submit'
+              severity='success'
+              rounded
+            />
           </div>
         </form>
       </Card>

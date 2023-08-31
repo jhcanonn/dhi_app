@@ -8,7 +8,7 @@ import {
   Professional,
   ProfessionalDirectus,
   Service,
-  ServiceDirectus,
+  ServiceDHI,
   StatusDirectus,
 } from '@models'
 
@@ -37,18 +37,21 @@ export const boxesMapper = (boxes: BoxDirectus[]) => {
           box_id: +b.id,
           name: b.nombre,
           color: b.color,
-          services: b.services.map((s) => s.servicios_id),
+          services: b.services.map((s) => ({
+            box_service_id: s.id,
+            ...s.servicios_id,
+          })),
         }) as Box,
     )
 }
 
-export const servicesMapper = (services: ServiceDirectus[]) => {
+export const servicesMapper = (services: ServiceDHI[]) => {
   return services
     ?.filter((s) => s.estado === StatusDirectus.PUBLISHED)
     ?.map(
       (s) =>
         ({
-          service_id: +s.id,
+          service_id: +s.box_service_id,
           name: s.nombre,
         }) as Service,
     )

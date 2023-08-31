@@ -17,7 +17,7 @@ import { calendarMonth, errorMessages } from '@utils'
 
 const FilterBar = () => {
   // Contexts
-  const { professionals, boxes } = useGlobalContext()
+  const { professionals, boxes, events } = useGlobalContext()
   const {
     calendarScheduler,
     resourceMode,
@@ -183,6 +183,14 @@ const FilterBar = () => {
               const professionalValue: Professional = e.value
               setSelectedProfessional(professionalValue)
               scheduler.handleState([professionalValue], 'resources')
+              scheduler.handleState(
+                events.filter(
+                  (e) =>
+                    e.professional?.professional_id ===
+                    professionalValue.professional_id,
+                ),
+                'events',
+              )
             }}
             options={professionals}
             optionLabel='name'

@@ -44,12 +44,19 @@ import { useGetResources } from '@hooks'
 import { useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { PAYS } from '@utils/queries'
-import { getHolidays } from '@utils/api'
+import { getCountries, getHolidays } from '@utils/api'
 
 const Calendar = () => {
   const calendarRef = useRef<SchedulerRef>(null)
-  const { events, user, holidays, setHolidays, setProfessionals, setBoxes } =
-    useGlobalContext()
+  const {
+    events,
+    user,
+    holidays,
+    setHolidays,
+    setCountries,
+    setProfessionals,
+    setBoxes,
+  } = useGlobalContext()
   const {
     setCalendarScheduler,
     calendarType,
@@ -92,6 +99,16 @@ const Calendar = () => {
     } else setHolidays(JSON.parse(lsH))
   }
 
+  const fetchCountries = () => {
+    const lsC = window.localStorage.getItem('countries')
+    if (!lsC) {
+      getCountries().then((c) => {
+        window.localStorage.setItem('countries', JSON.stringify(c))
+        setCountries(c)
+      })
+    } else setCountries(JSON.parse(lsC))
+  }
+
   const handleCustomHeader = (resource: DhiResource) => (
     <CalendarHeader {...resource} />
   )
@@ -111,6 +128,7 @@ const Calendar = () => {
   useEffect(() => {
     setCalendarScheduler(calendarRef)
     fetchHolidays()
+    fetchCountries()
   }, [])
 
   useEffect(() => {
@@ -218,7 +236,7 @@ const Calendar = () => {
             cellRenderer: ({ day, onClick, ...props }) => {
               const date = getOnlyDate(new Date(day))
               const holiday = holidays?.find(
-                (h: any) => h.date.slice(0, 10) === date,
+                (h) => h.date.slice(0, 10) === date,
               )
               const disabled = holiday !== undefined
               const restProps = disabled ? {} : props

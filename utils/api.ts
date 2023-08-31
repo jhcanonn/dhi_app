@@ -1,4 +1,4 @@
-import { Holiday } from '@models'
+import { Country, Holiday } from '@models'
 import axios from 'axios'
 
 export const getHolidays = (year: number) =>
@@ -7,6 +7,18 @@ export const getHolidays = (year: number) =>
       `https://api.generadordni.es/v2/holidays/holidays?country=CO&year=${year}`,
     )
     .then((res) => res.data as Holiday[])
+
+export const getCountries = () =>
+  axios
+    .get(`https://restcountries.com/v3.1/all?fields=name,idd,flag,flags`)
+    .then(
+      (res) =>
+        res.data.map((d: any) => ({
+          name: d.name.common,
+          image_url: d.flags.png,
+          dialling: d.idd.root + d.idd.suffixes[0],
+        })) as Country[],
+    )
 
 export const fetchVerifyToken = async (token: string) => {
   const response = await fetch(
