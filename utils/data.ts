@@ -1,18 +1,4 @@
-import { Country, DhiEvent, EventState } from '@models'
-
-export const COUNTRIES: Country[] = [
-  { name: 'Colombia', code: 'CO', dialling: '+57' },
-  { name: 'Australia', code: 'AU', dialling: '+61' },
-  { name: 'Brazil', code: 'BR', dialling: '+55' },
-  { name: 'China', code: 'CN', dialling: '+86' },
-  { name: 'Egypt', code: 'EG', dialling: '+20' },
-  { name: 'France', code: 'FR', dialling: '+33' },
-  { name: 'Germany', code: 'DE', dialling: '+49' },
-  { name: 'India', code: 'IN', dialling: '+91' },
-  { name: 'Japan', code: 'JP', dialling: '+81' },
-  { name: 'Spain', code: 'ES', dialling: '+34' },
-  { name: 'United States', code: 'US', dialling: '+1' },
-]
+import { DhiEvent, EventState } from '@models'
 
 export const STATES: EventState[] = [
   { state_id: 1, name: 'Atendido', color: '#FF5733' },

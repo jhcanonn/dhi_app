@@ -7,7 +7,8 @@ import { classNames as cx } from 'primereact/utils'
 import { InputNumber } from 'primereact/inputnumber'
 import { Dropdown } from 'primereact/dropdown'
 import { Country, FieldCommonProps } from '@models'
-import { COUNTRIES, colors, errorMessages } from '@utils'
+import { colors, errorMessages } from '@utils'
+import { useGlobalContext } from '@contexts'
 
 export type Props<T> = FieldCommonProps<T> & {
   diallingName?: string
@@ -26,6 +27,7 @@ const PhoneNumberValid = <T extends FieldValues>({
   required,
   validate,
 }: Props<T>) => {
+  const { countries } = useGlobalContext()
   const {
     formState: { errors },
     control,
@@ -46,12 +48,12 @@ const PhoneNumberValid = <T extends FieldValues>({
     return (
       <div className='flex items-center'>
         <Image
-          src='/assets/logo-secondary.png'
+          src={option.image_url}
           alt={option.name}
           priority={true}
-          width={40}
-          height={40}
-          className={`mr-2 w-2 flag flag-${option.code.toLowerCase()}`}
+          width={20}
+          height={20}
+          className={`mr-2 !w-5`}
         />
         <div>{option.name}</div>
       </div>
@@ -77,7 +79,7 @@ const PhoneNumberValid = <T extends FieldValues>({
               value={value}
               optionLabel='dialling'
               placeholder='+__'
-              options={COUNTRIES}
+              options={countries}
               focusInputRef={ref}
               onBlur={onBlur}
               onChange={(e) => onChange(e.value)}

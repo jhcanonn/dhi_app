@@ -27,6 +27,10 @@
       min-width: unset;
     }
 
+    & .rs__cell.rs__header > :first-of-type {
+      padding: 0 !important;
+    }
+
     & .rs__cell > button {
       @apply box-border;
     }
@@ -44,24 +48,31 @@
     @apply mr-0 p-0 min-h-full
     bg-[var(--surface-ground)] 
     text-[var(--text-color)]
+    [&_.p-inputtext]:py-[0.35rem]
+    [&_.p-button.p-button-icon-only]:py-[0.35rem]
     [&_.p-dropdown-panel]:text-[0.8rem]
     [&_.p-inputtextarea]:text-[0.8rem]
     [&_.p-dropdown-filter-container_input]:text-[0.8rem]
     [&_.p-dropdown-filter-container_input]:px-[0.8rem]
     [&_.p-dropdown-filter-container_input]:py-[0.4rem]
     [&_.p-dropdown-filter-container_svg]:w-[0.8rem]
+    [&_.p-multiselect-filter-container_svg]:w-[0.8rem]
     [&_.p-multiselect]:text-[0.8rem]
     [&_.p-multiselect-panel]:text-[0.8rem]
+    [&_.p-multiselect-panel_.p-multiselect-items]:text-[0.8rem]
     [&_.p-multiselect-filter]:text-[0.8rem]
     [&_.p-inputwrapper]:w-full
+    [&_.p-autocomplete-input]:w-full
     [&_.p-card-body]:w-full
     [&_.p-card-body]:text-[0.8rem]
     [&_.p-card-body_i]:text-[0.8rem]
     [&_.p-card-body_input]:text-[0.8rem]
-    [&_.p-card-body_.p-dropdown-label.p-inputtext]:text-[0.8rem]
-    [&_.p-card-body_.p-calendar_button]:text-[0.8rem]
-    [&_.p-card-body_.p-calendar_button_svg]:w-[0.8rem]
-    [&_.p-card-body_.p-dropdown-trigger_svg]:w-[0.8rem]
+    [&_.p-dropdown-label.p-inputtext]:text-[0.8rem]
+    [&_.p-calendar_button]:text-[0.8rem]
+    [&_.p-calendar_button_svg]:w-[0.8rem]
+    [&_.p-dropdown-trigger_svg]:w-[0.8rem]
+    [&_.p-multiselect-trigger_svg]:w-[0.8rem]
+    [&_.p-multiselect-close_svg]:w-[0.8rem]
     [&_.p-inputswitch]:w-[2.9rem]
     [&_.p-inputswitch]:h-[1.35rem]
     [&_.p-inputswitch_.p-inputswitch-slider]:rounded-[2rem]
@@ -72,7 +83,8 @@
 
     @apply [&_.p-dropdown-panel]:z-[1300] 
     [&_.p-datepicker]:z-[1300] 
-    [&_.p-multiselect-panel]:z-[1003] 
+    [&_.p-multiselect-panel]:z-[1300] 
+    [&_.p-autocomplete-panel]:z-[1300] 
     [&_.p-input-icon-left_input]:pl-10
     [&_.p-input-icon-left>i]:mt-[-0.35rem] #{!important};
 
@@ -84,7 +96,11 @@
     .p-float-label .p-inputwrapper-focus ~ label,
     .p-float-label .p-inputwrapper-filled ~ label,
     .p-float-label .p-tooltip-target-wrapper ~ label {
-      @apply px-[0.4rem] mt-[0.4rem] bg-white left-2 rounded-lg;
+      @apply px-[0.4rem] mt-[0.2rem] bg-white left-2 rounded-lg;
+    }
+
+    .p-float-label label {
+      @apply leading-[1rem];
     }
   }
 
@@ -94,6 +110,11 @@
 
   .layout-wrapper {
     @apply min-h-screen;
+  }
+
+  .p-multiselect .p-multiselect-label.p-placeholder,
+  .p-multiselect .p-multiselect-label {
+    @apply py-[0.35rem];
   }
 }
 

@@ -25,5 +25,6 @@ export const expiresCookie = () => {
 }
 
 export const getOnlyDate = (date: Date) => {
-  return date.toISOString().slice(0, 10)
+  const dp = date.toLocaleDateString('es-CL').slice(0, 10).split('-')
+  return `${dp[2]}-${dp[1]}-${dp[0]}`
 }
