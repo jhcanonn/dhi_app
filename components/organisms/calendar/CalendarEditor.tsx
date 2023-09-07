@@ -24,7 +24,6 @@ import {
 } from '@models'
 import { useCalendarContext, useGlobalContext } from '@contexts'
 import {
-  DHI_SESSION,
   GET_INFO_CLIENT,
   PAGE_PATH,
   directusAppointmentMapper,
@@ -44,7 +43,7 @@ import {
   AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
 } from 'primereact/autocomplete'
-import { createAppointment, editAppointment } from '@utils/api'
+import { createAppointment, editAppointment, refreshToken } from '@utils/api'
 import { Cookies, withCookies } from 'react-cookie'
 import { MultiSelectChangeEvent } from 'primereact/multiselect'
 import moment from 'moment'
@@ -55,9 +54,6 @@ type Props = {
 }
 
 const CalendarEditor = ({ scheduler, cookies }: Props) => {
-  const session = cookies?.get(DHI_SESSION)
-  const access_token = session ? session.access_token : undefined
-
   const [desabledFields, setDesabledFields] = useState<boolean>(false)
   const [patients, setPatients] = useState<Patient[]>([])
   const { refetch } = useQuery(GET_INFO_CLIENT)
@@ -131,6 +127,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
         data['professional_id'] = data.professional?.professional_id
         data['box_id'] = data.box?.box_id
         const appointment = directusAppointmentMapper(data)
+        const access_token = await refreshToken(cookies)
         if (event) {
           await editAppointment(+data.event_id, appointment, access_token)
         } else {
