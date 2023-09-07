@@ -59,7 +59,7 @@ const AutoCompleteValid = <T extends FieldValues>({
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i
-                className={cx(`pi pi-${icon} z-10`)}
+                className={cx(`pi pi-${icon}`, { 'z-10': !disabled })}
                 style={{ color: error ? colors.invalid : '' }}
               />
             )}

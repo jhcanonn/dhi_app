@@ -5,14 +5,15 @@ import { Tooltip } from 'primereact/tooltip'
 import { EventRendererProps } from 'react-scheduler-lib/types'
 import { useDragAttributes, useFormattedEventInfo } from '@hooks'
 import { colors } from '@utils'
-import { EventTags } from '@components/molecules'
 import { DhiEvent } from '@models'
+import { Tag } from 'primereact/tag'
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const customDragProps = useDragAttributes(event)
   const { formatedTime } = useFormattedEventInfo(event)
 
-  const { event_id, state, first_name, last_name } = event as DhiEvent
+  const { event_id, state, pay, description, first_name, last_name } =
+    event as DhiEvent
   const classEventId = 'event-' + event_id
 
   return (
@@ -32,15 +33,24 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
           className={`calendar-event ${classEventId}`}
           style={{ border: `3px solid ${state?.color ?? 'black'}` }}
         >
-          <EventTags event={event} />
-          <span className='font-bold'>
+          {pay && (
+            <Tag className='calendar-tag' severity='danger' value={pay.code} />
+          )}
+          {description && (
+            <Tag
+              icon='pi pi-comment'
+              severity='info'
+              className='calendar-tag'
+            />
+          )}
+          <Tag icon='pi pi-check' severity='success' className='calendar-tag' />
+          <Tag
+            icon='pi pi-exclamation-triangle'
+            severity='warning'
+            className='calendar-tag'
+          />
+          <span className='ml-[0.2rem]'>
             {first_name} {last_name}
-          </span>
-          <span>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita,
-            ipsam ratione ipsa magni nulla accusamus, dolorum omnis voluptatum
-            voluptas laboriosam eos nemo tempora maxime unde quis ullam impedit
-            non reiciendis?
           </span>
         </div>
       </ButtonBase>

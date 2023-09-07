@@ -8,6 +8,7 @@ import {
   Professional,
   ResourceMode,
   ResourceType,
+  ViewMode,
 } from '@models'
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
@@ -79,11 +80,14 @@ const FilterBar = () => {
       checkedResourceType ? ResourceType.PROFESSIONAL : ResourceType.BOX,
     )
     scheduler.handleState(resourceTypeChangeResources, 'resources')
-    scheduler.handleState(checkedResourceType ? null : calendarMonth, 'month')
+    scheduler.handleState(
+      checkedResourceType ? null : calendarMonth,
+      ViewMode.MONTH,
+    )
     scheduler.handleState(
       checkedResourceType
-        ? scheduler?.view === 'month'
-          ? 'week'
+        ? scheduler?.view === ViewMode.MONTH
+          ? ViewMode.WEEK
           : scheduler?.view
         : scheduler?.view,
       'view',

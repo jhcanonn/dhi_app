@@ -1,7 +1,11 @@
 .calendar-event {
-  @apply rounded-[4px] w-full p-2 gap-1 flex flex-col overflow-hidden text-xs;
+  @apply rounded-[4px] w-full px-[2px] overflow-hidden text-xs;
+}
+
+span.p-tag {
+  @apply py-[1.5px] px-[3px];
 }
 
 span.p-tag.calendar-tag {
-  @apply w-fit mr-[1px] mb-[1px] [&>span]:mr-0 [&>span]:text-[0.6rem];
+  @apply w-fit mr-[2px] mb-[1px] [&>span]:mr-0 [&>span]:text-[0.45rem];
 }

@@ -1,3 +1,28 @@
+export type AppointmentDirectus = {
+  title: string
+  start: string
+  end: string
+  client_id: number
+  professional_id: number
+  service_id: number[]
+  data_sheet: string
+  identification_type: string
+  identification: string
+  first_name: string
+  middle_name: string
+  last_name: string
+  last_name_2: string
+  dialling: string
+  phone: string
+  dialling_2: string
+  phone_2: string
+  email: string
+  sent_email: boolean
+  description: string
+  state_id: number
+  pay_id: number
+}
+
 export type ProfessionalDirectus = {
   id: number
   identificacion: string
@@ -18,6 +43,7 @@ export type ServiceDirectus = {
   id: number
   nombre: string
   estado: string
+  tiempo: number
 }
 
 export type EventStateDirectus = {

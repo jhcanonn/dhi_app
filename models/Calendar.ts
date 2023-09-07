@@ -8,6 +8,7 @@ export type DhiEvent = ProcessedEvent & {
   box_id?: number
   professional?: Professional
   box?: Box
+  services?: Service[]
   client_id?: number
   state?: EventState
   pay?: Pay
@@ -18,8 +19,8 @@ export type DhiEvent = ProcessedEvent & {
   middle_name?: string
   last_name?: string
   last_name_2?: string
-  phone?: string
-  phone_2?: string
+  phone?: string | null
+  phone_2?: string | null
   dialling?: Country
   dialling_2?: Country
   email?: string
@@ -98,7 +99,11 @@ export type Box = CommonData & {
   services: ServiceDHI[]
 }
 
-export type Service = { service_id: number; name: string }
+export type Service = {
+  service_id: number
+  name: string
+  time: number
+}
 
 export type DhiResource = Box & Professional
 
@@ -115,6 +120,12 @@ export enum CalendarType {
 export enum ResourceMode {
   DEFAULT = 'default',
   TABS = 'tabs',
+}
+
+export enum ViewMode {
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
 }
 
 export type EditFn = (
