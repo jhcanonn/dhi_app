@@ -5,15 +5,9 @@ import { Cookies, withCookies } from 'react-cookie'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  DHI_SESSION,
-  GET_TOKEN,
-  PAGE_PATH,
-  errorCodes,
-  expiresCookie,
-} from '@utils'
+import { DHI_SESSION, GET_TOKEN, PAGE_PATH, expiresCookie } from '@utils'
 import { directusSystemClient } from './Providers'
-import { AuthLogin, LoginData } from '@models'
+import { LoginData } from '@models'
 import { InputTextValid } from '@components/atoms'
 import { Button } from 'primereact/button'
 import PasswordValid from '@components/atoms/PasswordValid'
@@ -21,7 +15,7 @@ import { Avatar } from 'primereact/avatar'
 import { Message } from 'primereact/message'
 import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
-import { fetchRefreshToken, fetchVerifyToken } from '@utils/api'
+import { refreshToken } from '@utils/api'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -53,36 +47,9 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
     console.log('Olvido su contraseña')
   }
 
-  const setSessionCookie = (auth: AuthLogin) => {
-    cookies.set(DHI_SESSION, auth, {
-      path: '/',
-      expires: expiresCookie(),
-    })
-  }
-
   const verifyCookie = async () => {
-    const session = cookies?.get(DHI_SESSION)
-    const access_token = session ? session.access_token : undefined
-
-    try {
-      const { status } = await fetchVerifyToken(access_token)
-      if (status === errorCodes.ERR_JWT_EXPIRED) {
-        console.info('Refreshing token...')
-        const response = await fetchRefreshToken(session.refresh_token)
-        if (response) {
-          setSessionCookie(response as AuthLogin)
-          console.info('Refresh token DONE!')
-          router.push(PAGE_PATH.calendar)
-        } else {
-          cookies.remove(DHI_SESSION)
-          return
-        }
-      }
-      router.push(PAGE_PATH.calendar)
-    } catch (error: any) {
-      console.error(error)
-      cookies.remove(DHI_SESSION)
-    }
+    const access_token = await refreshToken(cookies)
+    access_token && router.push(PAGE_PATH.calendar)
   }
 
   useEffect(() => {
@@ -90,7 +57,10 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
       verifyCookie()
     } else {
       if (data) {
-        setSessionCookie(data.auth_login as AuthLogin)
+        cookies.set(DHI_SESSION, data.auth_login, {
+          path: '/',
+          expires: expiresCookie(),
+        })
         router.push(PAGE_PATH.calendar)
       }
     }

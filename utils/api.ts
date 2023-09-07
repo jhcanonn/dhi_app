@@ -1,3 +1,7 @@
+import { Cookies } from 'react-cookie'
+import { DHI_SESSION, errorCodes } from './constants'
+import { AuthLogin } from '@models'
+import { expiresCookie } from './helpers'
 import { AppointmentDirectus, Country, Holiday } from '@models'
 import axios from 'axios'
 
@@ -22,7 +26,7 @@ export const getCountries = () =>
 
 export const createAppointment = async (
   payload: AppointmentDirectus,
-  token: string,
+  token: string | null,
 ) => {
   const res = await axios.post(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment`,
@@ -39,7 +43,7 @@ export const createAppointment = async (
 export const editAppointment = async (
   eventId: number,
   payload: AppointmentDirectus,
-  token: string,
+  token: string | null,
 ) => {
   const res = await axios.put(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment/${eventId}`,
@@ -82,4 +86,34 @@ export const fetchRefreshToken = async (refresh_token: string) => {
   )
   const content = await response.json()
   return content?.data
+}
+
+export const refreshToken = async (cookies: Cookies) => {
+  const session = cookies?.get(DHI_SESSION)
+  const access_token: string = session ? session.access_token : undefined
+  let newToken = null
+
+  try {
+    const { status } = await fetchVerifyToken(access_token)
+    if (status === errorCodes.ERR_JWT_EXPIRED) {
+      console.info('Refreshing token...')
+      const response: AuthLogin = await fetchRefreshToken(session.refresh_token)
+      if (response) {
+        cookies.set(DHI_SESSION, response, {
+          path: '/',
+          expires: expiresCookie(),
+        })
+        newToken = response.access_token
+        console.info('Refresh token DONE!')
+      } else {
+        cookies.remove(DHI_SESSION)
+      }
+    }
+    newToken = access_token
+  } catch (error: any) {
+    console.error(error)
+    cookies.remove(DHI_SESSION)
+  }
+
+  return newToken
 }

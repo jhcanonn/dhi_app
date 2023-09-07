@@ -1,4 +1,5 @@
 /* Los campos que se mapean son del Evento */
+
 export const calendarFieldsMapper = (resource: string) => {
   return {
     idField: `${resource}_id`,
