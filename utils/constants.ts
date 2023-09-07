@@ -43,3 +43,5 @@ export const ROLES = {
 }
 
 export const DHI_SESSION = 'dhi_session'
+
+export const DEFAULT_APPOINTMENT_MINUTES = 30

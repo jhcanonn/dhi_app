@@ -16,10 +16,11 @@ import {
   Professional,
   ResourceMode,
   ResourceType,
+  ViewMode,
 } from '@models'
 import { SchedulerRef } from 'react-scheduler-lib/types'
 import { useGlobalContext } from './Global'
-import { ROLES } from '@utils'
+import { ROLES, getOnlyDate } from '@utils'
 
 type CalendarContextType = {
   calendarScheduler: RefObject<SchedulerRef> | null
@@ -42,6 +43,14 @@ type CalendarContextType = {
   setEventStates: Dispatch<SetStateAction<EventState[]>>
   pays: Pay[]
   setPays: Dispatch<SetStateAction<Pay[]>>
+  view: ViewMode | null
+  setView: Dispatch<SetStateAction<ViewMode | null>>
+  currentDate: Date | null
+  setCurrentDate: Dispatch<SetStateAction<Date | null>>
+  startDate: Date | null
+  setStartDate: Dispatch<SetStateAction<Date | null>>
+  endDate: Date | null
+  setEndDate: Dispatch<SetStateAction<Date | null>>
 }
 
 const calendarDefaultValues: CalendarContextType = {
@@ -65,6 +74,14 @@ const calendarDefaultValues: CalendarContextType = {
   setEventStates: () => {},
   pays: [],
   setPays: () => {},
+  view: ViewMode.DAY,
+  setView: () => {},
+  currentDate: new Date(),
+  setCurrentDate: () => {},
+  startDate: new Date(getOnlyDate(new Date()) + 'T00:00:00'),
+  setStartDate: () => {},
+  endDate: new Date(getOnlyDate(new Date()) + 'T23:59:59'),
+  setEndDate: () => {},
 }
 
 const Calendar = createContext<CalendarContextType>(calendarDefaultValues)
@@ -101,6 +118,15 @@ export const CalendarProvider = ({
   // EventStates and Pays
   const [eventStates, setEventStates] = useState<EventState[]>([])
   const [pays, setPays] = useState<Pay[]>([])
+  // View and Start/End Dates
+  const [view, setView] = useState<ViewMode | null>(ViewMode.DAY)
+  const [currentDate, setCurrentDate] = useState<Date | null>(new Date())
+  const [startDate, setStartDate] = useState<Date | null>(
+    new Date(getOnlyDate(new Date()) + 'T00:00:00'),
+  )
+  const [endDate, setEndDate] = useState<Date | null>(
+    new Date(getOnlyDate(new Date()) + 'T23:59:59'),
+  )
 
   return (
     <Calendar.Provider
@@ -125,6 +151,14 @@ export const CalendarProvider = ({
         setEventStates,
         pays,
         setPays,
+        view,
+        setView,
+        currentDate,
+        setCurrentDate,
+        startDate,
+        setStartDate,
+        endDate,
+        setEndDate,
       }}
     >
       {children}

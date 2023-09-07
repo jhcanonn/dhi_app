@@ -23,6 +23,7 @@ import {
   ROLES,
   getOnlyDate,
   colors,
+  dhiAppointmentMapper,
 } from '@utils'
 import {
   CalendarEditor,
@@ -31,6 +32,7 @@ import {
 } from '@components/organisms'
 import { CalendarHeader } from '@components/molecules'
 import {
+  AppointmentQuery,
   BoxDirectus,
   CalendarType,
   DhiResource,
@@ -38,13 +40,15 @@ import {
   PaysDirectus,
   ProfessionalDirectus,
   ResourceType,
+  ViewMode,
 } from '@models'
 import { useCalendarContext, useGlobalContext } from '@contexts'
 import { useGetResources } from '@hooks'
 import { useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import { PAYS } from '@utils/queries'
+import { GET_APPOINTMENTS, PAYS } from '@utils/queries'
 import { getCountries, getHolidays } from '@utils/api'
+import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns'
 
 const Calendar = () => {
   const calendarRef = useRef<SchedulerRef>(null)
@@ -52,6 +56,8 @@ const Calendar = () => {
     events,
     user,
     holidays,
+    countries,
+    setEvents,
     setHolidays,
     setCountries,
     setProfessionals,
@@ -62,6 +68,14 @@ const Calendar = () => {
     calendarType,
     resourceType,
     resourceMode,
+    view,
+    currentDate,
+    startDate,
+    endDate,
+    setView,
+    setCurrentDate,
+    setStartDate,
+    setEndDate,
     setSelectedProfessional,
     setSelectedProfessionals,
     setSelectedBox,
@@ -80,9 +94,16 @@ const Calendar = () => {
 
   const { data: boxesFetch, loading: boxesLoading } = useQuery(GET_BOXES)
 
+  const { loading: appointmentsLoading, refetch: appointmentRefetch } =
+    useQuery(GET_APPOINTMENTS)
+
   const isProfessionalUser = user?.role.id === ROLES.dhi_profesional
   const fetchingFromDirectus =
-    eventStateLoading && paysLoading && professionalsLoading && boxesLoading
+    eventStateLoading &&
+    paysLoading &&
+    professionalsLoading &&
+    boxesLoading &&
+    appointmentsLoading
 
   const resources = useGetResources(
     calendarType === CalendarType.INDIVIDUAL,
@@ -124,6 +145,40 @@ const Calendar = () => {
   const handleCustomEvent = (evetProps: EventRendererProps) => (
     <CalendarEvent {...evetProps} />
   )
+
+  const handleSelectedDateChange = (date: Date) => {
+    setCurrentDate(date)
+    switch (calendarRef.current?.scheduler.view) {
+      case ViewMode.DAY:
+        setStartDate(new Date(getOnlyDate(date) + 'T00:00:00'))
+        setEndDate(new Date(getOnlyDate(date) + 'T23:59:59'))
+        break
+      case ViewMode.WEEK:
+        setStartDate(startOfWeek(date, { weekStartsOn: 1 }))
+        setEndDate(endOfWeek(date, { weekStartsOn: 1 }))
+        break
+      case ViewMode.MONTH:
+        setStartDate(startOfMonth(date))
+        setEndDate(endOfMonth(date))
+        break
+    }
+  }
+
+  const fetchAppointments = async () => {
+    const start = startDate?.toISOString()
+    const end = endDate?.toISOString()
+    calendarRef.current?.scheduler.handleState(true, 'loading')
+    const res = await appointmentRefetch({ start, end })
+    const resAppointments: AppointmentQuery[] = res?.data?.citas
+    if (resAppointments) {
+      const appointments = resAppointments.map((c) =>
+        dhiAppointmentMapper(c, countries),
+      )
+      calendarRef.current?.scheduler.handleState(appointments, 'events')
+      calendarRef.current?.scheduler.handleState(false, 'loading')
+      setEvents(appointments)
+    }
+  }
 
   useEffect(() => {
     setCalendarScheduler(calendarRef)
@@ -175,6 +230,14 @@ const Calendar = () => {
       setSelectedBox(mappedBoxes?.length ? mappedBoxes[0] : null)
     }
   }, [boxesFetch])
+
+  useEffect(() => {
+    handleSelectedDateChange(currentDate!)
+  }, [view])
+
+  useEffect(() => {
+    countries?.length && fetchAppointments()
+  }, [startDate, endDate, countries])
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
@@ -280,6 +343,8 @@ const Calendar = () => {
           eventRenderer={handleCustomEvent}
           customViewer={handleCustomViewer}
           customEditor={handleCustomEditor}
+          onSelectedDateChange={handleSelectedDateChange}
+          onViewChange={(view: ViewMode) => setView(view)}
         />
       )}
     </section>

@@ -32,6 +32,7 @@ export const GET_BOXES = gql`
         servicios_id {
           id
           nombre
+          tiempo
           estado
         }
       }
@@ -103,6 +104,62 @@ export const GET_INFO_CLIENT = gql`
       registrado
       fecha_nacimiento
       genero
+    }
+  }
+`
+
+export const GET_APPOINTMENTS = gql`
+  query ($start: GraphQLStringOrFloat!, $end: GraphQLStringOrFloat!) {
+    citas(filter: { inicio: { _between: [$start, $end] } }) {
+      id
+      inicio
+      fin
+      titulo
+      enviar_correo
+      comentario
+      profesional {
+        id
+      }
+      servicios {
+        salas_servicios_id {
+          id
+          servicios_id {
+            id
+            nombre
+            tiempo
+            estado
+          }
+          salas_id {
+            id
+            nombre
+            color
+          }
+        }
+      }
+      paciente {
+        id
+        tipo_documento
+        documento
+        primer_nombre
+        segundo_nombre
+        apellido_paterno
+        apellido_materno
+        telefono
+        telefono_2
+        indicativo
+        indicativo_2
+        correo
+      }
+      estado {
+        id
+        nombre
+        color
+      }
+      estado_pago {
+        id
+        code
+        nombre
+      }
     }
   }
 `

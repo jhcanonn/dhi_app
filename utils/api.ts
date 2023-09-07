@@ -1,4 +1,4 @@
-import { Country, Holiday } from '@models'
+import { AppointmentDirectus, Country, Holiday } from '@models'
 import axios from 'axios'
 
 export const getHolidays = (year: number) =>
@@ -19,6 +19,39 @@ export const getCountries = () =>
           dialling: d.idd.root + d.idd.suffixes[0],
         })) as Country[],
     )
+
+export const createAppointment = async (
+  payload: AppointmentDirectus,
+  token: string,
+) => {
+  const res = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+  return res.data?.data
+}
+
+export const editAppointment = async (
+  eventId: number,
+  payload: AppointmentDirectus,
+  token: string,
+) => {
+  const res = await axios.put(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment/${eventId}`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+  return res.data?.data
+}
 
 export const fetchVerifyToken = async (token: string) => {
   const response = await fetch(
