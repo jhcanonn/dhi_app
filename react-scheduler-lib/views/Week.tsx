@@ -200,11 +200,11 @@ const Week = () => {
               className={`rs__cell rs__header ${isToday(date) ? "rs__today_cell" : ""}`}
               style={{ height: headerHeight }}
             >
-                              <TodayTypo
-                  date={date}
-                  onClick={!disableGoToDay ? handleGotoDay : undefined}
-                  locale={locale}
-                  tootip={typeof headRenderer === "function" ? headRenderer(date) : null}
+              <TodayTypo
+                date={date}
+                onClick={!disableGoToDay ? handleGotoDay : undefined}
+                locale={locale}
+                tootip={typeof headRenderer === "function" ? headRenderer(date) : null}
               /> {/* DHI-CODE */}
               {renderMultiDayEvents(recousedEvents, date)}
             </span>
