@@ -203,7 +203,7 @@ const Day = () => {
     );
   };
 
-  return resources.length ? <WithResources span={2} renderChildren={renderTable} /> : renderTable();
+  return resources.length ? <WithResources renderChildren={renderTable} /> : renderTable();
 };
 
 export { Day };
