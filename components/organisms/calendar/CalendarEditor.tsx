@@ -107,6 +107,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     email: event?.email,
     sent_email: event?.sent_email,
     description: event?.description,
+    eventStates,
   }
 
   console.log({ event, eventData })
@@ -136,7 +137,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
           if (addedEvent) {
             data.title = appointment.title
             data.event_id = +addedEvent.event_id
-            data.client_id = +addedEvent.client_id.id
+            data.client_id = +addedEvent.client_id
           }
         }
         const action: EventActions = event ? 'edit' : 'create'

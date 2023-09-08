@@ -44,11 +44,9 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   }
 
   const updateDirectusEvent = async (e: DhiEvent) => {
-    scheduler?.handleState(true, 'loading')
     const appointment = directusAppointmentMapper(e)
     const access_token = await refreshToken(new Cookies(cookies))
     await editAppointment(+e.event_id, appointment, access_token)
-    scheduler?.handleState(false, 'loading')
   }
 
   const handleClickItem = async (es: EventState) => {
@@ -56,8 +54,8 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
     newEvent.state = es
     scheduler?.confirmEvent(newEvent, 'edit')
     setEvents((preEvents) => [...preEvents, newEvent])
-    await updateDirectusEvent(newEvent)
     setAnchorEl(null)
+    await updateDirectusEvent(newEvent)
   }
 
   return (
