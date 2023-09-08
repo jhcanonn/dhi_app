@@ -7,14 +7,31 @@ import { useDragAttributes, useFormattedEventInfo } from '@hooks'
 import { colors } from '@utils'
 import { DhiEvent } from '@models'
 import { Tag } from 'primereact/tag'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import { useState } from 'react'
 
-const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
+const CalendarEvent = ({
+  event,
+  onClick,
+}: EventRendererProps) => {
   const customDragProps = useDragAttributes(event)
   const { formatedTime } = useFormattedEventInfo(event)
 
   const { event_id, state, pay, description, first_name, last_name } =
     event as DhiEvent
   const classEventId = 'event-' + event_id
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(event);
+    event.preventDefault()
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   return (
     <>
@@ -27,6 +44,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
       <ButtonBase
         style={{ backgroundColor: colors.bgEvent, color: 'black' }}
         onClick={onClick}
+        onContextMenu={handleClick}
         {...customDragProps}
       >
         <div
@@ -54,6 +72,27 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
           </span>
         </div>
       </ButtonBase>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <MenuItem onClick={handleClose}>Confirmado</MenuItem>
+        <MenuItem onClick={handleClose}>Atendido</MenuItem>
+        <MenuItem onClick={handleClose}>Llegó</MenuItem>
+        <MenuItem onClick={handleClose}>Suspendido</MenuItem>
+        <MenuItem onClick={handleClose}>No Llegó</MenuItem>
+        <MenuItem onClick={handleClose}>Lista de espera</MenuItem>
+        <MenuItem onClick={handleClose}>Eliminar</MenuItem>
+      </Menu>
     </>
   )
 }
