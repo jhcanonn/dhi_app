@@ -36,7 +36,7 @@ export interface DayProps {
   endHour: DayHours;
   step: number;
   cellRenderer?(props: CellRenderedProps): JSX.Element;
-  headRenderer?(day: Date): JSX.Element | null; // DHI_CODE
+  headRenderer?(day: Date): JSX.Element | null; // DHI-CODE
   navigation?: boolean;
 }
 

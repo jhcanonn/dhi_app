@@ -72,6 +72,7 @@ const Calendar = () => {
     currentDate,
     startDate,
     endDate,
+    eventStates,
     setView,
     setCurrentDate,
     setStartDate,
@@ -170,18 +171,14 @@ const Calendar = () => {
     calendarRef.current?.scheduler.handleState(true, 'loading')
     const res = await appointmentRefetch({ start, end })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
-    if (resAppointments) {
-      const eventState = eventStateFetch?.estado_citas as EventStateDirectus[]
-      if (eventState?.length) {
-        const mappedEventState = eventStateMapper(eventState)
-         const appointments = resAppointments.map((c) =>
-           dhiAppointmentMapper(c, countries, mappedEventState),
-         )
-         calendarRef.current?.scheduler.handleState(appointments, 'events')
-         calendarRef.current?.scheduler.handleState(false, 'loading')
-         setEvents(appointments)
-      }
+    if (resAppointments?.length) {
+      const appointments = resAppointments.map((c) =>
+        dhiAppointmentMapper(c, countries, eventStates),
+      )
+      calendarRef.current?.scheduler.handleState(appointments, 'events')
+      setEvents(appointments)
     }
+    calendarRef.current?.scheduler.handleState(false, 'loading')
   }
 
   useEffect(() => {
@@ -240,8 +237,8 @@ const Calendar = () => {
   }, [view])
 
   useEffect(() => {
-    countries?.length && fetchAppointments()
-  }, [startDate, endDate, countries])
+    countries?.length && eventStates?.length && fetchAppointments()
+  }, [startDate, endDate, countries, eventStates])
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>

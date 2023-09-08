@@ -1,19 +1,24 @@
 'use client'
 
-import { ButtonBase } from '@mui/material'
+import { ButtonBase, Menu, MenuItem } from '@mui/material'
 import { Tooltip } from 'primereact/tooltip'
 import { EventRendererProps } from 'react-scheduler-lib/types'
 import { useDragAttributes, useFormattedEventInfo } from '@hooks'
-import { colors } from '@utils'
-import { DhiEvent } from '@models'
+import { DHI_SESSION, colors, directusAppointmentMapper } from '@utils'
+import { DhiEvent, EventState } from '@models'
 import { Tag } from 'primereact/tag'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import { useState } from 'react'
+import { EventStateItem } from '@components/molecules'
+import { useCalendarContext, useGlobalContext } from '@contexts'
+import { useCookies, Cookies } from 'react-cookie'
+import { editAppointment, refreshToken } from '@utils/api'
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const customDragProps = useDragAttributes(event)
   const { formatedTime } = useFormattedEventInfo(event)
+  const { calendarScheduler } = useCalendarContext()
+  const { setEvents } = useGlobalContext()
+  const [cookies] = useCookies([DHI_SESSION])
 
   const {
     event_id,
@@ -25,15 +30,33 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
     eventStates,
   } = event as DhiEvent
   const classEventId = 'event-' + event_id
+  const scheduler = calendarScheduler?.current?.scheduler
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event)
+
+  const handleRightClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+
+  const handleDeleteItem = () => {
+    console.log('Deleted Item!')
+  }
+
+  const updateDirectusEvent = async (e: DhiEvent) => {
+    scheduler?.handleState(true, 'loading')
+    const appointment = directusAppointmentMapper(e)
+    const access_token = await refreshToken(new Cookies(cookies))
+    await editAppointment(+e.event_id, appointment, access_token)
+    scheduler?.handleState(false, 'loading')
+  }
+
+  const handleClickItem = async (es: EventState) => {
+    const newEvent = event as DhiEvent
+    newEvent.state = es
+    scheduler?.confirmEvent(newEvent, 'edit')
+    setEvents((preEvents) => [...preEvents, newEvent])
+    await updateDirectusEvent(newEvent)
     setAnchorEl(null)
   }
 
@@ -48,7 +71,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
       <ButtonBase
         style={{ backgroundColor: colors.bgEvent, color: 'black' }}
         onClick={onClick}
-        onContextMenu={handleClick}
+        onContextMenu={handleRightClick}
         {...customDragProps}
       >
         <div
@@ -78,8 +101,8 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
       </ButtonBase>
       <Menu
         anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        open={!!anchorEl}
+        onClose={() => setAnchorEl(null)}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',
@@ -89,10 +112,12 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
           horizontal: 'left',
         }}
       >
-        {eventStates?.map((p) => (
-          <MenuItem onClick={handleClose}>{p.name}</MenuItem>
+        {eventStates?.map((option) => (
+          <MenuItem onClick={() => handleClickItem(option)}>
+            <EventStateItem {...option} />
+          </MenuItem>
         ))}
-        <MenuItem onClick={handleClose}>Eliminar</MenuItem>
+        <MenuItem onClick={handleDeleteItem}>Eliminar</MenuItem>
       </Menu>
     </>
   )
