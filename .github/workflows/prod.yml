@@ -30,7 +30,7 @@ jobs:
           script: |
             cd /home/dhi/dhi_app/
             git pull
-            yarn install
-            yarn build
+            npm install --force
+            npm run build
             systemctl restart pm2-root
             sudo systemctl restart nginx
