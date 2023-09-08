@@ -26,6 +26,7 @@ export type DhiEvent = ProcessedEvent & {
   email?: string
   sent_email?: boolean
   description?: string
+  eventStates?: EventState[]
 }
 
 export type IdType = {

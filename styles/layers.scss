@@ -104,6 +104,29 @@
     }
   }
 
+  /* Cambiar el color del fondo de las barras de desplazamiento */
+  ::-webkit-scrollbar {
+    width: 8px;
+    /* Ancho de la barra de desplazamiento vertical */
+    height: 5px;
+  }
+
+  /* Cambiar el estilo del "pulgar" de la barra de desplazamiento */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(66 125 141 / 1);
+    /* Color del pulgar */
+    border-radius: 2px;
+    /* Borde redondeado del pulgar */
+  }
+
+  /* Cambiar el estilo del área de seguimiento de la barra de desplazamiento */
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    /* Color del área de seguimiento */
+    border-radius: 2px;
+    /* Borde redondeado del área de seguimiento */
+  }
+
   a {
     @apply text-[var(--primary-color)] no-underline;
   }

@@ -36,7 +36,7 @@ export interface DayProps {
   endHour: DayHours;
   step: number;
   cellRenderer?(props: CellRenderedProps): JSX.Element;
-  headRenderer?(day: Date): JSX.Element | null; // DHI_CODE
+  headRenderer?(day: Date): JSX.Element | null; // DHI-CODE
   navigation?: boolean;
 }
 
@@ -203,7 +203,7 @@ const Day = () => {
     );
   };
 
-  return resources.length ? <WithResources span={2} renderChildren={renderTable} /> : renderTable();
+  return resources.length ? <WithResources renderChildren={renderTable} /> : renderTable();
 };
 
 export { Day };

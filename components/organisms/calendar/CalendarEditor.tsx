@@ -47,6 +47,7 @@ import { createAppointment, editAppointment, refreshToken } from '@utils/api'
 import { Cookies, withCookies } from 'react-cookie'
 import { MultiSelectChangeEvent } from 'primereact/multiselect'
 import moment from 'moment'
+import { EventStateItem, EventStateItemColor } from '@components/molecules'
 
 type Props = {
   cookies: Cookies
@@ -264,21 +265,11 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     </div>
   )
 
-  const ItemColor = ({ color }: { color: string }) => (
-    <div
-      className='!w-[0.8rem] !h-[0.8rem] rounded-full mr-2'
-      style={{
-        border: `1px solid ${color}`,
-        backgroundColor: color,
-      }}
-    />
-  )
-
   const stateValueTemplate = (option: EventState) => (
     <div className='flex items-center'>
       {option ? (
         <>
-          <ItemColor color={option.color} />
+          <EventStateItemColor color={option.color} />
           <div>{option.name}</div>
         </>
       ) : (
@@ -288,10 +279,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   )
 
   const stateItemTemplate = (option: EventState) => (
-    <div className='flex items-center'>
-      <ItemColor color={option.color} />
-      <div>{option.name}</div>
-    </div>
+    <EventStateItem {...option} />
   )
 
   const idItemTemplate = (item: Patient) => (

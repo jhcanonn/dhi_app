@@ -7,7 +7,7 @@ import ArrowLeftRoundedIcon from "@mui/icons-material/ArrowLeftRounded";
 import EventNoteRoundedIcon from "@mui/icons-material/EventNoteRounded";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import SupervisorAccountRoundedIcon from "@mui/icons-material/SupervisorAccountRounded";
-import { EventItemPapper, PopperInner } from "../../styles/styles";
+import { EventItemPaper, PopperInner } from "../../styles/styles";
 import EventActions from "./Actions";
 import { differenceInDaysOmitTime } from "../../helpers/generals";
 import useStore from "../../hooks/useStore";
@@ -15,13 +15,13 @@ import useDragAttributes from "../../hooks/useDragAttributes";
 
 interface EventItemProps {
   event: ProcessedEvent;
-  multiday: boolean;
+  multiday?: boolean;
   hasPrev?: boolean;
   hasNext?: boolean;
   showdate?: boolean;
 }
 
-const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemProps) => {
+const EventItem = ({ event, multiday, hasPrev, hasNext, showdate = true }: EventItemProps) => {
   const {
     triggerDialog,
     onDelete,
@@ -36,14 +36,13 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
     resourceFields,
     locale,
     viewerTitleComponent,
-    editable,
-    deletable,
     hourFormat,
     eventRenderer,
     onEventClick,
     view,
     draggable,
     translations,
+    editable,
   } = useStore();
   const dragProps = useDragAttributes(event);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -119,9 +118,6 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
                 triggerViewer();
                 triggerDialog(true, event);
               }}
-              direction={direction}
-              deletable={deletable}
-              editable={editable}
             />
           </div>
           {viewerTitleComponent instanceof Function ? (
@@ -169,17 +165,17 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
 
   const isDraggable = useMemo(() => {
     // if Disabled
-    if (event.disabled) return false;
+    if (event.disabled || !editable) return false;
 
     // global-wise isDraggable
     let canDrag = typeof draggable !== "undefined" ? draggable : true;
+
     // Override by event-wise
     if (typeof event.draggable !== "undefined") {
       canDrag = event.draggable;
     }
-
     return canDrag;
-  }, [draggable, event.disabled, event.draggable]);
+  }, [draggable, editable, event.disabled, event.draggable]);
 
   const renderEvent = useMemo(() => {
     // Check if has custom render event method
@@ -188,11 +184,9 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
       const custom = eventRenderer({ event, onClick: triggerViewer, ...dragProps });
       if (custom) {
         return (
-          <EventItemPapper
-            key={`${event.start.getTime()}_${event.end.getTime()}_${event.event_id}`}
-          >
+          <EventItemPaper key={`${event.start.getTime()}_${event.end.getTime()}_${event.event_id}`}>
             {custom}
-          </EventItemPapper>
+          </EventItemPaper>
         );
       }
     }
@@ -242,10 +236,12 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
       );
     }
     return (
-      <EventItemPapper
+      <EventItemPaper
         key={`${event.start.getTime()}_${event.end.getTime()}_${event.event_id}`}
-        color={event.color}
         disabled={event.disabled}
+        sx={{
+          bgcolor: event.disabled ? "#d0d0d0" : event.color || theme.palette.primary.main,
+        }}
       >
         <ButtonBase
           onClick={(e) => {
@@ -262,7 +258,7 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
             {item}
           </div>
         </ButtonBase>
-      </EventItemPapper>
+      </EventItemPaper>
     );
     // eslint-disable-next-line
   }, [hasPrev, hasNext, event, isDraggable, locale, theme.palette]);
@@ -296,11 +292,6 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate }: EventItemPro
       </Popover>
     </Fragment>
   );
-};
-
-EventItem.defaultProps = {
-  multiday: false,
-  showdate: true,
 };
 
 export default EventItem;

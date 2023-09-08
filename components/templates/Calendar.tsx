@@ -72,6 +72,7 @@ const Calendar = () => {
     currentDate,
     startDate,
     endDate,
+    eventStates,
     setView,
     setCurrentDate,
     setStartDate,
@@ -170,14 +171,14 @@ const Calendar = () => {
     calendarRef.current?.scheduler.handleState(true, 'loading')
     const res = await appointmentRefetch({ start, end })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
-    if (resAppointments) {
+    if (resAppointments?.length) {
       const appointments = resAppointments.map((c) =>
-        dhiAppointmentMapper(c, countries),
+        dhiAppointmentMapper(c, countries, eventStates),
       )
       calendarRef.current?.scheduler.handleState(appointments, 'events')
-      calendarRef.current?.scheduler.handleState(false, 'loading')
       setEvents(appointments)
     }
+    calendarRef.current?.scheduler.handleState(false, 'loading')
   }
 
   useEffect(() => {
@@ -236,8 +237,8 @@ const Calendar = () => {
   }, [view])
 
   useEffect(() => {
-    countries?.length && fetchAppointments()
-  }, [startDate, endDate, countries])
+    countries?.length && eventStates?.length && fetchAppointments()
+  }, [startDate, endDate, countries, eventStates])
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
