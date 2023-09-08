@@ -30,6 +30,9 @@ jobs:
           script: |
             cd /home/dhi/dhi_app/
             git pull
+            npm install -g n
+            n install lts
+            n lts
             npm install --force
             npm run build
             systemctl restart pm2-root
