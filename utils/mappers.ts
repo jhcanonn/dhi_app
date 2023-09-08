@@ -122,6 +122,7 @@ export const directusAppointmentMapper = (data: DhiEvent) => {
 export const dhiAppointmentMapper = (
   data: AppointmentQuery,
   countries: Country[],
+  eventStates: EventState[],
 ) => {
   const servicesInfo = data.servicios
   const stateInfo = data.estado
@@ -179,5 +180,6 @@ export const dhiAppointmentMapper = (
     email: clientInfo.correo,
     sent_email: data.enviar_correo,
     description: data.comentario,
+    eventStates,
   } as DhiEvent
 }

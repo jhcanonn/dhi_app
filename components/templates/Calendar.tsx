@@ -171,12 +171,16 @@ const Calendar = () => {
     const res = await appointmentRefetch({ start, end })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
     if (resAppointments) {
-      const appointments = resAppointments.map((c) =>
-        dhiAppointmentMapper(c, countries),
-      )
-      calendarRef.current?.scheduler.handleState(appointments, 'events')
-      calendarRef.current?.scheduler.handleState(false, 'loading')
-      setEvents(appointments)
+      const eventState = eventStateFetch?.estado_citas as EventStateDirectus[]
+      if (eventState?.length) {
+        const mappedEventState = eventStateMapper(eventState)
+         const appointments = resAppointments.map((c) =>
+           dhiAppointmentMapper(c, countries, mappedEventState),
+         )
+         calendarRef.current?.scheduler.handleState(appointments, 'events')
+         calendarRef.current?.scheduler.handleState(false, 'loading')
+         setEvents(appointments)
+      }
     }
   }
 

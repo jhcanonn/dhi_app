@@ -11,21 +11,25 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState } from 'react'
 
-const CalendarEvent = ({
-  event,
-  onClick,
-}: EventRendererProps) => {
+const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const customDragProps = useDragAttributes(event)
   const { formatedTime } = useFormattedEventInfo(event)
 
-  const { event_id, state, pay, description, first_name, last_name } =
-    event as DhiEvent
+  const {
+    event_id,
+    state,
+    pay,
+    description,
+    first_name,
+    last_name,
+    eventStates,
+  } = event as DhiEvent
   const classEventId = 'event-' + event_id
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event);
+    console.log(event)
     event.preventDefault()
     setAnchorEl(event.currentTarget)
   }
@@ -85,12 +89,9 @@ const CalendarEvent = ({
           horizontal: 'left',
         }}
       >
-        <MenuItem onClick={handleClose}>Confirmado</MenuItem>
-        <MenuItem onClick={handleClose}>Atendido</MenuItem>
-        <MenuItem onClick={handleClose}>Llegó</MenuItem>
-        <MenuItem onClick={handleClose}>Suspendido</MenuItem>
-        <MenuItem onClick={handleClose}>No Llegó</MenuItem>
-        <MenuItem onClick={handleClose}>Lista de espera</MenuItem>
+        {eventStates?.map((p) => (
+          <MenuItem onClick={handleClose}>{p.name}</MenuItem>
+        ))}
         <MenuItem onClick={handleClose}>Eliminar</MenuItem>
       </Menu>
     </>
