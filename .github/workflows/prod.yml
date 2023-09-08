@@ -29,8 +29,7 @@ jobs:
           script: |
             cd /home/dhi/dhi_app/
             git pull
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
+            export PATH="$PATH:`/usr/local/bin`"
             yarn install
             yarn build
             systemctl restart pm2-root
