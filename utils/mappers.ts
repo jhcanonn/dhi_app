@@ -17,6 +17,7 @@ import {
 } from '@models'
 import moment from 'moment'
 import { idTypes } from './settings'
+import { BLOCK_SERVICE } from './constants'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals
@@ -55,7 +56,10 @@ export const boxesMapper = (boxes: BoxDirectus[]) => {
 
 export const servicesMapper = (services: ServiceDHI[]) => {
   return services
-    ?.filter((s) => s.estado === StatusDirectus.PUBLISHED)
+    ?.filter(
+      (s) =>
+        s.estado === StatusDirectus.PUBLISHED || s.nombre !== BLOCK_SERVICE,
+    )
     ?.map(
       (s) =>
         ({
@@ -93,11 +97,17 @@ export const paysMapper = (pays: PaysDirectus[]) => {
 }
 
 export const directusAppointmentMapper = (data: DhiEvent) => {
+  const title =
+    data.title ||
+    (data?.first_name && data?.last_name
+      ? `${data?.first_name} ${data?.last_name}`
+      : '')
   return {
-    title: `${data?.first_name} ${data?.last_name}`,
+    title,
     start: data.start.toISOString(),
     end: data.end.toISOString(),
     client_id: data.client_id,
+    box_id: data.box_id,
     professional_id: data.professional_id,
     service_id: data.services?.map((s) => s.service_id),
     data_sheet: data.data_sheet,
@@ -124,15 +134,16 @@ export const dhiAppointmentMapper = (
   countries: Country[],
   eventStates: EventState[],
 ) => {
+  console.log({ data })
   const servicesInfo = data.servicios
   const stateInfo = data.estado
   const payInfo = data.estado_pago
   const clientInfo = data.paciente
-  const idType = idTypes.find((id) => id.type === clientInfo.tipo_documento)
+  const idType = idTypes.find((id) => id.type === clientInfo?.tipo_documento)
   const boxInfo = servicesInfo[0].salas_servicios_id.salas_id
-  const dialling = countries.find((c) => c.dialling === clientInfo.indicativo)
+  const dialling = countries.find((c) => c.dialling === clientInfo?.indicativo)
   const dialling_2 = countries.find(
-    (c) => c.dialling === clientInfo.indicativo_2,
+    (c) => c.dialling === clientInfo?.indicativo_2,
   )
 
   return {
@@ -148,12 +159,20 @@ export const dhiAppointmentMapper = (
     box: {
       box_id: +boxInfo.id,
     },
-    client_id: +data.paciente.id,
-    services: servicesInfo.map((s) => ({
-      service_id: +s.salas_servicios_id.servicios_id.id,
-      name: s.salas_servicios_id.servicios_id.nombre,
-      time: +s.salas_servicios_id.servicios_id.tiempo,
-    })),
+    client_id: +clientInfo?.id,
+    services: servicesInfo
+      ?.filter(
+        (s) =>
+          s.salas_servicios_id.servicios_id.estado === StatusDirectus.PUBLISHED,
+      )
+      .map((s) => ({
+        service_id: +s.salas_servicios_id.servicios_id.id,
+        name: s.salas_servicios_id.servicios_id.nombre,
+        time:
+          s.salas_servicios_id.servicios_id.tiempo !== null
+            ? +s.salas_servicios_id.servicios_id.tiempo
+            : null,
+      })),
     state: {
       state_id: +stateInfo.id,
       name: stateInfo.nombre,
@@ -168,16 +187,16 @@ export const dhiAppointmentMapper = (
       type: idType?.type,
       name: idType?.name,
     },
-    identification: clientInfo.documento,
-    first_name: clientInfo.primer_nombre,
-    middle_name: clientInfo.segundo_nombre,
-    last_name: clientInfo.apellido_paterno,
-    last_name_2: clientInfo.apellido_materno,
-    phone: clientInfo.telefono,
-    phone_2: clientInfo.telefono_2,
+    identification: clientInfo?.documento,
+    first_name: clientInfo?.primer_nombre,
+    middle_name: clientInfo?.segundo_nombre,
+    last_name: clientInfo?.apellido_paterno,
+    last_name_2: clientInfo?.apellido_materno,
+    phone: clientInfo?.telefono,
+    phone_2: clientInfo?.telefono_2,
     dialling,
     dialling_2,
-    email: clientInfo.correo,
+    email: clientInfo?.correo,
     sent_email: data.enviar_correo,
     description: data.comentario,
     eventStates,

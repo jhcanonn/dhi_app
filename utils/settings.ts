@@ -96,6 +96,7 @@ export const localeOptions = {
 export const mandatoryAppointmentFields = [
   'start',
   'end',
+  'id_type',
   'identification',
   'first_name',
   'last_name',
@@ -104,6 +105,9 @@ export const mandatoryAppointmentFields = [
   'email',
   'professional',
   'box',
+  'services',
+  'pay',
+  'state',
 ]
 
 export const idTypes = [

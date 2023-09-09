@@ -10,12 +10,10 @@ export const GET_TOKEN = gql`
   }
 `
 
-export const REFRESH_TOKEN = gql`
-  mutation RefreshToken($refresh_token: String!) {
-    auth_refresh(refresh_token: $refresh_token, mode: json) {
-      access_token
-      refresh_token
-      expires
+export const DELETE_APPOINTMENT = gql`
+  mutation DeleteAppointment($id: ID!) {
+    delete_citas_item(id: $id) {
+      id
     }
   }
 `

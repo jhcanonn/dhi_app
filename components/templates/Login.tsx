@@ -32,9 +32,9 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   })
   const { reset, handleSubmit } = handleForm
 
-  const onSubmit = (data: LoginData) => {
+  const onSubmit = async (data: LoginData) => {
     if (Object.keys(data).every(Boolean)) {
-      login({
+      await login({
         variables: {
           email: data.email,
           password: data.password,

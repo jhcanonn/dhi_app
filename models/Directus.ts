@@ -3,6 +3,7 @@ export type AppointmentDirectus = {
   start: string
   end: string
   client_id: number
+  box_id: number
   professional_id: number
   service_id: number[]
   data_sheet: string
