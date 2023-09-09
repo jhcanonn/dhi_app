@@ -40,6 +40,22 @@ export const createAppointment = async (
   return res.data?.data
 }
 
+export const createBlock = async (
+  payload: AppointmentDirectus,
+  token: string | null,
+) => {
+  const res = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment/block`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+  return res.data?.data
+}
+
 export const editAppointment = async (
   eventId: number,
   payload: AppointmentDirectus,

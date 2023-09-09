@@ -79,7 +79,9 @@
     [&_.p-inputswitch_.p-inputswitch-slider:before]:rounded-[2rem]
     [&_.p-inputswitch_.p-inputswitch-slider:before]:w-[0.9rem]
     [&_.p-inputswitch_.p-inputswitch-slider:before]:h-[0.9rem]
-    [&_.p-inputswitch_.p-inputswitch-slider:before]:mt-[-0.45rem];
+    [&_.p-inputswitch_.p-inputswitch-slider:before]:mt-[-0.45rem]
+    [&_.css-12rl710-MuiPaper-root-MuiDialog-paper]:bg-transparent
+    [&_.css-m9glnp-MuiPaper-root-MuiDialog-paper]:bg-transparent;
 
     @apply [&_.p-dropdown-panel]:z-[1300] 
     [&_.p-datepicker]:z-[1300] 

@@ -44,7 +44,7 @@ const TodayEvents = ({
         const minituesFromTop = differenceInMinutes(event.start, setHours(today, startHour));
         const topSpace = minituesFromTop * minuteHeight;
         /** Add border factor to height of each slot */
-        const slots = height / 60;
+        const slots = height / 25; // DHI-CODE
         const heightBorderFactor = slots * BORDER_HEIGHT;
 
         /** Calculate top space */

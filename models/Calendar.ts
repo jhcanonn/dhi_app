@@ -103,7 +103,7 @@ export type Box = CommonData & {
 export type Service = {
   service_id: number
   name: string
-  time: number
+  time: number | null
 }
 
 export type DhiResource = Box & Professional

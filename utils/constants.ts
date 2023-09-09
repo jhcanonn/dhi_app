@@ -1,5 +1,6 @@
 export const colors = {
-  bgEvent: '#ffffff',
+  bgEventDefault: '#ffffff',
+  bgEventBlock: '#707070',
   invalid: '#dc3545',
   disabled: '#eee',
 }
@@ -43,5 +44,7 @@ export const ROLES = {
 }
 
 export const DHI_SESSION = 'dhi_session'
+export const BLOCK_BOX = 'Bloqueo'
+export const BLOCK_SERVICE = 'Bloqueo Otra Razón'
 
 export const DEFAULT_APPOINTMENT_MINUTES = 30

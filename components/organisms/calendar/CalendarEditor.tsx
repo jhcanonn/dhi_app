@@ -33,6 +33,8 @@ import {
   mandatoryAppointmentFields,
   servicesMapper,
   DEFAULT_APPOINTMENT_MINUTES,
+  BLOCK_BOX,
+  BLOCK_SERVICE,
 } from '@utils'
 import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
@@ -43,7 +45,12 @@ import {
   AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
 } from 'primereact/autocomplete'
-import { createAppointment, editAppointment, refreshToken } from '@utils/api'
+import {
+  createAppointment,
+  createBlock,
+  editAppointment,
+  refreshToken,
+} from '@utils/api'
 import { Cookies, withCookies } from 'react-cookie'
 import { MultiSelectChangeEvent } from 'primereact/multiselect'
 import moment from 'moment'
@@ -56,6 +63,7 @@ type Props = {
 
 const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const [desabledFields, setDesabledFields] = useState<boolean>(false)
+  const [blocked, setBlocked] = useState<boolean>(false)
   const [patients, setPatients] = useState<Patient[]>([])
   const { refetch } = useQuery(GET_INFO_CLIENT)
 
@@ -122,32 +130,65 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const { reset, handleSubmit, resetField, setValue, getValues, trigger } =
     handleForm
 
-  const onSubmit = async (data: DhiEvent) => {
-    if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
-      try {
-        scheduler.loading(true)
-        data['professional_id'] = data.professional?.professional_id
-        data['box_id'] = data.box?.box_id
-        const appointment = directusAppointmentMapper(data)
-        const access_token = await refreshToken(cookies)
-        if (event) {
-          await editAppointment(+data.event_id, appointment, access_token)
-        } else {
-          const addedEvent = await createAppointment(appointment, access_token)
-          if (addedEvent) {
-            data.title = appointment.title
-            data.event_id = +addedEvent.event_id
-            data.client_id = +addedEvent.client_id
-          }
+  const blockAppointment = async (data: DhiEvent) => {
+    scheduler.loading(true)
+    const serviceBlock = boxes
+      .find((b) => b.name === BLOCK_BOX)
+      ?.services.find((s) => s.nombre === BLOCK_SERVICE)
+    if (serviceBlock)
+      data.services = [
+        {
+          service_id: serviceBlock.box_service_id,
+          name: serviceBlock.nombre,
+          time: serviceBlock.tiempo,
+        },
+      ]
+    data.state = eventStates.find((es) => es.name === BLOCK_BOX)
+    data.title = data.title ?? 'Bloqueo'
+    const appointment = directusAppointmentMapper(data)
+    const access_token = await refreshToken(cookies)
+    const block = await createBlock(appointment, access_token)
+    if (block) data.event_id = +block.event_id
+    scheduler.onConfirm(data, 'create')
+    setEvents((preEvents) => [...preEvents, data])
+    scheduler.close()
+    scheduler.loading(false)
+  }
+
+  const createEditAppointment = async (data: DhiEvent) => {
+    try {
+      scheduler.loading(true)
+      data['professional_id'] = data.professional?.professional_id
+      data['box_id'] = data.box?.box_id
+      const appointment = directusAppointmentMapper(data)
+      const access_token = await refreshToken(cookies)
+      if (event) {
+        await editAppointment(+data.event_id, appointment, access_token)
+      } else {
+        const addedEvent = await createAppointment(appointment, access_token)
+        if (addedEvent) {
+          data.title = appointment.title
+          data.event_id = +addedEvent.event_id
+          data.client_id = +addedEvent.client_id
         }
-        const action: EventActions = event ? 'edit' : 'create'
-        scheduler.onConfirm(data, action)
-        setEvents((preEvents) => [...preEvents, data])
-        scheduler.close()
-      } finally {
-        scheduler.loading(false)
       }
-    } else reset()
+      const action: EventActions = event ? 'edit' : 'create'
+      scheduler.onConfirm(data, action)
+      setEvents((preEvents) => [...preEvents, data])
+      scheduler.close()
+    } finally {
+      scheduler.loading(false)
+    }
+  }
+
+  const onSubmit = async (data: DhiEvent) => {
+    if (blocked) {
+      await blockAppointment(data)
+    } else {
+      if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
+        await createEditAppointment(data)
+      } else reset()
+    }
   }
 
   const showNotification = (text: string) => {
@@ -178,10 +219,6 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
         .add(minutes || DEFAULT_APPOINTMENT_MINUTES, 'minutes')
         .toDate(),
     )
-  }
-
-  const handleBlock = (e: React.MouseEvent<HTMLElement>) => {
-    console.log('block!', e)
   }
 
   const handleCleanForm = () => {
@@ -230,7 +267,9 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const Header = () => (
     <div className='flex justify-between items-center'>
       <div className='flex justify-start items-center gap-2'>
-        <h2 className='font-bold'>{`${event ? 'Editar' : 'Crear'} cita`}</h2>
+        <h2 className='font-bold'>
+          {blocked ? 'Bloquear horario' : `${event ? 'Editar' : 'Crear'} cita`}
+        </h2>
         {desabledFields && (
           <Button
             severity='success'
@@ -245,15 +284,17 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
         )}
       </div>
       <div className='flex justify-end items-center gap-2'>
-        <Button
-          severity='secondary'
-          size='small'
-          rounded
-          onClick={handleBlock}
-          label='Bloquear'
-          aria-label='Bloquear'
-          className='h-[2rem]'
-        />
+        {!event && !blocked && (
+          <Button
+            severity='secondary'
+            size='small'
+            rounded
+            onClick={() => setBlocked(true)}
+            label='Bloquear'
+            aria-label='Bloquear'
+            className='h-[2rem]'
+          />
+        )}
         <Button
           icon='pi pi-times'
           severity='danger'
@@ -299,168 +340,183 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
           className='flex flex-col gap-2'
         >
           <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-60'>
-            <div className='flex flex-col gap-2 w-full'>
-              {event && (
-                <InputTextValid
-                  name='data_sheet'
-                  label='Ficha'
+            {!blocked && (
+              <div className='flex flex-col gap-2 w-full'>
+                {event && (
+                  <InputTextValid
+                    name='data_sheet'
+                    label='Ficha'
+                    handleForm={handleForm}
+                    icon='book'
+                    disabled
+                  />
+                )}
+                <DropdownValid
+                  name='id_type'
+                  label='Tipo de identificación'
                   handleForm={handleForm}
-                  icon='book'
-                  disabled
+                  list={idTypes}
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <AutoCompleteValid
+                  name='identification'
+                  label='Identificación'
+                  handleForm={handleForm}
+                  icon='id-card'
+                  field='documento'
+                  suggestions={patients}
+                  itemTemplate={idItemTemplate}
+                  completeMethod={idSearcher}
+                  onCustomChange={handleSetFieldsForm}
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <InputTextValid
+                  name='first_name'
+                  label='1° Nombre'
+                  handleForm={handleForm}
+                  icon='user'
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <InputTextValid
+                  name='middle_name'
+                  label='2° Nombre'
+                  handleForm={handleForm}
+                  disabled={desabledFields || isEvent}
+                  icon='user'
+                />
+                <InputTextValid
+                  name='last_name'
+                  label='1° Apellido'
+                  handleForm={handleForm}
+                  icon='user'
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <InputTextValid
+                  name='last_name_2'
+                  label='2° Apellido'
+                  handleForm={handleForm}
+                  disabled={desabledFields || isEvent}
+                  icon='user'
+                />
+              </div>
+            )}
+            <div className='flex flex-col gap-2 w-full'>
+              {blocked && (
+                <InputTextValid
+                  name='title'
+                  label='Nombre de bloqueo'
+                  handleForm={handleForm}
+                  icon='comment'
                 />
               )}
-              <DropdownValid
-                name='id_type'
-                label='Tipo de identificación'
-                handleForm={handleForm}
-                list={idTypes}
-                disabled={desabledFields || isEvent}
-                required
-              />
-              <AutoCompleteValid
-                name='identification'
-                label='Identificación'
-                handleForm={handleForm}
-                icon='id-card'
-                field='documento'
-                suggestions={patients}
-                itemTemplate={idItemTemplate}
-                completeMethod={idSearcher}
-                onCustomChange={handleSetFieldsForm}
-                disabled={desabledFields || isEvent}
-                required
-              />
-              <InputTextValid
-                name='first_name'
-                label='1° Nombre'
-                handleForm={handleForm}
-                icon='user'
-                disabled={desabledFields || isEvent}
-                required
-              />
-              <InputTextValid
-                name='middle_name'
-                label='2° Nombre'
-                handleForm={handleForm}
-                disabled={desabledFields || isEvent}
-                icon='user'
-              />
-              <InputTextValid
-                name='last_name'
-                label='1° Apellido'
-                handleForm={handleForm}
-                icon='user'
-                disabled={desabledFields || isEvent}
-                required
-              />
-              <InputTextValid
-                name='last_name_2'
-                label='2° Apellido'
-                handleForm={handleForm}
-                disabled={desabledFields || isEvent}
-                icon='user'
-              />
-            </div>
-            <div className='flex flex-col gap-2 w-full'>
               <DateTimeValid
                 name='start'
                 label='Fecha inicio'
                 handleForm={handleForm}
-                required
+                required={!blocked}
               />
               <DateTimeValid
                 name='end'
                 label='Fecha fin'
                 handleForm={handleForm}
-                required
+                required={!blocked}
               />
-              <DropdownValid
-                name='professional'
-                label='Profesional'
-                handleForm={handleForm}
-                list={professionals}
-                required
-              />
-              <DropdownValid
-                name='box'
-                label='Box'
-                handleForm={handleForm}
-                list={boxes}
-                required
-                onCustomChange={handleBoxChange}
-              />
-              <MultiSelectValid
-                name='services'
-                label='Servicios'
-                handleForm={handleForm}
-                list={servicesMapper(services)}
-                selectedItemsLabel='{0} servicios'
-                placeholder='Seleccione servicios'
-                onCustomChange={handleMultiselectService}
-                required
-              />
-              {event && (
-                <DropdownValid
-                  name='pay'
-                  label='Pago'
-                  handleForm={handleForm}
-                  list={pays}
-                  disabled={isEvent}
-                  required
-                />
+              {!blocked && (
+                <>
+                  <DropdownValid
+                    name='professional'
+                    label='Profesional'
+                    handleForm={handleForm}
+                    list={professionals}
+                    required={!blocked}
+                  />
+                  <DropdownValid
+                    name='box'
+                    label='Box'
+                    handleForm={handleForm}
+                    list={boxes.filter((b) => b.name !== BLOCK_BOX)}
+                    required={!blocked}
+                    onCustomChange={handleBoxChange}
+                  />
+                  <MultiSelectValid
+                    name='services'
+                    label='Servicios'
+                    handleForm={handleForm}
+                    list={servicesMapper(services)}
+                    selectedItemsLabel='{0} servicios'
+                    placeholder='Seleccione servicios'
+                    onCustomChange={handleMultiselectService}
+                    required={!blocked}
+                  />
+                  {event && (
+                    <DropdownValid
+                      name='pay'
+                      label='Pago'
+                      handleForm={handleForm}
+                      list={pays}
+                      required={!blocked}
+                    />
+                  )}
+                </>
               )}
             </div>
-            <div className='flex flex-col gap-2 w-full'>
-              {event && (
-                <DropdownValid
-                  name='state'
-                  label='Estado'
-                  handleForm={handleForm}
-                  list={eventStates}
-                  required
-                  itemTemplate={stateItemTemplate}
-                  valueTemplate={stateValueTemplate}
-                />
-              )}
-              <PhoneNumberValid
-                name='phone'
-                diallingName='dialling'
-                label='Teléfono'
-                handleForm={handleForm}
-                icon='phone'
-                minLength={6}
-                required
-              />
-              {event && (
+            {!blocked && (
+              <div className='flex flex-col gap-2 w-full'>
+                {event && (
+                  <DropdownValid
+                    name='state'
+                    label='Estado'
+                    handleForm={handleForm}
+                    list={eventStates.filter((es) => es.name !== BLOCK_BOX)}
+                    required={!blocked}
+                    itemTemplate={stateItemTemplate}
+                    valueTemplate={stateValueTemplate}
+                  />
+                )}
                 <PhoneNumberValid
-                  name='phone_2'
-                  diallingName='dialling_2'
-                  label='Teléfono 2'
+                  name='phone'
+                  diallingName='dialling'
+                  label='Teléfono'
                   handleForm={handleForm}
                   icon='phone'
                   minLength={6}
+                  required={!blocked}
                 />
-              )}
-              <InputTextValid
-                name='email'
-                label='Correo electrónico'
-                handleForm={handleForm}
-                icon='envelope'
-                required
-                pattern={/\S+@\S+\.\S+/}
-              />
-              <InputSwitchValid
-                name='sent_email'
-                handleForm={handleForm}
-                acceptMessage='Enviar correo.'
-              />
-              <InputTextareaValid
-                name='description'
-                label='Comentario'
-                handleForm={handleForm}
-                rows={4}
-              />
-            </div>
+                {event && (
+                  <PhoneNumberValid
+                    name='phone_2'
+                    diallingName='dialling_2'
+                    label='Teléfono 2'
+                    handleForm={handleForm}
+                    icon='phone'
+                    minLength={6}
+                  />
+                )}
+                <InputTextValid
+                  name='email'
+                  label='Correo electrónico'
+                  handleForm={handleForm}
+                  icon='envelope'
+                  required={!blocked}
+                  pattern={/\S+@\S+\.\S+/}
+                />
+                <InputSwitchValid
+                  name='sent_email'
+                  handleForm={handleForm}
+                  acceptMessage='Enviar correo.'
+                />
+                <InputTextareaValid
+                  name='description'
+                  label='Comentario'
+                  handleForm={handleForm}
+                  rows={4}
+                />
+              </div>
+            )}
           </div>
           <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem]'>
             {event && (
@@ -507,7 +563,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
               </>
             )}
             <Button
-              label={event ? 'Guardar' : 'Agendar'}
+              label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
               type='submit'
               severity='success'
               rounded
