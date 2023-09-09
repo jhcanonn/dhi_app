@@ -14,7 +14,7 @@ export const useDragAttributes = (event: ProcessedEvent) => {
       e.currentTarget.style.backgroundColor = theme.palette.error.main
     },
     onDragEnd: (e: DragEvent<HTMLElement>) => {
-      e.currentTarget.style.backgroundColor = colors.bgEvent
+      e.currentTarget.style.backgroundColor = colors.bgEventDefault
     },
     onDragOver: (e: DragEvent<HTMLElement>) => {
       e.stopPropagation()
