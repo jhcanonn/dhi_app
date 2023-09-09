@@ -169,7 +169,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
         if (addedEvent) {
           data.title = appointment.title
           data.event_id = +addedEvent.event_id
-          data.client_id = +addedEvent.client_id
+          data.client_id = +addedEvent.client_id || +addedEvent.client_id.id
         }
       }
       const action: EventActions = event ? 'edit' : 'create'
