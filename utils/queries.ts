@@ -86,8 +86,15 @@ export const PAYS = gql`
 `
 
 export const GET_INFO_CLIENT = gql`
-  query ($id: String!) {
-    pacientes(filter: { documento: { _starts_with: $id } }) {
+  query ($text: String!) {
+    pacientes(
+      filter: {
+        _or: [
+          { documento: { _contains: $text } }
+          { full_name: { _icontains: $text } }
+        ]
+      }
+    ) {
       id
       documento
       tipo_documento

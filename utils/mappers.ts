@@ -134,7 +134,6 @@ export const dhiAppointmentMapper = (
   countries: Country[],
   eventStates: EventState[],
 ) => {
-  console.log({ data })
   const servicesInfo = data.servicios
   const stateInfo = data.estado
   const payInfo = data.estado_pago

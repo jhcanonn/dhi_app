@@ -11,12 +11,14 @@ import { addLocale } from 'primereact/api'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
+  disabled?: boolean
 }
 
 const DateTimeValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
+  disabled,
   required,
   validate,
 }: Props<T>) => {
@@ -55,6 +57,7 @@ const DateTimeValid = <T extends FieldValues>({
               hourFormat='12'
               showIcon
               showTime
+              disabled={disabled}
               className={cx(
                 { 'p-invalid': error },
                 '[&_button]:bg-[var(--primary-color)]',
