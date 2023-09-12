@@ -9,12 +9,14 @@ import { errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   acceptMessage?: string
+  disabled?: boolean
 }
 
 const InputSwitchValid = <T extends FieldValues>({
   handleForm,
   name,
   acceptMessage,
+  disabled,
   required,
   validate,
 }: Props<T>) => {
@@ -44,6 +46,7 @@ const InputSwitchValid = <T extends FieldValues>({
               inputRef={ref}
               className={cx({ 'p-invalid': error }, 'rounded-2xl')}
               onChange={(e) => onChange(e.value)}
+              disabled={disabled}
             />
             <label className={cx({ 'p-error': errors.checked })}>
               {acceptMessage}

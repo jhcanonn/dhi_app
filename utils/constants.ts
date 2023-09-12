@@ -48,3 +48,4 @@ export const BLOCK_BOX = 'Bloqueo'
 export const BLOCK_SERVICE = 'Bloqueo Otra Razón'
 
 export const DEFAULT_APPOINTMENT_MINUTES = 30
+export const REQUEST_ATTEMPT_NUMBER = 3

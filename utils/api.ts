@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie'
-import { DHI_SESSION, errorCodes } from './constants'
+import { DHI_SESSION, REQUEST_ATTEMPT_NUMBER, errorCodes } from './constants'
 import { AuthLogin } from '@models'
 import { expiresCookie } from './helpers'
 import { AppointmentDirectus, Country, Holiday } from '@models'
@@ -88,8 +88,21 @@ export const fetchVerifyToken = async (token: string) => {
   return await response.json()
 }
 
+export const fetch_retry = async (
+  url: RequestInfo | URL,
+  options: RequestInit | undefined,
+  n: number,
+): Promise<Response> => {
+  try {
+    return await fetch(url, options)
+  } catch (err) {
+    if (n === 1) throw err
+    return await fetch_retry(url, options, n - 1)
+  }
+}
+
 export const fetchRefreshToken = async (refresh_token: string) => {
-  const response = await fetch(
+  const response = await fetch_retry(
     `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/auth/refresh`,
     {
       method: 'POST',
@@ -99,6 +112,7 @@ export const fetchRefreshToken = async (refresh_token: string) => {
       },
       body: JSON.stringify({ refresh_token }),
     },
+    REQUEST_ATTEMPT_NUMBER,
   )
   const content = await response.json()
   return content?.data
@@ -124,8 +138,9 @@ export const refreshToken = async (cookies: Cookies) => {
       } else {
         cookies.remove(DHI_SESSION)
       }
+    } else {
+      newToken = access_token
     }
-    newToken = access_token
   } catch (error: any) {
     console.error(error)
     cookies.remove(DHI_SESSION)

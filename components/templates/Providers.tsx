@@ -10,15 +10,14 @@ import {
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client'
-import { DHI_SESSION } from '@utils'
+import { refreshToken } from '@utils/api'
 
-const authLink = setContext((_, { headers }) => {
-  const cookies = new Cookies()
-  const session = cookies.get(DHI_SESSION)
+const authLink = setContext(async (_, { headers }) => {
+  const access_token = await refreshToken(new Cookies())
   return {
     headers: {
       ...headers,
-      authorization: session ? `Bearer ${session.access_token}` : '',
+      authorization: access_token ? `Bearer ${access_token}` : '',
     },
   }
 })

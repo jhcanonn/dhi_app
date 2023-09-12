@@ -10,6 +10,7 @@ import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 export type Props<T> = FieldCommonProps<T> & {
   list: any[]
   label?: string
+  disabled?: boolean
   placeholder?: string
   selectedItemsLabel?: string
   onCustomChange?: (e: MultiSelectChangeEvent) => void
@@ -22,6 +23,7 @@ const MultiSelectValid = <T extends FieldValues>({
   placeholder,
   selectedItemsLabel,
   list,
+  disabled,
   required,
   validate,
   onCustomChange,
@@ -66,6 +68,7 @@ const MultiSelectValid = <T extends FieldValues>({
                 { '[&_.p-multiselect-trigger]:!text-[#dc3545]': error },
               )}
               filter
+              disabled={disabled}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}

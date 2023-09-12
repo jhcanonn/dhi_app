@@ -75,6 +75,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const resourceField = calendarFieldsMapper(resourceType).idField
   const event: DhiEvent | undefined = scheduler.edited
   const isEvent = !!event
+  const isOldDate = isEvent ? moment(event?.start).isBefore() : false
   const resourceId = event
     ? Number(event[resourceField])
     : Number(scheduler[resourceField])
@@ -131,28 +132,33 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     handleForm
 
   const blockAppointment = async (data: DhiEvent) => {
-    scheduler.loading(true)
-    const serviceBlock = boxes
-      .find((b) => b.name === BLOCK_BOX)
-      ?.services.find((s) => s.nombre === BLOCK_SERVICE)
-    if (serviceBlock)
-      data.services = [
-        {
-          service_id: serviceBlock.box_service_id,
-          name: serviceBlock.nombre,
-          time: serviceBlock.tiempo,
-        },
-      ]
-    data.state = eventStates.find((es) => es.name === BLOCK_BOX)
-    data.title = data.title ?? 'Bloqueo'
-    const appointment = directusAppointmentMapper(data)
-    const access_token = await refreshToken(cookies)
-    const block = await createBlock(appointment, access_token)
-    if (block) data.event_id = +block.event_id
-    scheduler.onConfirm(data, 'create')
-    setEvents((preEvents) => [...preEvents, data])
-    scheduler.close()
-    scheduler.loading(false)
+    try {
+      scheduler.loading(true)
+      const serviceBlock = boxes
+        .find((b) => b.name === BLOCK_BOX)
+        ?.services.find((s) => s.nombre === BLOCK_SERVICE)
+      if (serviceBlock)
+        data.services = [
+          {
+            service_id: serviceBlock.box_service_id,
+            name: serviceBlock.nombre,
+            time: serviceBlock.tiempo,
+          },
+        ]
+      data.state = eventStates.find((es) => es.name === BLOCK_BOX)
+      data.title = data.title ?? 'Bloqueo'
+      const appointment = directusAppointmentMapper(data)
+      const access_token = await refreshToken(cookies)
+      const block = await createBlock(appointment, access_token)
+      if (block) data.event_id = +block.event_id
+      scheduler.onConfirm(data, 'create')
+      setEvents((preEvents) => [...preEvents, data])
+      scheduler.close()
+    } catch (error: any) {
+      showError(error.response.data.status, error.response.data.message)
+    } finally {
+      scheduler.loading(false)
+    }
   }
 
   const createEditAppointment = async (data: DhiEvent) => {
@@ -176,6 +182,8 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
       scheduler.onConfirm(data, action)
       setEvents((preEvents) => [...preEvents, data])
       scheduler.close()
+    } catch (error: any) {
+      showError(error.response.data.status, error.response.data.message)
     } finally {
       scheduler.loading(false)
     }
@@ -189,6 +197,15 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
         await createEditAppointment(data)
       } else reset()
     }
+  }
+
+  const showError = (status: string, message: string) => {
+    toast.current?.show({
+      severity: 'error',
+      summary: status,
+      detail: message,
+      sticky: true,
+    })
   }
 
   const showNotification = (text: string) => {
@@ -259,7 +276,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   }
 
   const idSearcher = (event: AutoCompleteCompleteEvent) => {
-    refetch({ id: event.query }).then((res) =>
+    refetch({ text: event.query }).then((res) =>
       setPatients(res?.data?.pacientes),
     )
   }
@@ -418,12 +435,14 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                 label='Fecha inicio'
                 handleForm={handleForm}
                 required={!blocked}
+                disabled={isOldDate}
               />
               <DateTimeValid
                 name='end'
                 label='Fecha fin'
                 handleForm={handleForm}
                 required={!blocked}
+                disabled={isOldDate}
               />
               {!blocked && (
                 <>
@@ -433,6 +452,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                     handleForm={handleForm}
                     list={professionals}
                     required={!blocked}
+                    disabled={isOldDate}
                   />
                   <DropdownValid
                     name='box'
@@ -440,6 +460,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                     handleForm={handleForm}
                     list={boxes.filter((b) => b.name !== BLOCK_BOX)}
                     required={!blocked}
+                    disabled={isOldDate}
                     onCustomChange={handleBoxChange}
                   />
                   <MultiSelectValid
@@ -451,6 +472,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                     placeholder='Seleccione servicios'
                     onCustomChange={handleMultiselectService}
                     required={!blocked}
+                    disabled={isOldDate}
                   />
                   {event && (
                     <DropdownValid
@@ -459,6 +481,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                       handleForm={handleForm}
                       list={pays}
                       required={!blocked}
+                      disabled={isOldDate}
                     />
                   )}
                 </>
@@ -475,6 +498,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                     required={!blocked}
                     itemTemplate={stateItemTemplate}
                     valueTemplate={stateValueTemplate}
+                    disabled={isOldDate}
                   />
                 )}
                 <PhoneNumberValid
@@ -485,6 +509,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   icon='phone'
                   minLength={6}
                   required={!blocked}
+                  disabled={isOldDate}
                 />
                 {event && (
                   <PhoneNumberValid
@@ -494,6 +519,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                     handleForm={handleForm}
                     icon='phone'
                     minLength={6}
+                    disabled={isOldDate}
                   />
                 )}
                 <InputTextValid
@@ -503,17 +529,20 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   icon='envelope'
                   required={!blocked}
                   pattern={/\S+@\S+\.\S+/}
+                  disabled={isOldDate}
                 />
                 <InputSwitchValid
                   name='sent_email'
                   handleForm={handleForm}
                   acceptMessage='Enviar correo.'
+                  disabled={isOldDate}
                 />
                 <InputTextareaValid
                   name='description'
                   label='Comentario'
                   handleForm={handleForm}
                   rows={4}
+                  disabled={isOldDate}
                 />
               </div>
             )}
@@ -562,12 +591,14 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                 />
               </>
             )}
-            <Button
-              label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
-              type='submit'
-              severity='success'
-              rounded
-            />
+            {!isOldDate && (
+              <Button
+                label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
+                type='submit'
+                severity='success'
+                rounded
+              />
+            )}
           </div>
         </form>
       </Card>

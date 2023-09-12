@@ -13,6 +13,7 @@ import { useGlobalContext } from '@contexts'
 export type Props<T> = FieldCommonProps<T> & {
   diallingName?: string
   label?: string
+  disabled?: boolean
   icon?: string
   minLength?: number
 }
@@ -22,6 +23,7 @@ const PhoneNumberValid = <T extends FieldValues>({
   name,
   diallingName,
   label,
+  disabled,
   icon,
   minLength,
   required,
@@ -92,6 +94,7 @@ const PhoneNumberValid = <T extends FieldValues>({
               itemTemplate={countryOptionTemplate}
               filter
               filterBy='name,dialling'
+              disabled={disabled}
             />
           )}
         />
@@ -137,6 +140,7 @@ const PhoneNumberValid = <T extends FieldValues>({
                 inputClassName={cx({ 'p-invalid': error })}
                 useGrouping={false}
                 aria-autocomplete='none'
+                disabled={disabled}
               />
               <label htmlFor={name} className={cx({ 'p-error': error })}>
                 {label}
