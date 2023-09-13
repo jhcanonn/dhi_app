@@ -62,6 +62,7 @@ const DateTimeValid = <T extends FieldValues>({
                 { 'p-invalid': error },
                 '[&_button]:bg-[var(--primary-color)]',
               )}
+              stepMinute={30}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}

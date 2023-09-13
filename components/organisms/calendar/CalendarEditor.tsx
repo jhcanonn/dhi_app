@@ -35,6 +35,7 @@ import {
   DEFAULT_APPOINTMENT_MINUTES,
   BLOCK_BOX,
   BLOCK_SERVICE,
+  errorMessages,
 } from '@utils'
 import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
@@ -114,7 +115,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     dialling: event?.dialling,
     dialling_2: event?.dialling_2,
     email: event?.email,
-    sent_email: event?.sent_email,
+    sent_email: event?.sent_email || false,
     description: event?.description,
     eventStates,
   }
@@ -190,13 +191,29 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   }
 
   const onSubmit = async (data: DhiEvent) => {
-    if (blocked) {
-      await blockAppointment(data)
+    const hs = moment(data.start).hour()
+    const he = moment(data.end).hour()
+    const me = moment(data.end).minute()
+    if (hs < 7 || he > 19 || (he === 19 && me > 0)) {
+      showWarning(errorMessages.statusOutRange, errorMessages.hoursOutRange)
     } else {
-      if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
-        await createEditAppointment(data)
-      } else reset()
+      if (blocked) {
+        await blockAppointment(data)
+      } else {
+        if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
+          await createEditAppointment(data)
+        } else reset()
+      }
     }
+  }
+
+  const showWarning = (status: string, message: string) => {
+    toast.current?.show({
+      severity: 'warn',
+      summary: status,
+      detail: message,
+      life: 3000,
+    })
   }
 
   const showError = (status: string, message: string) => {
