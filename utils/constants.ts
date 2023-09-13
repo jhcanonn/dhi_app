@@ -14,6 +14,8 @@ export const errorMessages = {
   noProfessionals: 'No hay profesionales',
   noBoxes: 'No hay boxes',
   noExists: 'No existe',
+  statusOutRange: 'Horario fuera de rango',
+  hoursOutRange: 'Solo se permiten citas entre 7AM y 7PM',
 }
 
 export const errorCodes = {

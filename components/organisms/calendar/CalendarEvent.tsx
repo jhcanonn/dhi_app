@@ -22,7 +22,7 @@ import { classNames as cx } from 'primereact/utils'
 import { useMutation } from '@apollo/client'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
-const CalendarEvent = ({ event, onClick, onDragStart }: EventRendererProps) => {
+const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const customDragProps = useDragAttributes(event)
   const { formatedTime } = useFormattedEventInfo(event)
   const { calendarScheduler } = useCalendarContext()
@@ -124,10 +124,6 @@ const CalendarEvent = ({ event, onClick, onDragStart }: EventRendererProps) => {
         }}
         onContextMenu={handleRightClick}
         {...customDragProps}
-        onDragStart={(e) => {
-          console.log('Dragging...', { e })
-          onDragStart && onDragStart(e)
-        }}
       >
         <div
           className={`calendar-event ${classEventId}`}
