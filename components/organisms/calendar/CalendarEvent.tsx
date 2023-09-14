@@ -23,7 +23,7 @@ import { useMutation } from '@apollo/client'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
-  const customDragProps = useDragAttributes(event)
+  
   const { formatedTime } = useFormattedEventInfo(event)
   const { calendarScheduler } = useCalendarContext()
   const { setEvents } = useGlobalContext()
@@ -43,6 +43,8 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
   const classEventId = 'event-' + event_id
   const isBlock = state?.name === BLOCK_BOX
   const scheduler = calendarScheduler?.current?.scheduler
+
+  const customDragProps = useDragAttributes(event, !isBlock)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
