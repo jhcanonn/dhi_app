@@ -7,13 +7,16 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  ToggleButtonGroup,
+  ToggleButton,
+  Divider,
 } from "@mui/material";
 import { WeekDateBtn } from "./WeekDateBtn";
 import { DayDateBtn } from "./DayDateBtn";
 import { MonthDateBtn } from "./MonthDateBtn";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import useStore from "../../hooks/useStore";
-import { NavigationDiv } from "../../styles/styles";
+import { NavigationDiv, StyledToggleButtonGroup } from "../../styles/styles";
 
 export type View = "month" | "week" | "day";
 
@@ -106,19 +109,22 @@ const Navigation = () => {
         </Button>
         {views.length > 1 &&
           (isDesktop ? (
-            views.map((v) => (
-              <Button
-                key={v}
-                color={v === view ? "primary" : "inherit"}
-                onClick={() => handleChangeView(v)}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  handleChangeView(v);
-                }}
-              >
-                {translations.navigation[v]}
-              </Button>
-            ))
+            /** DHI_CODE */
+            <StyledToggleButtonGroup color="primary" exclusive value={view}>
+              {views.map((v) => (
+                <ToggleButton
+                  key={v}
+                  value={v}
+                  onClick={() => handleChangeView(v)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    handleChangeView(v);
+                  }}
+                >
+                  {translations.navigation[v]}
+                </ToggleButton>
+              ))}
+            </StyledToggleButtonGroup>
           ) : (
             <Fragment>
               <IconButton

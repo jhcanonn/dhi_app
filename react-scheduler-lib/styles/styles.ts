@@ -1,4 +1,4 @@
-import { Paper, alpha, styled } from "@mui/material";
+import { Paper, alpha, styled, ToggleButtonGroup } from "@mui/material";
 
 export const Wrapper = styled("div")<{ dialog: number }>(({ theme, dialog }) => ({
   position: "relative",
@@ -196,5 +196,27 @@ export const TimeIndicatorBar = styled("div")(({ theme }) => ({
   "& > div:last-of-type": {
     borderTop: `solid 2px ${theme.palette.error.light}`,
     width: "100%",
+  },
+}));
+/** DHI_CODE */
+export const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    marginRight: theme.spacing(0.7),
+    border: 0,
+    width: "60px",
+    height: "14px",
+    '&.Mui-disabled': {
+      border: 0,
+    },
+    '&.Mui-selected': {
+      borderBottom: "2px solid",
+      fontWeight: "600"
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius,
+    },
   },
 }));
