@@ -3,7 +3,10 @@ import { ProcessedEvent } from 'react-scheduler-lib/types'
 import { colors } from '@utils'
 import { useTheme } from '@mui/material'
 
-export const useDragAttributes = (event: ProcessedEvent, isDragable?: boolean) => {
+export const useDragAttributes = (
+  event: ProcessedEvent,
+  isDragable?: boolean,
+) => {
   const theme = useTheme()
 
   return {

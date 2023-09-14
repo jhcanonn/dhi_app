@@ -109,7 +109,7 @@ const Navigation = () => {
         </Button>
         {views.length > 1 &&
           (isDesktop ? (
-            /** DHI_CODE */
+            /** DHI-CODE */
             <StyledToggleButtonGroup color="primary" exclusive value={view}>
               {views.map((v) => (
                 <ToggleButton
