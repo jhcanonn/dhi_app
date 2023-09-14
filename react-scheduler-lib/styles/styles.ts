@@ -198,7 +198,7 @@ export const TimeIndicatorBar = styled("div")(({ theme }) => ({
     width: "100%",
   },
 }));
-/** DHI_CODE */
+/** DHI-CODE */
 export const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     marginRight: theme.spacing(0.7),

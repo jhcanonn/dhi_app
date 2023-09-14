@@ -23,7 +23,6 @@ import { useMutation } from '@apollo/client'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
-  
   const { formatedTime } = useFormattedEventInfo(event)
   const { calendarScheduler } = useCalendarContext()
   const { setEvents } = useGlobalContext()

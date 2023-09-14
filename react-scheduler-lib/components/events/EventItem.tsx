@@ -174,6 +174,9 @@ const EventItem = ({ event, multiday, hasPrev, hasNext, showdate = true }: Event
     if (typeof event.draggable !== "undefined") {
       canDrag = event.draggable;
     }
+
+    if (view === "month") canDrag = false // DHI-CODE
+
     return canDrag;
   }, [draggable, editable, event.disabled, event.draggable]);
 
