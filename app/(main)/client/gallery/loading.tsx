@@ -1,5 +1,5 @@
-import { ClientGallerySkeleton } from '@components/molecules'
+import { AllGallerySkeleton } from '@components/molecules'
 
-const Loading = () => <ClientGallerySkeleton />
+const Loading = () => <AllGallerySkeleton />
 
 export default Loading

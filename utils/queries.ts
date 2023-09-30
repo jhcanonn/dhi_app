@@ -115,6 +115,29 @@ export const GET_INFO_CLIENT = gql`
   }
 `
 
+export const GET_CLIENT_BY_ID = gql`
+  query ($id: ID!) {
+    pacientes_by_id(id: $id) {
+      id
+      full_name
+      tipo_documento
+      documento
+      primer_nombre
+      segundo_nombre
+      apellido_paterno
+      apellido_materno
+      genero
+      fecha_nacimiento
+      correo
+      indicativo
+      telefono
+      indicativo_2
+      telefono_2
+      estado_civil
+    }
+  }
+`
+
 export const GET_APPOINTMENTS = gql`
   query ($start: GraphQLStringOrFloat!, $end: GraphQLStringOrFloat!) {
     citas(filter: { inicio: { _between: [$start, $end] } }) {
