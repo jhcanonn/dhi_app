@@ -47,18 +47,18 @@ const Aside = () => {
       ],
     },
     {
-      label: 'Clientes',
+      label: 'Pacientes',
       icon: PrimeIcons.USERS,
       items: [
         {
-          label: 'Lista de Clientes',
+          label: 'Lista de Pacientes',
           icon: PrimeIcons.USERS,
           command: () => goToPage(PAGE_PATH.clientList),
         },
         {
           label: 'Galería',
           icon: PrimeIcons.IMAGES,
-          command: () => goToPage(PAGE_PATH.clientGallery),
+          command: () => goToPage(PAGE_PATH.gallery),
         },
       ],
     },

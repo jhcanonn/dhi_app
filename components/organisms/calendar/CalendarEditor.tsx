@@ -36,6 +36,7 @@ import {
   BLOCK_BOX,
   BLOCK_SERVICE,
   errorMessages,
+  parseUrl,
 } from '@utils'
 import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
@@ -581,7 +582,9 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   rounded
                   onClick={() =>
                     router.push(
-                      `${PAGE_PATH.clientList}/${eventData.client_id}`,
+                      parseUrl(PAGE_PATH.clientDetail, {
+                        id: +eventData.client_id!,
+                      }),
                     )
                   }
                 />

@@ -1,4 +1,5 @@
 export { default as Calendar } from './Calendar'
+export { default as ClientDetail } from './ClientDetail'
 export { default as ComingSoon } from './ComingSoon'
 export { default as NotFound } from './NotFound'
 export { default as Login } from './Login'

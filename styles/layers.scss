@@ -88,7 +88,10 @@
     [&_.p-multiselect-panel]:z-[1300] 
     [&_.p-autocomplete-panel]:z-[1300] 
     [&_.p-input-icon-left_input]:pl-10
-    [&_.p-input-icon-left>i]:mt-[-0.35rem] #{!important};
+    [&_.p-input-icon-left>i]:mt-[-0.35rem]
+    [&_.p-tabmenu-nav]:bg-white
+    [&_.p-tabmenu-nav]:border-0
+    [&_.p-menuitem-link]:border-0 #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,
@@ -131,6 +134,9 @@
 
   a {
     @apply text-[var(--primary-color)] no-underline;
+  }
+  a:focus {
+    box-shadow: none !important;
   }
 
   .layout-wrapper {

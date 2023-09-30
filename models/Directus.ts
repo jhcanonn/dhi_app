@@ -72,6 +72,25 @@ export type BoxDirectus = {
   }[]
 }
 
+export type ClientDirectus = {
+  id: number
+  full_name: string
+  tipo_documento: string
+  documento: string
+  primer_nombre: string
+  segundo_nombre: string
+  apellido_paterno: string
+  apellido_materno: string
+  genero: string
+  fecha_nacimiento: Date
+  correo: string
+  indicativo: string
+  telefono: string
+  indicativo_2: string
+  telefono_2: string
+  estado_civil: string
+}
+
 export enum StatusDirectus {
   PUBLISHED = 'published',
   DRAFT = 'draft',
