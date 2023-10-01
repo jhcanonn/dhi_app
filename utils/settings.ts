@@ -110,9 +110,32 @@ export const mandatoryAppointmentFields = [
   'state',
 ]
 
+export const mandatoryClientEditFields = [
+  'tipo_documento',
+  'documento',
+  'primer_nombre',
+  'apellido_paterno',
+  'indicativo',
+  'telefono',
+]
+
 export const idTypes = [
   { type: 'CC', name: 'Cédula de ciudadanía' },
   { type: 'CE', name: 'Cédula de extranjería' },
   { type: 'PA', name: 'Pasaporte' },
   { type: 'PEP', name: 'Permiso especial de permanencia' },
+]
+
+export const genders = [
+  { type: 'M', name: 'Masculino' },
+  { type: 'F', name: 'Femenino' },
+  { type: 'N', name: 'No específica' },
+]
+
+export const civilStatus = [
+  { type: 'S', name: 'Solero(a)' },
+  { type: 'C', name: 'Casado(a)' },
+  { type: 'U', name: 'Unión libre' },
+  { type: 'V', name: 'Viudo(a)' },
+  { type: 'D', name: 'Divorciado(a)' },
 ]

@@ -1,7 +1,17 @@
 'use client'
 
 import { useClientContext } from '@contexts'
-import { calcularEdadConMeses, getOnlyDate } from '@utils'
+import {
+  PAGE_PATH,
+  calcularEdadConMeses,
+  civilStatus,
+  genders,
+  getOnlyDate,
+  idTypes,
+  parseUrl,
+} from '@utils'
+import moment from 'moment'
+import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { FileUpload } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
@@ -9,9 +19,10 @@ import { Toast } from 'primereact/toast'
 import { useRef } from 'react'
 
 const ClientDetail = () => {
+  const router = useRouter()
   const { clientInfo } = useClientContext()
   const birthDate = clientInfo?.fecha_nacimiento
-    ? new Date(clientInfo?.fecha_nacimiento)
+    ? moment(clientInfo?.fecha_nacimiento).toDate()
     : null
   const age = birthDate ? calcularEdadConMeses(birthDate) : null
   const toast = useRef<Toast>(null)
@@ -80,7 +91,13 @@ const ClientDetail = () => {
                 </tr>
                 <tr>
                   <td className='border font-bold'>Tipo de identificación:</td>
-                  <td className='border'>{clientInfo?.tipo_documento}</td>
+                  <td className='border'>
+                    {clientInfo?.tipo_documento
+                      ? idTypes.find(
+                          (t) => t.type === clientInfo.tipo_documento,
+                        )?.name
+                      : ''}
+                  </td>
                 </tr>
                 <tr>
                   <td className='border font-bold'>Identificación:</td>
@@ -110,7 +127,11 @@ const ClientDetail = () => {
               <tbody>
                 <tr>
                   <td className='border w-[35%] font-bold'>Género:</td>
-                  <td className='border w-[65%]'>{clientInfo?.genero}</td>
+                  <td className='border w-[65%]'>
+                    {clientInfo?.genero
+                      ? genders.find((g) => g.type === clientInfo.genero)?.name
+                      : ''}
+                  </td>
                 </tr>
                 <tr>
                   <td className='border font-bold'>Fecha de nacimiento:</td>
@@ -144,7 +165,13 @@ const ClientDetail = () => {
                 </tr>
                 <tr>
                   <td className='border font-bold'>Estado civil:</td>
-                  <td className='border'>{clientInfo?.estado_civil}</td>
+                  <td className='border'>
+                    {clientInfo?.estado_civil
+                      ? civilStatus.find(
+                          (c) => c.type === clientInfo.estado_civil,
+                        )?.name
+                      : ''}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -152,6 +179,7 @@ const ClientDetail = () => {
         </div>
         <div className='flex gap-2 flex-wrap mb-4 justify-end'>
           <Button
+            className='text-sm'
             label={'Asociar'}
             type='button'
             severity='success'
@@ -159,13 +187,20 @@ const ClientDetail = () => {
             onClick={(e: any) => showNotification(e.target.textContent)}
           />
           <Button
+            className='text-sm'
             label={'Editar'}
             type='button'
             severity='warning'
             rounded
-            onClick={(e: any) => showNotification(e.target.textContent)}
+            onClick={() => {
+              clientInfo &&
+                router.push(
+                  parseUrl(PAGE_PATH.clientEdit, { id: clientInfo.id }),
+                )
+            }}
           />
           <Button
+            className='text-sm'
             label={'Eliminar'}
             type='button'
             severity='danger'

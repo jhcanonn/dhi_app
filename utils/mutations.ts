@@ -17,3 +17,12 @@ export const DELETE_APPOINTMENT = gql`
     }
   }
 `
+
+export const UPDATE_PATIENT = gql`
+  mutation UpdatePatient($id: ID!, $data: update_pacientes_input!) {
+    update_pacientes_item(id: $id, data: $data) {
+      id
+      documento
+    }
+  }
+`
