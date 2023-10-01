@@ -80,7 +80,7 @@ const ClientLayout = ({ children, params }: Props) => {
             severity='success'
             rounded
             onClick={() => goToPage(PAGE_PATH.finance)}
-            className='px-4 py-1 font-bold text-lg'
+            className='px-4 py-1 font-bold text-md'
           />
         </div>
         {children}

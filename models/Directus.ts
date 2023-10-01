@@ -82,7 +82,7 @@ export type ClientDirectus = {
   apellido_paterno: string
   apellido_materno: string
   genero: string
-  fecha_nacimiento: Date
+  fecha_nacimiento: string
   correo: string
   indicativo: string
   telefono: string

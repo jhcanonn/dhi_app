@@ -31,6 +31,7 @@ export const PAGE_PATH = {
   dateListCalendar: '/calendar/date-list',
   clientList: '/client',
   clientDetail: '/client/{id}',
+  clientEdit: '/client/{id}/edit',
   clientDataSheet: '/client/{id}/dataSheet',
   clientGallery: '/client/{id}/gallery',
   clientBudget: '/client/{id}/budget',
