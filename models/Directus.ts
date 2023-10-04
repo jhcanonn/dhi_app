@@ -72,6 +72,14 @@ export type BoxDirectus = {
   }[]
 }
 
+export type ProfileAvatar = {
+  id: string
+  directus_files_id: {
+    id: string
+    title: string
+  }
+}
+
 export type ClientDirectus = {
   id: number
   full_name: string
@@ -89,6 +97,18 @@ export type ClientDirectus = {
   indicativo_2: string
   telefono_2: string
   estado_civil: string
+  avatar: ProfileAvatar[]
+  galeria: {
+    galeria_id: {
+      descripcion: string
+      date_created: string
+      fotos: {
+        directus_files_id: {
+          id: string
+        }
+      }[]
+    }
+  }[]
 }
 
 export enum StatusDirectus {

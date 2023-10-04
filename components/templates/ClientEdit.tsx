@@ -131,9 +131,62 @@ const ClientEdit = () => {
     }
   }, [clientInfo])
 
+  // const panelsArr = {
+  //   panels: [
+  //     {
+  //       name: 'Nota enfermería implante capilar',
+  //       config: [
+  //         {
+  //           group: 'Nota Enfermeria-Procedimiento',
+  //           fields: [
+  //             {
+  //               name: 'dia_procedimiento',
+  //               label: 'Dia de Procedimiento',
+  //               type: 'dropdown',
+  //               options: [
+  //                 { name: 'dia1', value: 'dia1' },
+  //                 { name: 'dia2', value: 'dia2' },
+  //               ],
+  //             },
+  //             {
+  //               name: 'implante',
+  //               label: 'Implante',
+  //               type: 'dropdown',
+  //               options: [
+  //                 { name: 'c', value: 'capilar' },
+  //                 { name: 'b', value: 'barba' },
+  //                 { name: 'c', value: 'capilar' },
+  //                 { name: 'cj', value: 'ceja' },
+  //                 { name: 'mx', value: 'mixto' },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // }
+
   return (
     <>
       <Toast ref={toast} />
+      {/* {panelsArr.panels.map((p: any) => {
+        return p.config.map((c: any) => {
+          return c.fields.map((f: any) => {
+            if (f.type === 'dropdown') {
+              return (
+                <DropdownValid
+                  name={f.name}
+                  label={f.label}
+                  handleForm={handleForm}
+                  list={f.options}
+                  required
+                />
+              )
+            }
+          })
+        })
+      })} */}
       <form
         autoComplete='off'
         onSubmit={handleSubmit(onSubmit)}

@@ -1,6 +1,6 @@
 import { Cookies } from 'react-cookie'
 import { DHI_SESSION, REQUEST_ATTEMPT_NUMBER, errorCodes } from './constants'
-import { AuthLogin } from '@models'
+import { AuthLogin, PatientAvatar } from '@models'
 import { expiresCookie } from './helpers'
 import { AppointmentDirectus, Country, Holiday } from '@models'
 import axios from 'axios'
@@ -147,4 +147,65 @@ export const refreshToken = async (cookies: Cookies) => {
   }
 
   return newToken
+}
+
+export const uploadFileToDirectus = async (
+  formData: FormData,
+  token: string | null,
+) => {
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/files`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return res.data?.data
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+export const deleteFileToDirectus = async (
+  id: string,
+  token: string | null,
+) => {
+  try {
+    const res = await axios.delete(
+      `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/files`,
+      {
+        data: [id],
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return res.data?.data
+  } catch (error: any) {
+    throw new Error(error)
+  }
+}
+
+export const patchAvatarWithPatient = async (
+  id: string,
+  payload: PatientAvatar,
+  token: string | null,
+) => {
+  try {
+    const res = await axios.patch(
+      `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/items/pacientes/${id}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return res.data?.data
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
