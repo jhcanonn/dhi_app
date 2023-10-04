@@ -56,3 +56,6 @@ export const BLOCK_SERVICE = 'Bloqueo Otra Razón'
 
 export const DEFAULT_APPOINTMENT_MINUTES = 30
 export const REQUEST_ATTEMPT_NUMBER = 3
+
+export const MAX_MB_GALLERY = 7
+export const PATIENTS_GALLERY = 'ce89509c-fcb6-4acd-afb2-3d3fec5e6058'

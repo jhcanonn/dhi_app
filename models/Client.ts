@@ -27,3 +27,15 @@ export type CivilState = {
   type: string
   name: string
 }
+
+export type PatientAvatar = {
+  avatar: {
+    create: {
+      pacientes_id: string
+      directus_files_id: {
+        id: string
+      }
+    }[]
+    delete: number[]
+  }
+}

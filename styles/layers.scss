@@ -94,7 +94,9 @@
     [&_.p-input-icon-left>i]:mt-[-0.35rem]
     [&_.p-tabmenu-nav]:bg-white
     [&_.p-tabmenu-nav]:border-0
-    [&_.p-menuitem-link]:border-0 #{!important};
+    [&_.p-menuitem-link]:border-0
+    [&_.p-dialog-mask]:z-[1300]
+    [&_.p-image-mask]:z-[1310] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,

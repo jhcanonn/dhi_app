@@ -79,6 +79,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         acceptClassName: 'p-button-danger',
         acceptLabel: 'Si',
         rejectLabel: 'No',
+        draggable: false,
         accept: async () => {
           await handleDeleteAppointment()
         },

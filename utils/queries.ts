@@ -134,6 +134,24 @@ export const GET_CLIENT_BY_ID = gql`
       indicativo_2
       telefono_2
       estado_civil
+      avatar {
+        id
+        directus_files_id {
+          id
+          title
+        }
+      }
+      galeria {
+        galeria_id {
+          descripcion
+          date_created
+          fotos {
+            directus_files_id {
+              id
+            }
+          }
+        }
+      }
     }
   }
 `

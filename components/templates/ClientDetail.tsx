@@ -1,5 +1,6 @@
 'use client'
 
+import { UploadProfileImage } from '@components/organisms'
 import { useClientContext } from '@contexts'
 import {
   PAGE_PATH,
@@ -13,39 +14,18 @@ import {
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
-import { FileUpload } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Toast } from 'primereact/toast'
 import { useRef } from 'react'
 
 const ClientDetail = () => {
   const router = useRouter()
-  const { clientInfo } = useClientContext()
+  const { clientInfo, setClientInfo } = useClientContext()
   const birthDate = clientInfo?.fecha_nacimiento
     ? moment(clientInfo?.fecha_nacimiento).toDate()
     : null
   const age = birthDate ? calcularEdadConMeses(birthDate) : null
   const toast = useRef<Toast>(null)
-
-  const emptyTemplate = () => (
-    <div className='flex align-items-center flex-column'>
-      <i
-        className='pi pi-image mt-2 p-4'
-        style={{
-          fontSize: '3em',
-          borderRadius: '50%',
-          backgroundColor: 'var(--surface-b)',
-          color: 'var(--surface-d)',
-        }}
-      ></i>
-      <span
-        style={{ fontSize: '1em', color: 'var(--text-color-secondary)' }}
-        className='my-3'
-      >
-        Drag and Drop Image Here
-      </span>
-    </div>
-  )
 
   const showNotification = (text: string) => {
     toast.current?.show({
@@ -61,25 +41,32 @@ const ClientDetail = () => {
       <Toast ref={toast} />
       <div className='flex flex-col gap-4 text-sm'>
         <div className='flex flex-col lg:flex-row gap-4'>
-          <div className='w-full lg:!w-[25%] flex flex-col sm:md:flex-row lg:flex-col items-center gap-4 justify-center'>
-            <Image
-              src='https://primefaces.org/cdn/primereact/images/galleria/galleria10.jpg'
-              alt='Image'
-              width='450'
-              preview
-              className='[&_img]:rounded-lg'
-            />
-            <FileUpload
-              name='demo[]'
-              url={'/api/upload'}
-              multiple
-              accept='image/*'
-              maxFileSize={1000000}
-              emptyTemplate={emptyTemplate}
-              chooseLabel='Elegir foto(s)'
-              uploadLabel='Cargar foto(s)'
-              cancelLabel='Cancelar foto(s)'
-              className='[&_.p-fileupload-buttonbar_.p-button]:w-full [&_.p-message-wrapper]:text-xs [&_.p-fileupload-buttonbar_.p-button]:!mr-0 max-w-xs [&_button]:bg-[#007bff] [&_button]:border-[#007bff] [&_.p-message.p-message-error]:border-[#ff5757] [&_.p-message.p-message-error]:border-l-[5px] [&_.p-message.p-message-error]:border-y-0 [&_.p-message.p-message-error]:border-r-0 [&_.p-message.p-message-error]:text-[#ff5757] [&_.p-message.p-message-error_.p-message-icon]:text-[#ff5757] [&_.p-message.p-message-error_.p-message-close]:text-[#ff5757]'
+          <div className='w-full lg:!w-[25%] flex flex-col items-center gap-4 justify-center'>
+            {clientInfo?.avatar[0]?.directus_files_id ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${clientInfo.avatar[0].directus_files_id.id}?fit=cover`}
+                alt={clientInfo.avatar[0].directus_files_id.title}
+                width='450'
+                preview
+                className='[&_img]:rounded-lg'
+              />
+            ) : (
+              <div className='flex align-items-center flex-column rounded-2xl w-full border-brand border-[1px]'>
+                <i
+                  className='pi pi-image mt-4 p-5 bg-brand/30 text-white rounded-full'
+                  style={{ fontSize: '5em' }}
+                ></i>
+                <span className='my-4 text-brand text-lg'>No tiene imagen</span>
+              </div>
+            )}
+            <UploadProfileImage
+              clientInfo={clientInfo}
+              buttonLabel='Foto de perfil'
+              onUploadAvatars={(avatars) => {
+                setClientInfo((prevInfo) =>
+                  prevInfo ? { ...prevInfo, avatar: avatars } : prevInfo,
+                )
+              }}
             />
           </div>
           <div className='w-full lg:!w-[37.5%]'>
@@ -179,7 +166,7 @@ const ClientDetail = () => {
         </div>
         <div className='flex gap-2 flex-wrap mb-4 justify-end'>
           <Button
-            className='text-sm'
+            className='text-sm w-full md:w-auto'
             label={'Asociar'}
             type='button'
             severity='success'
@@ -187,7 +174,7 @@ const ClientDetail = () => {
             onClick={(e: any) => showNotification(e.target.textContent)}
           />
           <Button
-            className='text-sm'
+            className='text-sm w-full md:w-auto'
             label={'Editar'}
             type='button'
             severity='warning'
@@ -200,7 +187,7 @@ const ClientDetail = () => {
             }}
           />
           <Button
-            className='text-sm'
+            className='text-sm w-full md:w-auto'
             label={'Eliminar'}
             type='button'
             severity='danger'
