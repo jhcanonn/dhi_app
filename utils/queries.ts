@@ -148,6 +148,8 @@ export const GET_CLIENT_BY_ID = gql`
           fotos {
             directus_files_id {
               id
+              title
+              description
             }
           }
         }
