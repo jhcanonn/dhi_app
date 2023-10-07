@@ -3,7 +3,13 @@
 import { useQuery } from '@apollo/client'
 import { useClientContext } from '@contexts'
 import { ClientDirectus } from '@models'
-import { GET_CLIENT_BY_ID, PAGE_PATH, parseUrl, toTitleCase } from '@utils'
+import {
+  CLIENT_PAGE_TAB,
+  GET_CLIENT_BY_ID,
+  PAGE_PATH,
+  parseUrl,
+  toTitleCase,
+} from '@utils'
 import { useRouter } from 'next/navigation'
 import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
@@ -11,6 +17,7 @@ import { MenuItem } from 'primereact/menuitem'
 import { Skeleton } from 'primereact/skeleton'
 import { TabMenu } from 'primereact/tabmenu'
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 type Props = {
   children: React.ReactNode
@@ -19,7 +26,12 @@ type Props = {
 
 const ClientLayout = ({ children, params }: Props) => {
   const { id } = params
-  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const pathname = usePathname()
+  const arr = pathname.split('/')
+  const lastItem = arr[arr.length - 1]
+  const tabIndex = CLIENT_PAGE_TAB.indexOf(lastItem) + 1
+
+  const [activeIndex, setActiveIndex] = useState<number>(tabIndex)
   const router = useRouter()
   const { setClientInfo, setLoadingInfo } = useClientContext()
 

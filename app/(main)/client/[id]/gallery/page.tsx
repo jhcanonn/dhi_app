@@ -1,10 +1,10 @@
-import { ComingSoon } from '@components/templates'
+import { ClientGallery } from '@components/templates'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'DHI | Galería del Paciente',
 }
 
-const ClientGallery = () => <ComingSoon page='Galería del Paciente' />
+const ClientGalleryPage = () => <ClientGallery />
 
-export default ClientGallery
+export default ClientGalleryPage
