@@ -87,6 +87,7 @@ const GallerySet = ({ photos }: { photos: ClientPhoto[] }) => {
         thumbnailsPosition='bottom'
         item={itemTemplate}
         thumbnail={thumbnailTemplate}
+        className='[&_.p-galleria-close]:z-10'
       />
       <Button
         icon='pi pi-camera'
