@@ -41,7 +41,7 @@ const ClientGallery = () => {
 
   return (
     <Card className='custom-table-card'>
-      {gallery.length ? (
+      {clientInfo ? (
         <DataTable
           value={gallery}
           emptyMessage='No se encontraron resultados'

@@ -73,8 +73,10 @@ const ClientDetail = () => {
             <table className='border [&_td]:px-3 [&_td]:py-2 w-full'>
               <tbody>
                 <tr>
-                  <td className='border w-[35%] font-bold'>Número de ficha:</td>
-                  <td className='border w-[65%]'></td>
+                  <td className='border w-[45%] md:w-[35%] font-bold'>
+                    Número de ficha:
+                  </td>
+                  <td className='border w-[55%] md:w-[65%]'></td>
                 </tr>
                 <tr>
                   <td className='border font-bold'>Tipo de identificación:</td>
@@ -113,8 +115,10 @@ const ClientDetail = () => {
             <table className='border [&_td]:px-3 [&_td]:py-2 w-full'>
               <tbody>
                 <tr>
-                  <td className='border w-[35%] font-bold'>Género:</td>
-                  <td className='border w-[65%]'>
+                  <td className='border w-[45%] md:w-[35%] font-bold'>
+                    Género:
+                  </td>
+                  <td className='border w-[55%] md:w-[65%]'>
                     {clientInfo?.genero
                       ? genders.find((g) => g.type === clientInfo.genero)?.name
                       : ''}
