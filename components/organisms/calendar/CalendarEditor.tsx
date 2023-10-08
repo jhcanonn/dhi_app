@@ -584,7 +584,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
               </div>
             )}
           </div>
-          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem]'>
+          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto'>
             {event && (
               <>
                 <Button

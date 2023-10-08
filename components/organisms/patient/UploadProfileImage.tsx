@@ -224,7 +224,7 @@ const UploadProfileImage = ({
         icon='pi pi-camera'
         onClick={() => setVisible(true)}
         className={cx(
-          '[&_.pi-camera:before]:text-lg flex justify-center [&_.p-button-label]:grow-0 w-full md:w-auto py-1',
+          '[&_.pi-camera:before]:text-lg flex justify-center [&_.p-button-label]:grow-0 w-auto py-1',
           {
             'px-4': buttonLabel,
           },
