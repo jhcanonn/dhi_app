@@ -74,7 +74,7 @@ const GallerySet = ({ photos }: { photos: ClientPhoto[] }) => {
   }, [])
 
   return (
-    <div className='card flex justify-content-center'>
+    <>
       <Galleria
         ref={galleryRef}
         value={images}
@@ -94,7 +94,7 @@ const GallerySet = ({ photos }: { photos: ClientPhoto[] }) => {
         onClick={() => galleryRef.current.show()}
         className='text-sm [&_.pi-camera:before]:text-lg'
       />
-    </div>
+    </>
   )
 }
 

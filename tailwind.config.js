@@ -8,6 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        defaultBlue: '#007bff',
+        surfaceGround: '#efefef',
         brand: '#427D8D',
         invalid: '#dc3435',
       },

@@ -134,6 +134,9 @@ export const GET_CLIENT_BY_ID = gql`
       indicativo_2
       telefono_2
       estado_civil
+      ficha_id {
+        id
+      }
       avatar {
         id
         directus_files_id {
@@ -199,6 +202,9 @@ export const GET_APPOINTMENTS = gql`
         indicativo
         indicativo_2
         correo
+        ficha_id {
+          id
+        }
       }
       estado {
         id

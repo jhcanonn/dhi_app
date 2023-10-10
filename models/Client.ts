@@ -39,3 +39,10 @@ export type PatientAvatar = {
     delete: number[]
   }
 }
+
+export enum DataSheetEnum {
+  CONSULTA_PRIMERA_VEZ = 'Consulta primera vez',
+  CONSULTA_CONTROL = 'Consulta control',
+  COTIZACION = 'Cotizacion',
+  RISP_AC = 'RISP AC',
+}
