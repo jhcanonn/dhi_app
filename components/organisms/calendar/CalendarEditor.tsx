@@ -130,8 +130,6 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     refetch: patientRefetch,
   } = useQuery(GET_CLIENT_BY_ID, { variables: { id: eventData.client_id } })
 
-  console.log({ event, eventData })
-
   const getServices = (boxId: number) =>
     boxes.find((b) => b.box_id === boxId)?.services!
 
@@ -187,6 +185,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
           data.title = appointment.title
           data.event_id = +addedEvent.event_id
           data.client_id = +addedEvent.client_id || +addedEvent.client_id.id
+          data.data_sheet = addedEvent.data_sheet
         }
       }
       const action: EventActions = event ? 'edit' : 'create'

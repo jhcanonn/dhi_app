@@ -208,6 +208,7 @@ export const dhiAppointmentMapper = (
       type: idType?.type,
       name: idType?.name,
     },
+    data_sheet: clientInfo?.ficha_id?.id,
     identification: clientInfo?.documento,
     first_name: clientInfo?.primer_nombre,
     middle_name: clientInfo?.segundo_nombre,

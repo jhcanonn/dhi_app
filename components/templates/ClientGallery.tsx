@@ -1,15 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { GallerySet } from '@components/organisms'
 import { useClientContext } from '@contexts'
 import { ClientPhoto } from '@models'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
-import { useEffect, useState } from 'react'
+import { ProgressSpinner } from 'primereact/progressspinner'
 import moment from 'moment'
 import 'moment/locale/es'
-import { ProgressSpinner } from 'primereact/progressspinner'
 
 interface Gallery {
   description: string
@@ -46,10 +46,10 @@ const ClientGallery = () => {
           value={gallery}
           emptyMessage='No se encontraron resultados'
           size='small'
-          showGridlines
           paginator
           rows={5}
           rowsPerPageOptions={[5, 10, 25, 50]}
+          tableStyle={{ minWidth: '40rem' }}
           className='custom-table'
         >
           <Column
@@ -66,7 +66,6 @@ const ClientGallery = () => {
           />
           <Column
             key='actions'
-            field='actions'
             header='Acción'
             body={actionsBodyTemplate}
             style={{ width: '10%' }}

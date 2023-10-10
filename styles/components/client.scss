@@ -1,11 +1,15 @@
 .custom-table {
-  @apply w-full [&_.p-column-header-content]:justify-center [&_.p-column-title]:font-bold [&_.p-inputwrapper]:w-fit [&_.p-paginator_.p-dropdown]:ml-0 [&_.p-paginator_.p-dropdown]:h-fit [&_.p-paginator-bottom]:border-0 [&_.p-paginator-first]:mx-[1px] [&_.p-paginator-first]:text-gray-500 [&_.p-paginator-first]:rounded-full [&_.p-paginator-first]:border-0 [&_.p-paginator-prev]:mx-[1px] [&_.p-paginator-prev]:rounded-full [&_.p-paginator-prev]:text-gray-500 [&_.p-paginator-prev]:border-0 [&_.p-paginator-next]:mx-[1px] [&_.p-paginator-next]:rounded-full [&_.p-paginator-next]:text-gray-500 [&_.p-paginator-next]:border-0 [&_.p-paginator-last]:mx-[1px] [&_.p-paginator-last]:rounded-full [&_.p-paginator-last]:text-gray-500 [&_.p-paginator-last]:border-0 [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:mx-[1px] [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:border-0 [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:rounded-full [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:text-gray-500 [&_.p-paginator_.p-paginator-pages_.p-paginator-page.p-highlight]:bg-gray-400 [&_.p-paginator_.p-paginator-pages_.p-paginator-page.p-highlight]:text-white [&.p-datatable_.p-paginator-bottom]:gap-y-2;
+  @apply text-sm w-full [&_.p-inputwrapper]:w-fit [&_.p-paginator_.p-dropdown]:ml-0 [&_.p-paginator_.p-dropdown]:h-fit [&_.p-paginator-bottom]:border-0 [&_.p-paginator-first]:mx-[1px] [&_.p-paginator-first]:text-gray-500 [&_.p-paginator-first]:rounded-full [&_.p-paginator-first]:border-0 [&_.p-paginator-prev]:mx-[1px] [&_.p-paginator-prev]:rounded-full [&_.p-paginator-prev]:text-gray-500 [&_.p-paginator-prev]:border-0 [&_.p-paginator-next]:mx-[1px] [&_.p-paginator-next]:rounded-full [&_.p-paginator-next]:text-gray-500 [&_.p-paginator-next]:border-0 [&_.p-paginator-last]:mx-[1px] [&_.p-paginator-last]:rounded-full [&_.p-paginator-last]:text-gray-500 [&_.p-paginator-last]:border-0 [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:mx-[1px] [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:border-0 [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:rounded-full [&_.p-paginator_.p-paginator-pages_.p-paginator-page]:text-gray-500 [&_.p-paginator_.p-paginator-pages_.p-paginator-page.p-highlight]:bg-gray-400 [&_.p-paginator_.p-paginator-pages_.p-paginator-page.p-highlight]:text-white [&.p-datatable_.p-paginator-bottom]:gap-y-2 [&_.p-datatable-header_button]:rounded-full;
 
-  @apply [&_th]:bg-gray-300/30 #{!important};
+  @apply [&_th]:bg-gray-300/40 [&_.p-row-odd]:bg-gray-300/20 [&_.p-datatable-header]:bg-gray-300/40 [&_th]:border-b-0 [&_.p-datatable-header_button]:text-brand #{!important};
 }
 
 .custom-table-card {
-  @apply rounded-xl [&_.p-card-content]:p-0 [&_.p-card-content]:flex [&_.p-card-content]:justify-center;
+  @apply rounded-xl [&_.p-card-body]:p-4 [&_.p-card-content]:p-0 [&_.p-card-content]:flex [&_.p-card-content]:flex-col [&_.p-card-content]:gap-4;
 
   @apply shadow-none #{!important};
+}
+
+.custom-tab-menu {
+  @apply [&_.p-tabmenu-nav]:flex-wrap [&_.p-menuitem-link]:w-max [&_.p-highlight>a]:border-b-4 [&_.p-highlight>a]:border-brand [&_.p-highlight>a]:text-brand [&_.p-tabmenuitem>a]:focus:shadow-none #{!important};
 }

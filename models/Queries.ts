@@ -37,6 +37,9 @@ export type AppointmentQuery = {
     indicativo: string
     indicativo_2: string
     correo: string
+    ficha_id: {
+      id: string
+    }
   }
   estado: {
     id: string

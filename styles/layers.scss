@@ -63,6 +63,10 @@
     [&_.p-inputnumber-input]:text-[0.8rem]
     [&_.p-multiselect-panel]:text-[0.8rem]
     [&_.p-multiselect-panel_.p-multiselect-items]:text-[0.8rem]
+    [&_.p-multiselect-panel_.p-multiselect-header]:py-[0.4rem]
+    [&_.p-multiselect-panel_.p-multiselect-header]:pr-[0.4rem]
+    [&_.p-column-filter-overlay-menu_.p-column-filter-buttonbar]:pt-0
+    [&_.p-column-filter-buttonbar_button]:bg-defaultBlue
     [&_.p-multiselect-filter]:text-[0.8rem]
     [&_.p-inputwrapper]:w-full
     [&_.p-autocomplete-input]:w-full

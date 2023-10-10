@@ -18,6 +18,7 @@ import { Skeleton } from 'primereact/skeleton'
 import { TabMenu } from 'primereact/tabmenu'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { ScrollTop } from 'primereact/scrolltop'
 
 type Props = {
   children: React.ReactNode
@@ -42,7 +43,7 @@ const ClientLayout = ({ children, params }: Props) => {
   const items: MenuItem[] = [
     {
       label: 'Perfil',
-      icon: PrimeIcons.USERS,
+      icon: PrimeIcons.USER,
       command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id })),
     },
     {
@@ -73,12 +74,10 @@ const ClientLayout = ({ children, params }: Props) => {
         model={items}
         activeIndex={activeIndex}
         onTabChange={(e) => setActiveIndex(e.index)}
-        className={
-          '[&_.p-highlight>a]:!border-b-4 [&_.p-highlight>a]:!border-brand [&_.p-highlight>a]:!text-brand [&_.p-tabmenuitem>a]:focus:!shadow-none'
-        }
+        className={'custom-tab-menu'}
       />
       <section className='w-full max-w-[100rem] mx-auto px-4'>
-        <div className='py-3 flex flex-col md:flex-row justify-between gap-2 mb-4'>
+        <div className='py-3 flex flex-col md:flex-row justify-between gap-2'>
           <h2 className='text-2xl font-extrabold text-brand border-b-2 flex-grow'>
             {loading ? (
               <Skeleton height='2rem' borderRadius='16px'></Skeleton>
@@ -95,8 +94,9 @@ const ClientLayout = ({ children, params }: Props) => {
             className='px-4 py-1 font-bold text-md'
           />
         </div>
-        {children}
+        <section className='my-4'>{children}</section>
       </section>
+      <ScrollTop />
     </>
   )
 }

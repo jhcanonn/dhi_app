@@ -105,6 +105,9 @@ export type ClientDirectus = {
   indicativo_2: string
   telefono_2: string
   estado_civil: string
+  ficha_id: {
+    id: number
+  }
   avatar: ProfileAvatar[]
   galeria: {
     galeria_id: {
