@@ -358,7 +358,7 @@ const Calendar = ({ cookies }: Props) => {
           resources={resources}
           resourceViewMode={resourceMode}
           resourceFields={calendarFieldsMapper(resourceType)}
-          recourseHeaderComponent={handleCustomHeader}
+          resourceHeaderComponent={handleCustomHeader}
           eventRenderer={handleCustomEvent}
           customViewer={handleCustomViewer}
           customEditor={handleCustomEditor}
