@@ -22,6 +22,8 @@ export const errorCodes = {
   ERR_JWT_EXPIRED: 'ERR_JWT_EXPIRED',
 }
 
+export const CLIENT_PAGE_TAB = ['dataSheet', 'gallery', 'budget']
+
 export const PAGE_PATH = {
   home: '/',
   login: '/login',
@@ -30,7 +32,12 @@ export const PAGE_PATH = {
   dayCalendar: '/calendar/day',
   dateListCalendar: '/calendar/date-list',
   clientList: '/client',
-  clientGallery: '/client/gallery',
+  clientDetail: '/client/{id}',
+  clientEdit: '/client/{id}/edit',
+  clientDataSheet: '/client/{id}/dataSheet',
+  clientGallery: '/client/{id}/gallery',
+  clientBudget: '/client/{id}/budget',
+  gallery: '/client/gallery',
   crm: '/crm',
   finance: '/finance',
   statistics: '/statistics',
@@ -51,3 +58,6 @@ export const BLOCK_SERVICE = 'Bloqueo Otra Razón'
 
 export const DEFAULT_APPOINTMENT_MINUTES = 30
 export const REQUEST_ATTEMPT_NUMBER = 3
+
+export const MAX_MB_GALLERY = 7
+export const PATIENTS_GALLERY = 'ce89509c-fcb6-4acd-afb2-3d3fec5e6058'

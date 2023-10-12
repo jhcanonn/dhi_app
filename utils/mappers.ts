@@ -3,8 +3,10 @@ import {
   AppointmentQuery,
   Box,
   BoxDirectus,
+  ClientDirectus,
   Country,
   DhiEvent,
+  DhiPatient,
   EventState,
   EventStateDirectus,
   Pay,
@@ -94,6 +96,26 @@ export const paysMapper = (pays: PaysDirectus[]) => {
           code: p.code,
         }) as Pay,
     )
+}
+
+export const directusClientMapper = (data: DhiPatient) => {
+  return {
+    id: data.id,
+    tipo_documento: data.tipo_documento?.type,
+    documento: data.documento,
+    primer_nombre: data.primer_nombre,
+    segundo_nombre: data.segundo_nombre,
+    apellido_paterno: data.apellido_paterno,
+    apellido_materno: data.apellido_materno,
+    genero: data.genero?.type,
+    fecha_nacimiento: data.fecha_nacimiento?.toISOString(),
+    correo: data.correo,
+    indicativo: data.indicativo?.dialling,
+    telefono: data.telefono,
+    indicativo_2: data.indicativo_2?.dialling,
+    telefono_2: data.telefono_2,
+    estado_civil: data.estado_civil?.type,
+  } as ClientDirectus
 }
 
 export const directusAppointmentMapper = (data: DhiEvent) => {
@@ -186,6 +208,7 @@ export const dhiAppointmentMapper = (
       type: idType?.type,
       name: idType?.name,
     },
+    data_sheet: clientInfo?.ficha_id?.id,
     identification: clientInfo?.documento,
     first_name: clientInfo?.primer_nombre,
     middle_name: clientInfo?.segundo_nombre,

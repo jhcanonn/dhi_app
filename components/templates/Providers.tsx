@@ -1,6 +1,11 @@
 'use client'
 
-import { AsideProvider, CalendarProvider, GlobalProvider } from '@contexts'
+import {
+  AsideProvider,
+  CalendarProvider,
+  ClientProvider,
+  GlobalProvider,
+} from '@contexts'
 import { CookiesProvider, Cookies } from 'react-cookie'
 import { setContext } from '@apollo/client/link/context'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -48,7 +53,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => (
       <CookiesProvider>
         <GlobalProvider>
           <CalendarProvider>
-            <AsideProvider>{children}</AsideProvider>
+            <AsideProvider>
+              <ClientProvider>{children}</ClientProvider>
+            </AsideProvider>
           </CalendarProvider>
         </GlobalProvider>
       </CookiesProvider>

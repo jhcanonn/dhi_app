@@ -35,6 +35,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
       header: 'Confirmación',
       icon: 'pi pi-info-circle',
       acceptClassName: 'p-button-danger',
+      draggable: false,
       async accept() {
         await handleDelete()
       },

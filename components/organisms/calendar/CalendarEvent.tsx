@@ -79,6 +79,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         acceptClassName: 'p-button-danger',
         acceptLabel: 'Si',
         rejectLabel: 'No',
+        draggable: false,
         accept: async () => {
           await handleDeleteAppointment()
         },
@@ -167,8 +168,11 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         {!isBlock &&
           eventStates
             ?.filter((es) => es.name !== BLOCK_BOX)
-            ?.map((option) => (
-              <MenuItem onClick={() => handleClickItem(option)}>
+            ?.map((option, i) => (
+              <MenuItem
+                key={`${option.name}_${i}`}
+                onClick={() => handleClickItem(option)}
+              >
                 <EventStateItem {...option} />
               </MenuItem>
             ))}

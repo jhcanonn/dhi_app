@@ -51,6 +51,8 @@
     [&_.p-inputtext]:py-[0.35rem]
     [&_.p-button.p-button-icon-only]:py-[0.35rem]
     [&_.p-dropdown-panel]:text-[0.8rem]
+    [&_.pi]:text-[0.8rem]
+    [&_.p-inputtext]:text-[0.8rem]
     [&_.p-inputtextarea]:text-[0.8rem]
     [&_.p-dropdown-filter-container_input]:text-[0.8rem]
     [&_.p-dropdown-filter-container_input]:px-[0.8rem]
@@ -58,8 +60,13 @@
     [&_.p-dropdown-filter-container_svg]:w-[0.8rem]
     [&_.p-multiselect-filter-container_svg]:w-[0.8rem]
     [&_.p-multiselect]:text-[0.8rem]
+    [&_.p-inputnumber-input]:text-[0.8rem]
     [&_.p-multiselect-panel]:text-[0.8rem]
     [&_.p-multiselect-panel_.p-multiselect-items]:text-[0.8rem]
+    [&_.p-multiselect-panel_.p-multiselect-header]:py-[0.4rem]
+    [&_.p-multiselect-panel_.p-multiselect-header]:pr-[0.4rem]
+    [&_.p-column-filter-overlay-menu_.p-column-filter-buttonbar]:pt-0
+    [&_.p-column-filter-buttonbar_button]:bg-defaultBlue
     [&_.p-multiselect-filter]:text-[0.8rem]
     [&_.p-inputwrapper]:w-full
     [&_.p-autocomplete-input]:w-full
@@ -88,7 +95,12 @@
     [&_.p-multiselect-panel]:z-[1300] 
     [&_.p-autocomplete-panel]:z-[1300] 
     [&_.p-input-icon-left_input]:pl-10
-    [&_.p-input-icon-left>i]:mt-[-0.35rem] #{!important};
+    [&_.p-input-icon-left>i]:mt-[-0.35rem]
+    [&_.p-tabmenu-nav]:bg-white
+    [&_.p-tabmenu-nav]:border-0
+    [&_.p-menuitem-link]:border-0
+    [&_.p-dialog-mask]:z-[1300]
+    [&_.p-image-mask]:z-[1310] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,
@@ -102,7 +114,7 @@
     }
 
     .p-float-label label {
-      @apply leading-[1rem];
+      @apply leading-[1rem] text-sm;
     }
   }
 
@@ -131,6 +143,9 @@
 
   a {
     @apply text-[var(--primary-color)] no-underline;
+  }
+  a:focus {
+    box-shadow: none !important;
   }
 
   .layout-wrapper {

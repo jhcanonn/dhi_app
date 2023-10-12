@@ -1,5 +1,7 @@
 /* Los campos que se mapean son del Evento */
 
+import { PrimitiveValue, parseTemplate } from 'url-template'
+
 export const calendarFieldsMapper = (resource: string) => {
   return {
     idField: `${resource}_id`,
@@ -28,4 +30,39 @@ export const expiresCookie = () => {
 export const getOnlyDate = (date: Date) => {
   const dp = date.toLocaleDateString('es-CL').slice(0, 10).split('-')
   return `${dp[2]}-${dp[1]}-${dp[0]}`
+}
+
+export const parseUrl = (
+  url: string,
+  template: Record<
+    string,
+    PrimitiveValue | PrimitiveValue[] | Record<string, PrimitiveValue>
+  >,
+): string => {
+  const urlParse = parseTemplate(url)
+  return urlParse.expand(template)
+}
+
+export const toTitleCase = (text: string) =>
+  text
+    .split(' ')
+    .filter((word) => word)
+    .map((word) => {
+      const wordLC = word.toLowerCase()
+      return wordLC[0].toUpperCase() + wordLC.substring(1)
+    })
+    .join(' ')
+
+export const calcularEdadConMeses = (fechaNacimiento: Date) => {
+  const fechaActual = new Date()
+
+  let anios = fechaActual.getFullYear() - fechaNacimiento.getFullYear()
+  let meses = fechaActual.getMonth() - fechaNacimiento.getMonth()
+
+  if (meses < 0) {
+    anios--
+    meses += 12
+  }
+
+  return { anios, meses }
 }

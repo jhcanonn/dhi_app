@@ -1,12 +1,10 @@
-import { ComingSoon } from '@components/templates'
+import { ClientDetail } from '@components/templates'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'DHI | Detalle del Cliente',
+  title: 'DHI | Detalle del Paciente',
 }
 
-const ClientID = ({ params }: { params: { id: string } }) => (
-  <ComingSoon page={`Detalle del Cliente ${params.id}`} />
-)
+const ClientDetailPage = () => <ClientDetail />
 
-export default ClientID
+export default ClientDetailPage

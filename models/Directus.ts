@@ -72,6 +72,52 @@ export type BoxDirectus = {
   }[]
 }
 
+export type ProfileAvatar = {
+  id: string
+  directus_files_id: {
+    id: string
+    title: string
+  }
+}
+
+export type ClientPhoto = {
+  directus_files_id: {
+    id: string
+    title: string
+    description: string
+  }
+}
+
+export type ClientDirectus = {
+  id: number
+  full_name: string
+  tipo_documento: string
+  documento: string
+  primer_nombre: string
+  segundo_nombre: string
+  apellido_paterno: string
+  apellido_materno: string
+  genero: string
+  fecha_nacimiento: string
+  correo: string
+  indicativo: string
+  telefono: string
+  indicativo_2: string
+  telefono_2: string
+  estado_civil: string
+  ficha_id: {
+    id: number
+  }
+  avatar: ProfileAvatar[]
+  galeria: {
+    galeria_id: {
+      descripcion: string
+      date_created: string
+      fotos: ClientPhoto[]
+    }
+  }[]
+}
+
 export enum StatusDirectus {
   PUBLISHED = 'published',
   DRAFT = 'draft',

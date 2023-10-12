@@ -115,6 +115,52 @@ export const GET_INFO_CLIENT = gql`
   }
 `
 
+export const GET_CLIENT_BY_ID = gql`
+  query ($id: ID!) {
+    pacientes_by_id(id: $id) {
+      id
+      full_name
+      tipo_documento
+      documento
+      primer_nombre
+      segundo_nombre
+      apellido_paterno
+      apellido_materno
+      genero
+      fecha_nacimiento
+      correo
+      indicativo
+      telefono
+      indicativo_2
+      telefono_2
+      estado_civil
+      ficha_id {
+        id
+      }
+      avatar {
+        id
+        directus_files_id {
+          id
+          title
+        }
+      }
+      galeria {
+        galeria_id {
+          descripcion
+          date_created
+          fotos {
+            directus_files_id {
+              id
+              title
+              description
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 export const GET_APPOINTMENTS = gql`
   query ($start: GraphQLStringOrFloat!, $end: GraphQLStringOrFloat!) {
     citas(filter: { inicio: { _between: [$start, $end] } }) {
@@ -156,6 +202,9 @@ export const GET_APPOINTMENTS = gql`
         indicativo
         indicativo_2
         correo
+        ficha_id {
+          id
+        }
       }
       estado {
         id

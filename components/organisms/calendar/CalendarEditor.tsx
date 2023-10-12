@@ -36,10 +36,12 @@ import {
   BLOCK_BOX,
   BLOCK_SERVICE,
   errorMessages,
+  parseUrl,
+  GET_CLIENT_BY_ID,
 } from '@utils'
 import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { useQuery } from '@apollo/client'
 import {
@@ -56,6 +58,8 @@ import { Cookies, withCookies } from 'react-cookie'
 import { MultiSelectChangeEvent } from 'primereact/multiselect'
 import moment from 'moment'
 import { EventStateItem, EventStateItemColor } from '@components/molecules'
+import { UploadProfileImage } from '../patient'
+import { Skeleton } from 'primereact/skeleton'
 
 type Props = {
   cookies: Cookies
@@ -120,7 +124,11 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     eventStates,
   }
 
-  console.log({ event, eventData })
+  const {
+    data: patientInfo,
+    loading: patientLoading,
+    refetch: patientRefetch,
+  } = useQuery(GET_CLIENT_BY_ID, { variables: { id: eventData.client_id } })
 
   const getServices = (boxId: number) =>
     boxes.find((b) => b.box_id === boxId)?.services!
@@ -177,6 +185,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
           data.title = appointment.title
           data.event_id = +addedEvent.event_id
           data.client_id = +addedEvent.client_id || +addedEvent.client_id.id
+          data.data_sheet = addedEvent.data_sheet
         }
       }
       const action: EventActions = event ? 'edit' : 'create'
@@ -329,6 +338,12 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
             className='h-[2rem]'
           />
         )}
+        {event &&
+          (patientLoading ? (
+            <Skeleton shape='circle' size='2.4rem'></Skeleton>
+          ) : (
+            <UploadProfileImage clientInfo={patientInfo.pacientes_by_id} />
+          ))}
         <Button
           icon='pi pi-times'
           severity='danger'
@@ -363,6 +378,10 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
       {item.documento} - {item.primer_nombre} {item.apellido_paterno}
     </p>
   )
+
+  useEffect(() => {
+    patientRefetch({ id: eventData.client_id })
+  }, [])
 
   return (
     <>
@@ -564,7 +583,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
               </div>
             )}
           </div>
-          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem]'>
+          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto'>
             {event && (
               <>
                 <Button
@@ -581,7 +600,9 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   rounded
                   onClick={() =>
                     router.push(
-                      `${PAGE_PATH.clientList}/${eventData.client_id}`,
+                      parseUrl(PAGE_PATH.clientDetail, {
+                        id: +eventData.client_id!,
+                      }),
                     )
                   }
                 />
