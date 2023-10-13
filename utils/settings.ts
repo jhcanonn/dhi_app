@@ -93,32 +93,6 @@ export const localeOptions = {
   clear: 'Limpiar',
 }
 
-export const mandatoryAppointmentFields = [
-  'start',
-  'end',
-  'id_type',
-  'identification',
-  'first_name',
-  'last_name',
-  'phone',
-  'dialling',
-  'email',
-  'professional',
-  'box',
-  'services',
-  'pay',
-  'state',
-]
-
-export const mandatoryClientEditFields = [
-  'tipo_documento',
-  'documento',
-  'primer_nombre',
-  'apellido_paterno',
-  'indicativo',
-  'telefono',
-]
-
 export const idTypes = [
   { type: 'CC', name: 'Cédula de ciudadanía' },
   { type: 'CE', name: 'Cédula de extranjería' },

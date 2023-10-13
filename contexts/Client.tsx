@@ -1,6 +1,6 @@
 'use client'
 
-import { ClientDirectus } from '@models'
+import { ClientDirectus, PanelsDirectus } from '@models'
 import {
   Dispatch,
   SetStateAction,
@@ -14,6 +14,8 @@ type ClientContextType = {
   setLoadingInfo: Dispatch<SetStateAction<boolean>>
   clientInfo: ClientDirectus | null
   setClientInfo: Dispatch<SetStateAction<ClientDirectus | null>>
+  dataSheetPanels: PanelsDirectus[]
+  setDataSheetPanels: Dispatch<SetStateAction<PanelsDirectus[]>>
 }
 
 const clientContextDefaultValues: ClientContextType = {
@@ -21,6 +23,8 @@ const clientContextDefaultValues: ClientContextType = {
   setLoadingInfo: () => {},
   clientInfo: null,
   setClientInfo: () => {},
+  dataSheetPanels: [],
+  setDataSheetPanels: () => {},
 }
 
 const ClientContext = createContext<ClientContextType>(
@@ -34,10 +38,18 @@ export const useClientContext = () => {
 export const ClientProvider = ({ children }: { children: React.ReactNode }) => {
   const [loadingInfo, setLoadingInfo] = useState(true)
   const [clientInfo, setClientInfo] = useState<ClientDirectus | null>(null)
+  const [dataSheetPanels, setDataSheetPanels] = useState<PanelsDirectus[]>([])
 
   return (
     <ClientContext.Provider
-      value={{ clientInfo, setClientInfo, loadingInfo, setLoadingInfo }}
+      value={{
+        clientInfo,
+        setClientInfo,
+        loadingInfo,
+        setLoadingInfo,
+        dataSheetPanels,
+        setDataSheetPanels,
+      }}
     >
       {children}
     </ClientContext.Provider>

@@ -56,7 +56,7 @@ const InputTextValid = <T extends FieldValues>({
             )}
             <InputText
               id={name}
-              value={value}
+              value={value || undefined}
               ref={ref}
               onBlur={(e) => {
                 onBlur()

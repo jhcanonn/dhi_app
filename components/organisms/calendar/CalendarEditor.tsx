@@ -30,7 +30,6 @@ import {
   calendarFieldsMapper,
   getResourceData,
   idTypes,
-  mandatoryAppointmentFields,
   servicesMapper,
   DEFAULT_APPOINTMENT_MINUTES,
   BLOCK_BOX,
@@ -38,6 +37,7 @@ import {
   errorMessages,
   parseUrl,
   GET_CLIENT_BY_ID,
+  regexPatterns,
 } from '@utils'
 import { useRouter } from 'next/navigation'
 import { Toast } from 'primereact/toast'
@@ -137,8 +137,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     getServices(eventData.box?.box_id!),
   )
   const handleForm = useForm({ defaultValues: eventData })
-  const { reset, handleSubmit, resetField, setValue, getValues, trigger } =
-    handleForm
+  const { handleSubmit, resetField, setValue, getValues, trigger } = handleForm
 
   const blockAppointment = async (data: DhiEvent) => {
     try {
@@ -206,13 +205,8 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     if (hs < 7 || he > 19 || (he === 19 && me > 0)) {
       showWarning(errorMessages.statusOutRange, errorMessages.hoursOutRange)
     } else {
-      if (blocked) {
-        await blockAppointment(data)
-      } else {
-        if (mandatoryAppointmentFields.map((f) => data[f]).every(Boolean)) {
-          await createEditAppointment(data)
-        } else reset()
-      }
+      if (blocked) await blockAppointment(data)
+      else await createEditAppointment(data)
     }
   }
 
@@ -432,6 +426,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   icon='user'
                   disabled={desabledFields || isEvent}
                   required={!blocked}
+                  pattern={regexPatterns.onlyEmpty}
                 />
                 <InputTextValid
                   name='middle_name'
@@ -439,6 +434,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   handleForm={handleForm}
                   disabled={desabledFields || isEvent}
                   icon='user'
+                  pattern={regexPatterns.onlyEmpty}
                 />
                 <InputTextValid
                   name='last_name'
@@ -447,6 +443,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   icon='user'
                   disabled={desabledFields || isEvent}
                   required={!blocked}
+                  pattern={regexPatterns.onlyEmpty}
                 />
                 <InputTextValid
                   name='last_name_2'
@@ -454,6 +451,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   handleForm={handleForm}
                   disabled={desabledFields || isEvent}
                   icon='user'
+                  pattern={regexPatterns.onlyEmpty}
                 />
               </div>
             )}
@@ -564,7 +562,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   handleForm={handleForm}
                   icon='envelope'
                   required={!blocked}
-                  pattern={/\S+@\S+\.\S+/}
+                  pattern={regexPatterns.email}
                   disabled={isOldDate}
                 />
                 <InputSwitchValid
@@ -579,6 +577,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   handleForm={handleForm}
                   rows={4}
                   disabled={isOldDate}
+                  pattern={regexPatterns.onlyEmpty}
                 />
               </div>
             )}

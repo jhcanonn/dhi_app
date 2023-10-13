@@ -10,6 +10,9 @@ module.exports = {
       colors: {
         defaultBlue: '#007bff',
         surfaceGround: '#efefef',
+        brandGrouperColor: '#dee2e6',
+        brandFieldBorder: '#ced4da',
+        brandFieldColor: '#6c757d',
         brand: '#427D8D',
         invalid: '#dc3435',
       },

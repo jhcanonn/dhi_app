@@ -17,8 +17,8 @@ import {
   directusClientMapper,
   genders,
   idTypes,
-  mandatoryClientEditFields,
   parseUrl,
+  regexPatterns,
 } from '@utils'
 import { getCountries } from '@utils/api'
 import moment from 'moment'
@@ -62,7 +62,7 @@ const ClientEdit = () => {
   }
 
   const handleForm = useForm({ defaultValues: dataClient })
-  const { reset, handleSubmit, setValue, getValues } = handleForm
+  const { handleSubmit, setValue, getValues } = handleForm
 
   const showError = (status: string, message: string) => {
     toast.current?.show({
@@ -91,11 +91,9 @@ const ClientEdit = () => {
   }
 
   const onSubmit = async (data: DhiPatient) => {
-    if (mandatoryClientEditFields.map((f) => data[f]).every(Boolean)) {
-      setLoading(true)
-      await editClient(data)
-      setLoading(false)
-    } else reset()
+    setLoading(true)
+    await editClient(data)
+    setLoading(false)
   }
 
   const fetchCountries = () => {
@@ -131,62 +129,9 @@ const ClientEdit = () => {
     }
   }, [clientInfo])
 
-  // const panelsArr = {
-  //   panels: [
-  //     {
-  //       name: 'Nota enfermería implante capilar',
-  //       config: [
-  //         {
-  //           group: 'Nota Enfermeria-Procedimiento',
-  //           fields: [
-  //             {
-  //               name: 'dia_procedimiento',
-  //               label: 'Dia de Procedimiento',
-  //               type: 'dropdown',
-  //               options: [
-  //                 { name: 'dia1', value: 'dia1' },
-  //                 { name: 'dia2', value: 'dia2' },
-  //               ],
-  //             },
-  //             {
-  //               name: 'implante',
-  //               label: 'Implante',
-  //               type: 'dropdown',
-  //               options: [
-  //                 { name: 'c', value: 'capilar' },
-  //                 { name: 'b', value: 'barba' },
-  //                 { name: 'c', value: 'capilar' },
-  //                 { name: 'cj', value: 'ceja' },
-  //                 { name: 'mx', value: 'mixto' },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // }
-
   return (
     <>
       <Toast ref={toast} />
-      {/* {panelsArr.panels.map((p: any) => {
-        return p.config.map((c: any) => {
-          return c.fields.map((f: any) => {
-            if (f.type === 'dropdown') {
-              return (
-                <DropdownValid
-                  name={f.name}
-                  label={f.label}
-                  handleForm={handleForm}
-                  list={f.options}
-                  required
-                />
-              )
-            }
-          })
-        })
-      })} */}
       <form
         autoComplete='off'
         onSubmit={handleSubmit(onSubmit)}
@@ -215,12 +160,14 @@ const ClientEdit = () => {
                 handleForm={handleForm}
                 icon='user'
                 required
+                pattern={regexPatterns.onlyEmpty}
               />
               <InputTextValid
                 name='segundo_nombre'
                 label='Segundo nombre'
                 handleForm={handleForm}
                 icon='user'
+                pattern={regexPatterns.onlyEmpty}
               />
               <InputTextValid
                 name='apellido_paterno'
@@ -228,12 +175,14 @@ const ClientEdit = () => {
                 handleForm={handleForm}
                 icon='user'
                 required
+                pattern={regexPatterns.onlyEmpty}
               />
               <InputTextValid
                 name='apellido_materno'
                 label='Apellido materno'
                 handleForm={handleForm}
                 icon='user'
+                pattern={regexPatterns.onlyEmpty}
               />
             </div>
             <div className='w-full md:!w-[50%]'>
@@ -254,7 +203,7 @@ const ClientEdit = () => {
                 label='Correo electrónico'
                 handleForm={handleForm}
                 icon='envelope'
-                pattern={/\S+@\S+\.\S+/}
+                pattern={regexPatterns.email}
               />
               <PhoneNumberValid
                 name='telefono'

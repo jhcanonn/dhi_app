@@ -5,7 +5,13 @@ import { Cookies, withCookies } from 'react-cookie'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { DHI_SESSION, GET_TOKEN, PAGE_PATH, expiresCookie } from '@utils'
+import {
+  DHI_SESSION,
+  GET_TOKEN,
+  PAGE_PATH,
+  expiresCookie,
+  regexPatterns,
+} from '@utils'
 import { directusSystemClient } from './Providers'
 import { LoginData } from '@models'
 import { InputTextValid } from '@components/atoms'
@@ -30,17 +36,15 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
       password: '',
     },
   })
-  const { reset, handleSubmit } = handleForm
+  const { handleSubmit } = handleForm
 
   const onSubmit = async (data: LoginData) => {
-    if (Object.keys(data).every(Boolean)) {
-      await login({
-        variables: {
-          email: data.email,
-          password: data.password,
-        },
-      })
-    } else reset()
+    await login({
+      variables: {
+        email: data.email,
+        password: data.password,
+      },
+    })
   }
 
   const handleForgotPassword = () => {
@@ -91,7 +95,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
             handleForm={handleForm}
             icon='envelope'
             required
-            pattern={/\S+@\S+\.\S+/}
+            pattern={regexPatterns.email}
           />
           <PasswordValid
             name='password'

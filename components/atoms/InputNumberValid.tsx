@@ -9,7 +9,10 @@ import { colors, errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
+  disabled?: boolean
   icon?: string
+  mode?: 'currency' | 'decimal'
+  showButtons?: boolean
   minLength?: number
   onCustomChange?: (e: InputNumberChangeEvent) => void
 }
@@ -18,7 +21,10 @@ const InputNumberValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
+  disabled,
   icon,
+  mode,
+  showButtons,
   minLength,
   required,
   validate,
@@ -56,7 +62,7 @@ const InputNumberValid = <T extends FieldValues>({
             )}
             <InputNumber
               id={name}
-              value={value}
+              value={value || null}
               inputRef={ref}
               onBlur={(e) => {
                 onBlur()
@@ -68,6 +74,10 @@ const InputNumberValid = <T extends FieldValues>({
               }}
               inputClassName={cx({ 'p-invalid': error })}
               useGrouping={false}
+              showButtons={showButtons}
+              mode={mode}
+              disabled={disabled}
+              className={"[&_[type='button']]:bg-defaultBlue"}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}
