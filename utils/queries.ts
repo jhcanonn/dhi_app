@@ -54,6 +54,7 @@ export const GET_USER_ME = gql`
       profesional {
         id
         nombre
+        no_registro_medico
       }
       avatar {
         id

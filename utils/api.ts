@@ -24,6 +24,24 @@ export const getCountries = () =>
         })) as Country[],
     )
 
+export const getPanelsFromDirectus = async (token: string | null) => {
+  const agrupadores_id = 'agrupadores_id'
+  const agrupadores_code = `${agrupadores_id}.agrupadores_code`
+  const campos_id = `${agrupadores_code}.campos_id`
+  const _campos_id = `${campos_id}.campos_id`
+  const fields = `fields=*,${agrupadores_id}.*,${agrupadores_code}.*,${campos_id}.*,${_campos_id}.*`
+
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/items/paneles?${fields}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+  return res.data?.data
+}
+
 export const createAppointment = async (
   payload: AppointmentDirectus,
   token: string | null,

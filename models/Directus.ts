@@ -118,8 +118,96 @@ export type ClientDirectus = {
   }[]
 }
 
+export type DisenioResponsivoDirectus = {
+  desktop: {
+    columnas: number
+  }
+  tablet: {
+    columnas: number
+  }
+  mobile: {
+    columnas: number
+  }
+}
+
+export type CamposValidacionesDirectus = {
+  required: boolean
+  regex: string
+}
+
+export type CamposOpcionesDirectus = {
+  name: string
+  value: string
+}
+
+type DefaultFieldsDirectus = {
+  estado: string
+  orden: number | null
+  user_created: string
+  date_created: string
+  user_updated: string | null
+  date_updated: string | null
+}
+
+export type CamposDirectus = {
+  id: number
+  tipo: string
+  codigo: string
+  etiqueta: string
+  descripcion: string | null
+  validaciones: CamposValidacionesDirectus | null
+  opciones: CamposOpcionesDirectus[] | null
+  filas_por_defecto: number
+  filas_grilla: number
+  valor_predeterminado: any
+  valor_accionado: any
+  deshabilitado: boolean
+} & DefaultFieldsDirectus
+
+export type CamposRelDirectus = {
+  id: number
+  orden: number
+  agrupadores_code: string
+  campos_id: CamposDirectus
+}
+
+export type AgrupadoresDirectus = {
+  code: string
+  etiqueta: string | null
+  descripcion: string | null
+  diseno_responsivo: DisenioResponsivoDirectus
+  campos_id: CamposRelDirectus[]
+  etiqueta_boton_extra: string | null
+} & DefaultFieldsDirectus
+
+export type AgrupadoresRelDirectus = {
+  id: number
+  orden: number
+  paneles_code: string
+  agrupadores_code: AgrupadoresDirectus
+}
+
+export type PanelsDirectus = {
+  code: string
+  nombre: string
+  descripcion: string
+  agrupadores_id: AgrupadoresRelDirectus[]
+  bloque_de_firma: boolean
+} & DefaultFieldsDirectus
+
 export enum StatusDirectus {
   PUBLISHED = 'published',
   DRAFT = 'draft',
   ARCHIVED = 'archived',
+}
+
+export enum FieldTypeDirectus {
+  TEXT = 'text',
+  TEXTAREA = 'textarea',
+  NUMBER = 'number',
+  DROPDOWN = 'dropdown',
+  DATE = 'date',
+  TIME = 'time',
+  DATETIME = 'datetime',
+  CHECKBOX = 'checkbox',
 }

@@ -67,6 +67,7 @@
     [&_.p-multiselect-panel_.p-multiselect-header]:pr-[0.4rem]
     [&_.p-column-filter-overlay-menu_.p-column-filter-buttonbar]:pt-0
     [&_.p-column-filter-buttonbar_button]:bg-defaultBlue
+    [&_[type='submit']]:bg-defaultBlue
     [&_.p-multiselect-filter]:text-[0.8rem]
     [&_.p-inputwrapper]:w-full
     [&_.p-autocomplete-input]:w-full
@@ -100,7 +101,15 @@
     [&_.p-tabmenu-nav]:border-0
     [&_.p-menuitem-link]:border-0
     [&_.p-dialog-mask]:z-[1300]
-    [&_.p-image-mask]:z-[1310] #{!important};
+    [&_.p-image-mask]:z-[1310]
+    [&_.p-fieldset-legend]:py-2
+    [&_.p-fieldset-legend_a]:py-3
+    [&_.p-fieldset_.p-fieldset-content]:pt-[1rem]
+    [&_.p-fieldset_.p-fieldset-content]:px-[0.75rem]
+    [&_.p-fieldset_.p-fieldset-content]:pb-[0.3rem]
+    [&_.p-checkbox-box]:w-[17px]
+    [&_.p-checkbox-box]:h-[17px]
+    [&_.p-checkbox]:items-center #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,
@@ -115,6 +124,11 @@
 
     .p-float-label label {
       @apply leading-[1rem] text-sm;
+    }
+
+    fieldset {
+      padding-inline-start: 0.75em;
+      padding-inline-end: 0.75em;
     }
   }
 
@@ -155,6 +169,14 @@
   .p-multiselect .p-multiselect-label.p-placeholder,
   .p-multiselect .p-multiselect-label {
     @apply py-[0.35rem];
+  }
+
+  .custom-float-label {
+    @apply absolute text-brandFieldColor left-[0.5rem] top-[-0.75rem] text-xs rounded-[0.5rem] px-[0.4rem] mt-[0.2rem] bg-white;
+  }
+
+  .custom-field-border {
+    @apply border border-brandFieldBorder rounded-[4px] pt-[5.6px] pb-[3px] px-[12px] relative;
   }
 }
 

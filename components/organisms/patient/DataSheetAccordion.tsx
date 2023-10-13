@@ -1,13 +1,23 @@
 'use client'
 
 import { ComingSoon } from '@components/templates'
-import { DataSheetEnum } from '@models'
+import { useClientContext } from '@contexts'
+import { DataSheetEnum, PanelsDirectus } from '@models'
+import { getPanelsFromDirectus, refreshToken } from '@utils/api'
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Button } from 'primereact/button'
-import { useState } from 'react'
+import { ProgressSpinner } from 'primereact/progressspinner'
+import { useEffect, useState } from 'react'
+import { Cookies, withCookies } from 'react-cookie'
+import { PanelForm } from '@components/molecules'
 
-const DataSheetAccordion = () => {
+type Props = {
+  cookies: Cookies
+}
+
+const DataSheetAccordion = ({ cookies }: Props) => {
   const [accordionIndex, setAccordionIndex] = useState<number[]>([0])
+  const { dataSheetPanels, setDataSheetPanels } = useClientContext()
 
   const closeAccordionTab = (itemIndex: number) => {
     const _accordionIndex = accordionIndex ? [...accordionIndex] : []
@@ -24,6 +34,16 @@ const DataSheetAccordion = () => {
     setAccordionIndex(_accordionIndex)
   }
 
+  const getPanels = async () => {
+    const access_token = await refreshToken(cookies)
+    const panels: PanelsDirectus[] = await getPanelsFromDirectus(access_token)
+    setDataSheetPanels(panels)
+  }
+
+  useEffect(() => {
+    getPanels()
+  }, [])
+
   return (
     <Accordion
       multiple
@@ -31,22 +51,20 @@ const DataSheetAccordion = () => {
       onTabChange={(e: any) => setAccordionIndex(e.index)}
     >
       <AccordionTab header={DataSheetEnum.CONSULTA_PRIMERA_VEZ}>
-        <div className='flex flex-col gap-4 items-center'>
-          <p className='m-0'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </p>
-          <Button
-            label='Guardar atención'
-            className='text-sm w-fit'
-            onClick={() => closeAccordionTab(0)}
+        {dataSheetPanels.length ? (
+          <PanelForm
+            panel={
+              dataSheetPanels.filter(
+                (p) => p.code === 'consulta_primera_vez',
+              )[0]
+            }
+            onCustom={() => closeAccordionTab(0)}
           />
-        </div>
+        ) : (
+          <div className='flex justify-center'>
+            <ProgressSpinner />
+          </div>
+        )}
       </AccordionTab>
       <AccordionTab header={DataSheetEnum.CONSULTA_CONTROL}>
         <div className='flex flex-col gap-4 items-center'>
@@ -82,4 +100,4 @@ const DataSheetAccordion = () => {
   )
 }
 
-export default DataSheetAccordion
+export default withCookies(DataSheetAccordion)

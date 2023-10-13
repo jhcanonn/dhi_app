@@ -67,6 +67,7 @@ export type User = {
   profesional: {
     id: string
     nombre: string
+    no_registro_medico: string
   }
   avatar: {
     id: string

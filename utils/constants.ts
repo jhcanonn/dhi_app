@@ -18,6 +18,11 @@ export const errorMessages = {
   hoursOutRange: 'Solo se permiten citas entre 7AM y 7PM',
 }
 
+export const regexPatterns = {
+  onlyEmpty: /^(?!\s+$).+/,
+  email: /\S+@\S+\.\S+/,
+}
+
 export const errorCodes = {
   ERR_JWT_EXPIRED: 'ERR_JWT_EXPIRED',
 }

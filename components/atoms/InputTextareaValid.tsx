@@ -9,6 +9,7 @@ import { errorMessages } from '@utils'
 
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
+  gridRows?: number
   disabled?: boolean
   rows?: number
   pattern?: RegExp
@@ -18,6 +19,7 @@ const InputTextareaValid = <T extends FieldValues>({
   handleForm,
   name,
   label,
+  gridRows,
   disabled,
   rows,
   pattern,
@@ -42,12 +44,24 @@ const InputTextareaValid = <T extends FieldValues>({
           message: errorMessages.invalidFormat,
         },
       }}
-      render={({ field, fieldState: { error } }) => (
-        <div className='flex flex-col'>
+      render={({
+        field: { name, value, ...restFields },
+        fieldState: { error },
+      }) => (
+        <div
+          className={cx(
+            'flex flex-col',
+            { 'row-span-2': gridRows === 2 },
+            { 'row-span-3': gridRows === 3 },
+            { 'row-span-4': gridRows === 4 },
+            { 'row-span-5': gridRows === 5 },
+          )}
+        >
           <span className='p-float-label'>
             <InputTextarea
-              id={field.name}
-              {...field}
+              id={name}
+              value={value || undefined}
+              {...restFields}
               rows={rows}
               className={cx({ 'p-invalid': error }, 'w-full')}
               autoResize
