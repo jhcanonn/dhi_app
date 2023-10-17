@@ -8,8 +8,7 @@ import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import moment from 'moment'
-import 'moment/locale/es'
+import { getFormatedDateToEs } from '@utils'
 
 interface Gallery {
   description: string
@@ -26,16 +25,14 @@ const ClientGallery = () => {
   )
 
   useEffect(() => {
-    const gallery = clientInfo?.galeria.map((g) => {
-      const formatedDate = moment(g.galeria_id?.date_created)
-        .locale('es')
-        .format('ll')
-      return {
-        date: formatedDate,
-        description: g.galeria_id?.descripcion,
-        photos: g.galeria_id?.fotos,
-      } as Gallery
-    })
+    const gallery = clientInfo?.galeria.map(
+      (g) =>
+        ({
+          date: getFormatedDateToEs(g.galeria_id?.date_created),
+          description: g.galeria_id?.descripcion,
+          photos: g.galeria_id?.fotos,
+        }) as Gallery,
+    )
     gallery && setGallery(gallery)
   }, [clientInfo])
 

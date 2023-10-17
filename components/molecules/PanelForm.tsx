@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form'
 
 type Props = {
   panel: PanelsDirectus
-  onCustom?: () => void
+  onFormData: (formData: any) => void
 }
 
 type GridProps = {
@@ -33,7 +33,7 @@ type GridProps = {
   responsive: DisenioResponsivoDirectus
 }
 
-const PanelForm = ({ panel, onCustom }: Props) => {
+const PanelForm = ({ panel, onFormData }: Props) => {
   const { user } = useGlobalContext()
 
   let defaultValues: any = {}
@@ -67,13 +67,11 @@ const PanelForm = ({ panel, onCustom }: Props) => {
   })
 
   const handleForm = useForm({ defaultValues })
-  const { handleSubmit, getValues, setValue } = handleForm
+  const { handleSubmit, setValue } = handleForm
 
-  const onSubmit = async (data: any) => {
-    console.log({ data })
+  const onSubmit = async (formData: any) => {
     hasFirma && setValue('firma_hora_de_cierre', moment().toDate())
-    onCustom && onCustom()
-    console.log(getValues())
+    onFormData(formData)
   }
 
   const FieldsGrid = ({ children, responsive }: GridProps) => {

@@ -26,3 +26,37 @@ export const UPDATE_PATIENT = gql`
     }
   }
 `
+
+export const CREATE_ATTENTION = gql`
+  mutation CreateAttention(
+    $fichaId: ID!
+    $panelCode: ID!
+    $userId: ID!
+    $sucursal: String
+    $valores: JSON
+  ) {
+    create_historico_atenciones_item(
+      data: {
+        panel_id: { code: $panelCode }
+        ficha_id: { id: $fichaId }
+        user_created: { id: $userId }
+        sucursal: $sucursal
+        valores: $valores
+      }
+    ) {
+      id
+      date_created
+      sucursal
+      valores
+      user_created {
+        profesional {
+          nombre
+        }
+      }
+      panel_id {
+        code
+        nombre
+      }
+    }
+  }
+`
