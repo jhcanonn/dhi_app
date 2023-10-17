@@ -5,6 +5,8 @@ import {
   BoxDirectus,
   ClientDirectus,
   Country,
+  DataSheet,
+  DataSheetDirectus,
   DhiEvent,
   DhiPatient,
   EventState,
@@ -20,6 +22,7 @@ import {
 import moment from 'moment'
 import { idTypes } from './settings'
 import { BLOCK_SERVICE } from './constants'
+import { getFormatedDateToEs } from './helpers'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals
@@ -224,3 +227,16 @@ export const dhiAppointmentMapper = (
     eventStates,
   } as DhiEvent
 }
+
+export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
+  ({
+    id: dataSheet.id,
+    date: getFormatedDateToEs(dataSheet.date_created),
+    type: {
+      code: dataSheet.panel_id.code,
+      name: dataSheet.panel_id.nombre,
+    },
+    professional: dataSheet.user_created.profesional?.nombre,
+    sucursal: dataSheet.sucursal,
+    data: dataSheet.valores,
+  }) as DataSheet

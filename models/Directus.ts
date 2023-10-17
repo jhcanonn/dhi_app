@@ -1,3 +1,5 @@
+import { UUID } from 'crypto'
+
 export type AppointmentDirectus = {
   title: string
   start: string
@@ -194,6 +196,22 @@ export type PanelsDirectus = {
   agrupadores_id: AgrupadoresRelDirectus[]
   bloque_de_firma: boolean
 } & DefaultFieldsDirectus
+
+export type DataSheetDirectus = {
+  id: UUID
+  sucursal: string
+  valores: JSON
+  panel_id: {
+    code: string
+    nombre: string
+  }
+  date_created: string
+  user_created: {
+    profesional: {
+      nombre: string
+    }
+  }
+}
 
 export enum StatusDirectus {
   PUBLISHED = 'published',

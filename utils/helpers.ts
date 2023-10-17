@@ -1,6 +1,8 @@
 /* Los campos que se mapean son del Evento */
 
 import { PrimitiveValue, parseTemplate } from 'url-template'
+import moment from 'moment'
+import 'moment/locale/es'
 
 export const calendarFieldsMapper = (resource: string) => {
   return {
@@ -66,3 +68,11 @@ export const calcularEdadConMeses = (fechaNacimiento: Date) => {
 
   return { anios, meses }
 }
+
+export const removeDuplicates = (arr: any[]): any[] => {
+  const uniqueSet = new Set(arr.map((a) => JSON.stringify(a)))
+  return Array.from(uniqueSet).map((a) => JSON.parse(a))
+}
+
+export const getFormatedDateToEs = (date: string) =>
+  moment(date).locale('es').format('ll')

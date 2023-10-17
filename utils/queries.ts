@@ -116,6 +116,26 @@ export const GET_INFO_CLIENT = gql`
   }
 `
 
+export const GET_DATASHEETS_BY_ID = gql`
+  query ($fichaId: GraphQLStringOrFloat) {
+    historico_atenciones(filter: { ficha_id: { id: { _eq: $fichaId } } }) {
+      id
+      sucursal
+      valores
+      panel_id {
+        code
+        nombre
+      }
+      date_created
+      user_created {
+        profesional {
+          nombre
+        }
+      }
+    }
+  }
+`
+
 export const GET_CLIENT_BY_ID = gql`
   query ($id: ID!) {
     pacientes_by_id(id: $id) {

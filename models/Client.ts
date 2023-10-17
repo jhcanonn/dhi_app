@@ -1,3 +1,4 @@
+import { UUID } from 'crypto'
 import { Country, IdType } from './Calendar'
 
 export type DhiPatient = {
@@ -40,7 +41,37 @@ export type PatientAvatar = {
   }
 }
 
-export enum DataSheetEnum {
+export type CreatedAttention = {
+  id: UUID
+  date_created: string
+  sucursal: string
+  valores: JSON
+  user_created: {
+    profesional: {
+      nombre: string
+    }
+  }
+  panel_id: {
+    code: string
+    nombre: string
+  }
+}
+
+export type DataSheetType = {
+  code: string
+  name: string
+}
+
+export type DataSheet = {
+  id: UUID
+  type: DataSheetType
+  date: string
+  professional: string
+  sucursal: string
+  data: JSON
+}
+
+export enum AccordionLabels {
   CONSULTA_PRIMERA_VEZ = 'Consulta primera vez',
   CONSULTA_CONTROL = 'Consulta control',
   COTIZACION = 'Cotizacion',
