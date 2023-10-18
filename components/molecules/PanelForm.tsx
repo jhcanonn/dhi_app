@@ -15,17 +15,20 @@ import {
   FieldTypeDirectus,
   PanelsDirectus,
 } from '@models'
-import { regexPatterns } from '@utils'
+import { convertValuesToDateIfSo, regexPatterns } from '@utils'
 import moment from 'moment'
 import { Button } from 'primereact/button'
 import { Fieldset } from 'primereact/fieldset'
+import { Message } from 'primereact/message'
 import { classNames as cx } from 'primereact/utils'
 import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 type Props = {
-  panel: PanelsDirectus
-  onFormData: (formData: any) => void
+  panel: PanelsDirectus | undefined
+  initialData?: JSON
+  disabledData?: boolean
+  onFormData?: (formData: any) => void
 }
 
 type GridProps = {
@@ -33,18 +36,29 @@ type GridProps = {
   responsive: DisenioResponsivoDirectus
 }
 
-const PanelForm = ({ panel, onFormData }: Props) => {
+const PanelForm = ({ panel, initialData, disabledData, onFormData }: Props) => {
+  if (!panel)
+    return (
+      <Message
+        severity='warn'
+        text='No existe un panel configurado'
+        className='border-primary w-full justify-content-start'
+      />
+    )
+
   const { user } = useGlobalContext()
 
   let defaultValues: any = {}
-  const hasFirma = panel.bloque_de_firma && user?.profesional
 
-  if (hasFirma)
+  const hasFirma = panel.bloque_de_firma && user?.profesional
+  if (hasFirma) {
     defaultValues = {
       firma_profesional: user?.profesional.nombre,
       firma_registro_medico: user?.profesional.no_registro_medico,
       firma_hora_de_cierre: undefined,
     }
+  }
+
   panel.agrupadores_id.forEach((a) => {
     a.agrupadores_code.campos_id.forEach((c) => {
       const field = c.campos_id
@@ -66,12 +80,14 @@ const PanelForm = ({ panel, onFormData }: Props) => {
     })
   })
 
-  const handleForm = useForm({ defaultValues })
-  const { handleSubmit, setValue } = handleForm
+  if (initialData) defaultValues = convertValuesToDateIfSo(initialData)
 
-  const onSubmit = async (formData: any) => {
+  const handleForm = useForm({ defaultValues })
+  const { handleSubmit, setValue, getValues } = handleForm
+
+  const onSubmit = async () => {
     hasFirma && setValue('firma_hora_de_cierre', moment().toDate())
-    onFormData(formData)
+    onFormData && onFormData(getValues())
   }
 
   const FieldsGrid = ({ children, responsive }: GridProps) => {
@@ -116,7 +132,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
     <form
       autoComplete='off'
       onSubmit={handleSubmit(onSubmit)}
-      className='flex flex-col gap-3 text-sm items-center [&>*]:w-full mt-2'
+      className='flex flex-col gap-3 text-sm items-center [&>*]:w-full'
     >
       {panel.agrupadores_id
         .sort((a, b) => a.orden - b.orden)
@@ -138,7 +154,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       handleForm={handleForm}
                       required={field.validaciones?.required}
                       pattern={regexPatterns.onlyEmpty}
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 case FieldTypeDirectus.TEXTAREA:
@@ -155,7 +171,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       }
                       gridRows={field.filas_grilla}
                       pattern={regexPatterns.onlyEmpty}
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 case FieldTypeDirectus.NUMBER:
@@ -168,7 +184,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       required={field.validaciones?.required}
                       showButtons
                       mode='decimal'
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 case FieldTypeDirectus.DROPDOWN:
@@ -180,7 +196,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       handleForm={handleForm}
                       list={field.opciones?.length ? field.opciones : []}
                       required={field.validaciones?.required}
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 case FieldTypeDirectus.DATETIME:
@@ -193,7 +209,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       required={field.validaciones?.required}
                       stepMinute={1}
                       showIcon={false}
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 case FieldTypeDirectus.CHECKBOX:
@@ -206,7 +222,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
                       required={field.validaciones?.required}
                       list={field.opciones?.length ? field.opciones : []}
                       gridRows={field.filas_grilla}
-                      disabled={field.deshabilitado}
+                      disabled={field.deshabilitado || disabledData}
                     />
                   )
                 default:
@@ -221,7 +237,7 @@ const PanelForm = ({ panel, onFormData }: Props) => {
 
           const ButtonExtraAndFields = () => (
             <>
-              {buttonExtraLabel && (
+              {!disabledData && buttonExtraLabel && (
                 <Button
                   type='button'
                   label={buttonExtraLabel}
@@ -287,7 +303,9 @@ const PanelForm = ({ panel, onFormData }: Props) => {
           </div>
         </Fieldset>
       )}
-      <Button label='Guardar atención' className='text-sm w-fit' />
+      {onFormData && (
+        <Button label='Guardar atención' className='text-sm w-fit' />
+      )}
     </form>
   )
 }
