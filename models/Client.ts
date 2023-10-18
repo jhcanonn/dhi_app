@@ -57,6 +57,11 @@ export type CreatedAttention = {
   }
 }
 
+export type UpdatedAttention = {
+  id: UUID
+  valores: JSON
+}
+
 export type DataSheetType = {
   code: string
   name: string

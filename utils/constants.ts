@@ -19,7 +19,7 @@ export const errorMessages = {
 }
 
 export const regexPatterns = {
-  onlyEmpty: /^(?!\s+$).+/,
+  onlyEmpty: /^(?!\s+$)[\s\S]*$/,
   email: /\S+@\S+\.\S+/,
 }
 

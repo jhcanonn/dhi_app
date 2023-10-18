@@ -60,3 +60,15 @@ export const CREATE_ATTENTION = gql`
     }
   }
 `
+
+export const UPDATE_ATTENTION = gql`
+  mutation UpdateAttention($atentionId: ID!, $valores: JSON) {
+    update_historico_atenciones_item(
+      id: $atentionId
+      data: { valores: $valores }
+    ) {
+      id
+      valores
+    }
+  }
+`

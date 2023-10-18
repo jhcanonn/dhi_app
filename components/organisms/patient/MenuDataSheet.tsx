@@ -19,9 +19,10 @@ import {
   removeDuplicates,
 } from '@utils'
 import { useQuery } from '@apollo/client'
-import { UUID } from 'crypto'
 import { useClientContext } from '@contexts'
-import { RowExpansionDataSheet } from '@components/molecules'
+import { EditDataSheet, RowExpansionDataSheet } from '@components/molecules'
+import { Dialog } from 'primereact/dialog'
+import { ProgressSpinner } from 'primereact/progressspinner'
 
 const defaultFilters: DataTableFilterMeta = {
   type: { value: null, matchMode: FilterMatchMode.IN },
@@ -29,6 +30,8 @@ const defaultFilters: DataTableFilterMeta = {
 
 const MenuDataSheet = () => {
   const toast = useRef<Toast>(null)
+  const [visible, setVisible] = useState<boolean>(false)
+  const [currentRowData, setCurrentRowData] = useState<DataSheet | null>(null)
   const [expandedRows, setExpandedRows] = useState<
     DataTableExpandedRows | DataTableValueArray | undefined
   >(undefined)
@@ -36,12 +39,14 @@ const MenuDataSheet = () => {
   const [dataSheetTypes, setDataSheetTypes] = useState<DataSheetType[]>([])
   const { dataSheets, setDataSheets, clientInfo } = useClientContext()
 
-  const { data: dataSheetsData, loading: dataSheetsLoading } = useQuery(
-    GET_DATASHEETS_BY_ID,
-    {
-      variables: { fichaId: clientInfo?.ficha_id?.id },
-    },
-  )
+  const fichaId = clientInfo?.ficha_id?.id
+  const {
+    data: dataSheetsData,
+    loading: dataSheetsLoading,
+    refetch: dataSheetsRefetch,
+  } = useQuery(GET_DATASHEETS_BY_ID, {
+    variables: { fichaId },
+  })
 
   const expandAll = () => {
     const _expandedRows: DataTableExpandedRows = {}
@@ -53,15 +58,6 @@ const MenuDataSheet = () => {
     setExpandedRows(undefined)
   }
 
-  const showNotification = (text: string, id: UUID) => {
-    toast.current?.show({
-      severity: 'info',
-      summary: text,
-      detail: text + ' registro ' + id,
-      life: 3000,
-    })
-  }
-
   const optionsBodyTemplate = (rowData: DataSheet) => (
     <div className='w-full flex gap-2'>
       <Button
@@ -69,14 +65,25 @@ const MenuDataSheet = () => {
         icon='pi pi-pencil'
         type='button'
         severity='success'
-        onClick={() => showNotification('Editar', rowData.id)}
+        onClick={() => {
+          setCurrentRowData(rowData)
+          setVisible(true)
+        }}
       />
       <Button
         className='text-sm'
         icon='pi pi-trash'
         type='button'
         severity='danger'
-        onClick={() => showNotification('Eliminar', rowData.id)}
+        onClick={() => {
+          setCurrentRowData(rowData)
+          toast.current?.show({
+            severity: 'info',
+            summary: 'Atención anulada',
+            detail: 'Proximamente!',
+            life: 3000,
+          })
+        }}
       />
     </div>
   )
@@ -103,7 +110,7 @@ const MenuDataSheet = () => {
     />
   )
 
-  const header = (
+  const headerTable = (
     <div className='flex flex-wrap justify-content-end gap-2'>
       <Button
         icon='pi pi-plus'
@@ -122,6 +129,23 @@ const MenuDataSheet = () => {
     </div>
   )
 
+  const headerDialog = <h2>Edición {currentRowData?.type.name}</h2>
+
+  const footerDialog = (
+    <div className='flex gap-2 justify-end'>
+      <Button
+        label='Cerrar'
+        severity='danger'
+        onClick={() => setVisible(false)}
+      />
+      <Button
+        label='Guardar'
+        severity='success'
+        form={`form_${currentRowData?.type.code}_edit_${currentRowData?.id}`}
+      />
+    </div>
+  )
+
   const initFilters = () => {
     setFilters(defaultFilters)
   }
@@ -130,7 +154,7 @@ const MenuDataSheet = () => {
     initFilters()
     if (!dataSheetsLoading) {
       const dataSheets: DataSheetDirectus[] =
-        dataSheetsData.historico_atenciones
+        dataSheetsData?.historico_atenciones || []
       const tableDataSheets: DataSheet[] = dataSheets.map((ds) =>
         dhiDataSheetMapper(ds),
       )
@@ -139,9 +163,40 @@ const MenuDataSheet = () => {
     }
   }, [dataSheetsData])
 
+  useEffect(() => {
+    fichaId ? dataSheetsRefetch({ fichaId }) : setDataSheets([])
+  }, [])
+
   return (
     <>
       <Toast ref={toast} />
+      <Dialog
+        header={headerDialog}
+        draggable={false}
+        visible={visible}
+        onHide={() => setVisible(false)}
+        footer={footerDialog}
+        className='w-[90vw] max-w-[100rem]'
+      >
+        {currentRowData ? (
+          <EditDataSheet
+            data={currentRowData}
+            onHide={() => {
+              setVisible(false)
+              toast.current?.show({
+                severity: 'success',
+                summary: 'Atención actualizada',
+                detail: 'La atención fue actualizada correctamente',
+                life: 3000,
+              })
+            }}
+          />
+        ) : (
+          <div className='flex justify-center py-4'>
+            <ProgressSpinner />
+          </div>
+        )}
+      </Dialog>
       <DataTable
         value={dataSheets}
         expandedRows={expandedRows}
@@ -149,7 +204,7 @@ const MenuDataSheet = () => {
         rowExpansionTemplate={rowExpansionTemplate}
         dataKey='id'
         filters={filters}
-        header={header}
+        header={headerTable}
         paginator
         stripedRows
         rows={5}

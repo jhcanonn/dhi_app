@@ -258,24 +258,25 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     )
   }
 
+  const options = { shouldValidate: true }
+
   const handleCleanForm = () => {
     setDesabledFields(false)
     setValue('client_id', undefined)
     setValue('identification', '')
-    setValue('first_name', '')
-    setValue('middle_name', '')
-    setValue('last_name', '')
-    setValue('last_name_2', '')
-    setValue('dialling', { name: '', dialling: '', image_url: '' })
-    setValue('phone', '')
-    setValue('email', '')
+    setValue('first_name', '', options)
+    setValue('middle_name', '', options)
+    setValue('last_name', '', options)
+    setValue('last_name_2', '', options)
+    setValue('dialling', { name: '', dialling: '', image_url: '' }, options)
+    setValue('phone', '', options)
+    setValue('email', '', options)
     trigger('identification', { shouldFocus: true })
   }
 
   const handleSetFieldsForm = (e: AutoCompleteChangeEvent) => {
     const patient: Patient = e.value
     if (patient && typeof patient === 'object') {
-      const options = { shouldValidate: true }
       setDesabledFields(true)
       setValue('client_id', +patient.id)
       setValue('identification', patient.documento, options)
