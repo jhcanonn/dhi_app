@@ -45,7 +45,7 @@ const InputTextareaValid = <T extends FieldValues>({
         },
       }}
       render={({
-        field: { name, value, ...restFields },
+        field: { name, value, ref, onChange, onBlur },
         fieldState: { error },
       }) => (
         <div
@@ -60,8 +60,13 @@ const InputTextareaValid = <T extends FieldValues>({
           <span className='p-float-label'>
             <InputTextarea
               id={name}
-              value={value || undefined}
-              {...restFields}
+              value={value || ''}
+              ref={ref}
+              onBlur={(e) => {
+                onBlur()
+                onChange(e.target.value)
+              }}
+              onChange={(e) => onChange(e.target.value)}
               rows={rows}
               className={cx({ 'p-invalid': error }, 'w-full')}
               autoResize

@@ -25,9 +25,11 @@ import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 type Props = {
+  formId: string
   panel: PanelsDirectus | undefined
   initialData?: JSON
   disabledData?: boolean
+  hideSubmitButton?: boolean
   onFormData?: (formData: any) => void
 }
 
@@ -36,7 +38,14 @@ type GridProps = {
   responsive: DisenioResponsivoDirectus
 }
 
-const PanelForm = ({ panel, initialData, disabledData, onFormData }: Props) => {
+const PanelForm = ({
+  formId,
+  panel,
+  initialData,
+  disabledData,
+  hideSubmitButton,
+  onFormData,
+}: Props) => {
   if (!panel)
     return (
       <Message
@@ -130,6 +139,7 @@ const PanelForm = ({ panel, initialData, disabledData, onFormData }: Props) => {
 
   return (
     <form
+      id={`form_${panel.code}_${formId}`}
       autoComplete='off'
       onSubmit={handleSubmit(onSubmit)}
       className='flex flex-col gap-3 text-sm items-center [&>*]:w-full'
@@ -170,6 +180,7 @@ const PanelForm = ({ panel, initialData, disabledData, onFormData }: Props) => {
                           : field.filas_por_defecto
                       }
                       gridRows={field.filas_grilla}
+                      required={field.validaciones?.required}
                       pattern={regexPatterns.onlyEmpty}
                       disabled={field.deshabilitado || disabledData}
                     />
@@ -303,7 +314,7 @@ const PanelForm = ({ panel, initialData, disabledData, onFormData }: Props) => {
           </div>
         </Fieldset>
       )}
-      {onFormData && (
+      {!hideSubmitButton && (
         <Button label='Guardar atención' className='text-sm w-fit' />
       )}
     </form>

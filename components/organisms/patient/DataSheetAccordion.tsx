@@ -53,7 +53,7 @@ const DataSheetAccordion = ({ cookies }: Props) => {
     setDataSheetPanels(panels)
   }
 
-  const updateAttentionsTable = (attention: CreatedAttention) => {
+  const addAttentionOnTable = (attention: CreatedAttention) => {
     const newAttention: DataSheet = {
       id: attention.id,
       date: getFormatedDateToEs(attention.date_created),
@@ -87,7 +87,7 @@ const DataSheetAccordion = ({ cookies }: Props) => {
       })
       const attention: CreatedAttention =
         result.data.create_historico_atenciones_item
-      if (attention) updateAttentionsTable(attention)
+      if (attention) addAttentionOnTable(attention)
     } catch (error: any) {
       toast.current?.show({
         severity: 'error',
@@ -113,6 +113,7 @@ const DataSheetAccordion = ({ cookies }: Props) => {
         <AccordionTab header={AccordionLabels.CONSULTA_PRIMERA_VEZ}>
           {dataSheetPanels.length ? (
             <PanelForm
+              formId='accordion'
               panel={dataSheetPanels.find(
                 (p) => p.code === 'consulta_primera_vez',
               )}

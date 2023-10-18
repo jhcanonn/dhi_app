@@ -17,7 +17,13 @@ const RowExpansionDataSheet = ({ data }: Props) => {
   return (
     <ScrollPanel className={cx('custombar2', { 'h-[30rem]': panel })}>
       <section className='border border-brandFieldBorder rounded-[4px] p-4'>
-        <PanelForm panel={panel} initialData={data.data} disabledData />
+        <PanelForm
+          formId={`detail_${data.id}`}
+          panel={panel}
+          initialData={data.data}
+          disabledData
+          hideSubmitButton
+        />
       </section>
     </ScrollPanel>
   )

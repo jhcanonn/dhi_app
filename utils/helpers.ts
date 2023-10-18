@@ -74,8 +74,8 @@ export const removeDuplicates = (arr: any[]): any[] => {
   return Array.from(uniqueSet).map((a) => JSON.parse(a))
 }
 
-export const getFormatedDateToEs = (date: string) =>
-  moment(date).locale('es').format('ll')
+export const getFormatedDateToEs = (date: string, format = 'll') =>
+  moment(date).locale('es').format(format)
 
 export const convertValuesToDateIfSo = (data: any) => {
   for (const key in data) {
