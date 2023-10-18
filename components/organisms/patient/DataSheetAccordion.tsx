@@ -113,13 +113,10 @@ const DataSheetAccordion = ({ cookies }: Props) => {
         <AccordionTab header={AccordionLabels.CONSULTA_PRIMERA_VEZ}>
           {dataSheetPanels.length ? (
             <PanelForm
-              panel={
-                dataSheetPanels.filter(
-                  (p) => p.code === 'consulta_primera_vez',
-                )[0]
-              }
+              panel={dataSheetPanels.find(
+                (p) => p.code === 'consulta_primera_vez',
+              )}
               onFormData={(formData: any) => {
-                console.log({ formData })
                 closeAccordionTab(0)
                 onSaveAttention(formData, 'consulta_primera_vez')
               }}

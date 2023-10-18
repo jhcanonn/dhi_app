@@ -7,11 +7,9 @@ import {
   DataTable,
   DataTableExpandedRows,
   DataTableFilterMeta,
-  DataTableRowEvent,
   DataTableValueArray,
 } from 'primereact/datatable'
 import { Toast } from 'primereact/toast'
-import { ComingSoon } from '@components/templates'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { DataSheet, DataSheetDirectus, DataSheetType } from '@models'
 import { FilterMatchMode } from 'primereact/api'
@@ -23,6 +21,7 @@ import {
 import { useQuery } from '@apollo/client'
 import { UUID } from 'crypto'
 import { useClientContext } from '@contexts'
+import { RowExpansionDataSheet } from '@components/molecules'
 
 const defaultFilters: DataTableFilterMeta = {
   type: { value: null, matchMode: FilterMatchMode.IN },
@@ -44,26 +43,6 @@ const MenuDataSheet = () => {
     },
   )
 
-  const onRowExpand = (event: DataTableRowEvent) => {
-    const rowData = event.data as DataSheet
-    toast.current?.show({
-      severity: 'info',
-      summary: 'Ficha expandida',
-      detail: rowData.professional,
-      life: 3000,
-    })
-  }
-
-  const onRowCollapse = (event: DataTableRowEvent) => {
-    const rowData = event.data as DataSheet
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Ficha minimizada',
-      detail: rowData.professional,
-      life: 3000,
-    })
-  }
-
   const expandAll = () => {
     const _expandedRows: DataTableExpandedRows = {}
     dataSheets.forEach((ds) => (_expandedRows[`${ds.id}`] = true))
@@ -72,11 +51,6 @@ const MenuDataSheet = () => {
 
   const collapseAll = () => {
     setExpandedRows(undefined)
-  }
-
-  const allowExpansion = (rowData: DataSheet) => {
-    console.log('allowExpansion', { rowData })
-    return true
   }
 
   const showNotification = (text: string, id: UUID) => {
@@ -88,37 +62,30 @@ const MenuDataSheet = () => {
     })
   }
 
-  const optionsBodyTemplate = (rowData: DataSheet) => {
-    console.log('optionsBodyTemplate', { rowData })
-    return (
-      <div className='w-full flex gap-2'>
-        <Button
-          className='text-sm'
-          icon='pi pi-pencil'
-          type='button'
-          severity='success'
-          onClick={() => showNotification('Editar', rowData.id)}
-        />
-        <Button
-          className='text-sm'
-          icon='pi pi-trash'
-          type='button'
-          severity='danger'
-          onClick={() => showNotification('Eliminar', rowData.id)}
-        />
-      </div>
-    )
-  }
+  const optionsBodyTemplate = (rowData: DataSheet) => (
+    <div className='w-full flex gap-2'>
+      <Button
+        className='text-sm'
+        icon='pi pi-pencil'
+        type='button'
+        severity='success'
+        onClick={() => showNotification('Editar', rowData.id)}
+      />
+      <Button
+        className='text-sm'
+        icon='pi pi-trash'
+        type='button'
+        severity='danger'
+        onClick={() => showNotification('Eliminar', rowData.id)}
+      />
+    </div>
+  )
 
-  const rowExpansionTemplate = (data: DataSheet) => {
-    console.log('rowExpansionTemplate', { data })
-    return <ComingSoon />
-  }
+  const rowExpansionTemplate = (data: DataSheet) => (
+    <RowExpansionDataSheet data={data} />
+  )
 
-  const typeBodyTemplate = (rowData: DataSheet) => {
-    console.log('typeBodyTemplate', { type: rowData.type.name })
-    return <p>{rowData.type.name}</p>
-  }
+  const typeBodyTemplate = (rowData: DataSheet) => <p>{rowData.type.name}</p>
 
   const typesItemTemplate = (option: DataSheetType) => <p>{option.name}</p>
 
@@ -179,13 +146,10 @@ const MenuDataSheet = () => {
         value={dataSheets}
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
-        onRowExpand={onRowExpand}
-        onRowCollapse={onRowCollapse}
         rowExpansionTemplate={rowExpansionTemplate}
         dataKey='id'
         filters={filters}
         header={header}
-        tableStyle={{ minWidth: '60rem' }}
         paginator
         stripedRows
         rows={5}
@@ -195,7 +159,7 @@ const MenuDataSheet = () => {
         className='custom-table'
         loading={dataSheetsLoading}
       >
-        <Column expander={allowExpansion} style={{ width: '3%' }} />
+        <Column expander={true} style={{ width: '3%' }} />
         <Column field='date' header='Fecha' sortable style={{ width: '15%' }} />
         <Column
           header='Tipo'

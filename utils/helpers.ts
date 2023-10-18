@@ -76,3 +76,17 @@ export const removeDuplicates = (arr: any[]): any[] => {
 
 export const getFormatedDateToEs = (date: string) =>
   moment(date).locale('es').format('ll')
+
+export const convertValuesToDateIfSo = (data: any) => {
+  for (const key in data) {
+    const date = moment(data[key])
+    if (
+      date.isValid() &&
+      typeof data[key] === 'string' &&
+      data[key].trim().slice(-1) === 'Z'
+    ) {
+      data[key] = date.toDate()
+    }
+  }
+  return data
+}
