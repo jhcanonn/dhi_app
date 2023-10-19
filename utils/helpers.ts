@@ -83,7 +83,7 @@ export const convertValuesToDateIfSo = (data: any) => {
     if (
       date.isValid() &&
       typeof data[key] === 'string' &&
-      data[key].trim().slice(-1) === 'Z'
+      data[key].trim().endsWith('Z')
     ) {
       data[key] = date.toDate()
     }

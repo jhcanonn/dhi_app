@@ -12,7 +12,8 @@ type Props = {
 }
 
 const EditDataSheet = ({ data, onHide }: Props) => {
-  const { dataSheetPanels, dataSheets, setDataSheets } = useClientContext()
+  const { dataSheetPanels, dataSheets, setDataSheets, setSavingDataSheet } =
+    useClientContext()
   const [updateAttention] = useMutation(UPDATE_ATTENTION)
 
   const panel = dataSheetPanels.find((p) => p.code === data.type.code)
@@ -27,6 +28,7 @@ const EditDataSheet = ({ data, onHide }: Props) => {
 
   const onEdit = async (formData: any) => {
     try {
+      setSavingDataSheet(true)
       const result: any = await updateAttention({
         variables: {
           atentionId: data.id,

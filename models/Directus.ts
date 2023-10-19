@@ -1,4 +1,5 @@
 import { UUID } from 'crypto'
+import { StatusDataSheet } from './Client'
 
 export type AppointmentDirectus = {
   title: string
@@ -199,6 +200,7 @@ export type PanelsDirectus = {
 
 export type DataSheetDirectus = {
   id: UUID
+  status: StatusDataSheet
   sucursal: string
   valores: JSON
   panel_id: {

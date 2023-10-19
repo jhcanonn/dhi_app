@@ -120,6 +120,7 @@ export const GET_DATASHEETS_BY_ID = gql`
   query ($fichaId: GraphQLStringOrFloat) {
     historico_atenciones(filter: { ficha_id: { id: { _eq: $fichaId } } }) {
       id
+      status
       sucursal
       valores
       panel_id {

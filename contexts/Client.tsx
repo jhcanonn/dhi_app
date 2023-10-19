@@ -12,6 +12,8 @@ import {
 type ClientContextType = {
   loadingInfo: boolean
   setLoadingInfo: Dispatch<SetStateAction<boolean>>
+  savingDataSheet: boolean
+  setSavingDataSheet: Dispatch<SetStateAction<boolean>>
   clientInfo: ClientDirectus | null
   setClientInfo: Dispatch<SetStateAction<ClientDirectus | null>>
   dataSheetPanels: PanelsDirectus[]
@@ -23,6 +25,8 @@ type ClientContextType = {
 const clientContextDefaultValues: ClientContextType = {
   loadingInfo: true,
   setLoadingInfo: () => {},
+  savingDataSheet: false,
+  setSavingDataSheet: () => {},
   clientInfo: null,
   setClientInfo: () => {},
   dataSheetPanels: [],
@@ -41,6 +45,7 @@ export const useClientContext = () => {
 
 export const ClientProvider = ({ children }: { children: React.ReactNode }) => {
   const [loadingInfo, setLoadingInfo] = useState(true)
+  const [savingDataSheet, setSavingDataSheet] = useState(false)
   const [clientInfo, setClientInfo] = useState<ClientDirectus | null>(null)
   const [dataSheetPanels, setDataSheetPanels] = useState<PanelsDirectus[]>([])
   const [dataSheets, setDataSheets] = useState<DataSheet[]>([])
@@ -50,6 +55,8 @@ export const ClientProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         clientInfo,
         setClientInfo,
+        savingDataSheet,
+        setSavingDataSheet,
         loadingInfo,
         setLoadingInfo,
         dataSheetPanels,

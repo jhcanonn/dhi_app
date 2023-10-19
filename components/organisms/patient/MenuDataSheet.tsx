@@ -11,18 +11,27 @@ import {
 } from 'primereact/datatable'
 import { Toast } from 'primereact/toast'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
-import { DataSheet, DataSheetDirectus, DataSheetType } from '@models'
+import {
+  DataSheet,
+  DataSheetDirectus,
+  DataSheetType,
+  StatusDataSheet,
+  UpdatedAttention,
+} from '@models'
 import { FilterMatchMode } from 'primereact/api'
 import {
   GET_DATASHEETS_BY_ID,
+  UPDATE_ATTENTION,
   dhiDataSheetMapper,
   removeDuplicates,
 } from '@utils'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { useClientContext } from '@contexts'
 import { EditDataSheet, RowExpansionDataSheet } from '@components/molecules'
 import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
+import { Tag } from 'primereact/tag'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 const defaultFilters: DataTableFilterMeta = {
   type: { value: null, matchMode: FilterMatchMode.IN },
@@ -37,7 +46,15 @@ const MenuDataSheet = () => {
   >(undefined)
   const [filters, setFilters] = useState<DataTableFilterMeta>(defaultFilters)
   const [dataSheetTypes, setDataSheetTypes] = useState<DataSheetType[]>([])
-  const { dataSheets, setDataSheets, clientInfo } = useClientContext()
+  const [updateAttention] = useMutation(UPDATE_ATTENTION)
+
+  const {
+    dataSheets,
+    setDataSheets,
+    clientInfo,
+    savingDataSheet,
+    setSavingDataSheet,
+  } = useClientContext()
 
   const fichaId = clientInfo?.ficha_id?.id
   const {
@@ -58,33 +75,82 @@ const MenuDataSheet = () => {
     setExpandedRows(undefined)
   }
 
+  const updateAttentionOnTable = (attention: UpdatedAttention) => {
+    const updatedDataSheets = dataSheets.map((ds) =>
+      ds.id === attention.id ? { ...ds, status: attention.status } : ds,
+    )
+    setDataSheets(updatedDataSheets)
+  }
+
+  const annulDataSheet = async (rowData: DataSheet) => {
+    try {
+      const result: any = await updateAttention({
+        variables: {
+          atentionId: rowData.id,
+          status: StatusDataSheet.ANNULLED,
+        },
+      })
+      const attention: UpdatedAttention =
+        result.data.update_historico_atenciones_item
+      if (attention) updateAttentionOnTable(attention)
+    } catch (error: any) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: error.message,
+        sticky: true,
+      })
+    }
+  }
+
+  const annulDataSheetHandle = (rowData: DataSheet) => {
+    confirmDialog({
+      tagKey: `annul_${rowData.id}`,
+      message:
+        'La anulación de una atención es irreversible, está seguro(a) que desea seguir?',
+      header: 'Confirmación de anulación de atención',
+      icon: 'pi pi-info-circle',
+      acceptClassName: 'p-button-danger',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      draggable: false,
+      accept: async () => {
+        await annulDataSheet(rowData)
+      },
+    })
+  }
+
   const optionsBodyTemplate = (rowData: DataSheet) => (
     <div className='w-full flex gap-2'>
-      <Button
-        className='text-sm'
-        icon='pi pi-pencil'
-        type='button'
-        severity='success'
-        onClick={() => {
-          setCurrentRowData(rowData)
-          setVisible(true)
-        }}
-      />
-      <Button
-        className='text-sm'
-        icon='pi pi-trash'
-        type='button'
-        severity='danger'
-        onClick={() => {
-          setCurrentRowData(rowData)
-          toast.current?.show({
-            severity: 'info',
-            summary: 'Atención anulada',
-            detail: 'Proximamente!',
-            life: 3000,
-          })
-        }}
-      />
+      <ConfirmDialog tagKey={`annul_${rowData.id}`} />
+      {rowData.status === StatusDataSheet.ANNULLED ? (
+        <Tag
+          severity='danger'
+          value='Anulada'
+          className='h-fit px-2 py-1 self-center'
+          rounded
+        />
+      ) : (
+        <>
+          <Button
+            className='text-sm'
+            icon='pi pi-pencil'
+            type='button'
+            severity='success'
+            onClick={() => {
+              setCurrentRowData(rowData)
+              setVisible(true)
+            }}
+          />
+          <Button
+            className='text-sm'
+            icon='pi pi-trash'
+            type='button'
+            severity='danger'
+            onClick={() => annulDataSheetHandle(rowData)}
+          />
+        </>
+      )}
     </div>
   )
 
@@ -142,6 +208,7 @@ const MenuDataSheet = () => {
         label='Guardar'
         severity='success'
         form={`form_${currentRowData?.type.code}_edit_${currentRowData?.id}`}
+        loading={savingDataSheet}
       />
     </div>
   )
@@ -183,6 +250,7 @@ const MenuDataSheet = () => {
             data={currentRowData}
             onHide={() => {
               setVisible(false)
+              setSavingDataSheet(false)
               toast.current?.show({
                 severity: 'success',
                 summary: 'Atención actualizada',
