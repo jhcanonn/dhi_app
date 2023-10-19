@@ -60,6 +60,7 @@ export type CreatedAttention = {
 export type UpdatedAttention = {
   id: UUID
   valores: JSON
+  status: StatusDataSheet
 }
 
 export type DataSheetType = {
@@ -67,8 +68,16 @@ export type DataSheetType = {
   name: string
 }
 
+export enum StatusDataSheet {
+  PUBLISHED = 'published',
+  DRAFT = 'draft',
+  ARCHIVED = 'archived',
+  ANNULLED = 'annulled',
+}
+
 export type DataSheet = {
   id: UUID
+  status?: StatusDataSheet
   type: DataSheetType
   date: string
   professional: string

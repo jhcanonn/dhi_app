@@ -231,6 +231,7 @@ export const dhiAppointmentMapper = (
 export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
   ({
     id: dataSheet.id,
+    status: dataSheet.status,
     date: getFormatedDateToEs(dataSheet.date_created, 'ddd ll'),
     type: {
       code: dataSheet.panel_id.code,

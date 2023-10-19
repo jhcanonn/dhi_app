@@ -62,13 +62,14 @@ export const CREATE_ATTENTION = gql`
 `
 
 export const UPDATE_ATTENTION = gql`
-  mutation UpdateAttention($atentionId: ID!, $valores: JSON) {
+  mutation UpdateAttention($atentionId: ID!, $valores: JSON, $status: String) {
     update_historico_atenciones_item(
       id: $atentionId
-      data: { valores: $valores }
+      data: { valores: $valores, status: $status }
     ) {
       id
       valores
+      status
     }
   }
 `
