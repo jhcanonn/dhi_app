@@ -1,11 +1,13 @@
 'use client'
 
 import { UploadProfileImage } from '@components/organisms'
-import { useClientContext } from '@contexts'
+import { useClientContext, useGlobalContext } from '@contexts'
+import { CamposDirectus, FieldTypeDirectus } from '@models'
 import {
   PAGE_PATH,
   calcularEdadConMeses,
   civilStatus,
+  getFormatedDateToEs,
   getOnlyDate,
   idTypes,
   parseUrl,
@@ -13,13 +15,49 @@ import {
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
+import { Divider } from 'primereact/divider'
 import { Image } from 'primereact/image'
+import { ProgressSpinner } from 'primereact/progressspinner'
 import { Toast } from 'primereact/toast'
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
+
+const Th = ({ children }: { children: React.ReactNode }) => (
+  <h2 className='font-bold border-b-2 px-2 py-1'>{children}</h2>
+)
+
+const Tr = ({ children }: { children: React.ReactNode }) => (
+  <span className='block border-b-2 px-2 py-1'>{children}</span>
+)
+
+const getFieldValue = (field: CamposDirectus, dataExtra: any) => {
+  let value = null
+  switch (field.tipo) {
+    case FieldTypeDirectus.DATE:
+    case FieldTypeDirectus.DATETIME:
+      value = getFormatedDateToEs(dataExtra[field.codigo])
+      break
+    case FieldTypeDirectus.DROPDOWN: {
+      const options = field.opciones
+      value = options?.find((o) => o.value === dataExtra[field.codigo])?.name
+      break
+    }
+    case FieldTypeDirectus.PHONE: {
+      const indicativoCode = `indicativo_${field.codigo}`
+      value = `${dataExtra[indicativoCode].dialling} ${dataExtra[field.codigo]}`
+      break
+    }
+    default:
+      value = dataExtra[field.codigo]
+      break
+  }
+  return value
+}
 
 const ClientDetail = () => {
   const router = useRouter()
+  const { panels } = useGlobalContext()
   const { clientInfo, setClientInfo } = useClientContext()
+
   const birthDate = clientInfo?.fecha_nacimiento
     ? moment(clientInfo?.fecha_nacimiento).toDate()
     : null
@@ -68,98 +106,86 @@ const ClientDetail = () => {
               }}
             />
           </div>
-          <div className='w-full lg:!w-[37.5%]'>
-            <table className='border [&_td]:px-3 [&_td]:py-2 w-full'>
-              <tbody>
-                <tr>
-                  <td className='border w-[45%] md:w-[35%] font-bold'>
-                    Número de ficha:
-                  </td>
-                  <td className='border w-[55%] md:w-[65%]'></td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Tipo de identificación:</td>
-                  <td className='border'>
-                    {clientInfo?.tipo_documento
-                      ? idTypes.find(
-                          (t) => t.type === clientInfo.tipo_documento,
-                        )?.name
-                      : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Identificación:</td>
-                  <td className='border'>{clientInfo?.documento}</td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Primer nombre:</td>
-                  <td className='border'>{clientInfo?.primer_nombre}</td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Segundo nombre:</td>
-                  <td className='border'>{clientInfo?.segundo_nombre}</td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Apellido paterno:</td>
-                  <td className='border'>{clientInfo?.apellido_paterno}</td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Apellido materno:</td>
-                  <td className='border'>{clientInfo?.apellido_materno}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className='w-full lg:!w-[37.5%]'>
-            <table className='border [&_td]:px-3 [&_td]:py-2 w-full'>
-              <tbody>
-                <tr>
-                  <td className='border w-[45%] md:w-[35%] font-bold'>
-                    Fecha de nacimiento:
-                  </td>
-                  <td className='border w-[55%] md:w-[65%]'>
-                    {birthDate && getOnlyDate(birthDate)}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Edad:</td>
-                  <td className='border'>
-                    {age ? `${age?.anios} años, ${age?.meses} meses` : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Correo electrónico:</td>
-                  <td className='border'>{clientInfo?.correo}</td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Telefono 1:</td>
-                  <td className='border'>
-                    {clientInfo?.indicativo}
-                    {clientInfo?.telefono}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Telefono 2:</td>
-                  <td className='border'>
-                    {clientInfo?.indicativo_2}
-                    {clientInfo?.telefono_2}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Estado civil:</td>
-                  <td className='border'>
-                    {clientInfo?.estado_civil
-                      ? civilStatus.find(
-                          (c) => c.type === clientInfo.estado_civil,
-                        )?.name
-                      : ''}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <section className='w-full lg:!w-[75%] '>
+            <div className='!grid grid-cols-2 md:grid-cols-4 gap-y-1 h-fit'>
+              <Th>Número de ficha:</Th>
+              <Tr>{clientInfo?.ficha_id?.id ?? 'Sin ficha'}</Tr>
+              <Th>Tipo de identificación:</Th>
+              <Tr>
+                {clientInfo?.tipo_documento
+                  ? idTypes.find((t) => t.type === clientInfo.tipo_documento)
+                      ?.name
+                  : ''}
+              </Tr>
+              <Th>Identificación:</Th>
+              <Tr>{clientInfo?.documento}</Tr>
+              <Th>Primer nombre:</Th>
+              <Tr>{clientInfo?.primer_nombre}</Tr>
+              <Th>Segundo nombre:</Th>
+              <Tr>{clientInfo?.segundo_nombre}</Tr>
+              <Th>Apellido paterno:</Th>
+              <Tr>{clientInfo?.apellido_paterno}</Tr>
+              <Th>Apellido materno:</Th>
+              <Tr>{clientInfo?.apellido_materno}</Tr>
+              <Th>Fecha de nacimiento:</Th>
+              <Tr>{birthDate && getOnlyDate(birthDate)}</Tr>
+              <Th>Edad:</Th>
+              <Tr>{age ? `${age?.anios} años, ${age?.meses} meses` : ''}</Tr>
+              <Th>Correo electrónico:</Th>
+              <Tr>{clientInfo?.correo}</Tr>
+              <Th>Telefono 1:</Th>
+              <Tr>
+                {clientInfo?.indicativo} {clientInfo?.telefono}
+              </Tr>
+              <Th>Telefono 2:</Th>
+              <Tr>
+                {clientInfo?.indicativo_2} {clientInfo?.telefono_2}
+              </Tr>
+              <Th>Estado civil:</Th>
+              <Tr>
+                {clientInfo?.estado_civil
+                  ? civilStatus.find((c) => c.type === clientInfo.estado_civil)
+                      ?.name
+                  : ''}
+              </Tr>
+            </div>
+            <Divider
+              align='left'
+              className='[&_.p-divider-content]:bg-transparent mt-4 mb-3'
+            >
+              <h2 className='text-2xl font-extrabold text-brand bg-surfaceGround px-2'>
+                Datos extra
+              </h2>
+            </Divider>
+            {clientInfo ? (
+              <div className='!grid grid-cols-2 md:grid-cols-4 gap-y-1 h-fit'>
+                {panels
+                  .find((p) => p.code === 'patient')
+                  ?.agrupadores_id.sort((a, b) => a.orden - b.orden)
+                  .map((g) =>
+                    g.agrupadores_code.campos_id
+                      .sort((a, b) => a.orden - b.orden)
+                      .map((c) => {
+                        const field = c.campos_id
+                        return (
+                          <Fragment key={field.id}>
+                            <Th>{field.etiqueta}:</Th>
+                            <Tr>
+                              {getFieldValue(field, clientInfo?.datos_extra)}
+                            </Tr>
+                          </Fragment>
+                        )
+                      }),
+                  )}
+              </div>
+            ) : (
+              <div className='flex justify-center py-4'>
+                <ProgressSpinner />
+              </div>
+            )}
+          </section>
         </div>
-        <div className='flex gap-2 flex-wrap mb-4 justify-end'>
+        <div className='flex gap-2 flex-wrap mb-4 mt-2 justify-end'>
           <Button
             className='text-sm w-full md:w-auto'
             label={'Asociar'}
