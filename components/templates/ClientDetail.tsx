@@ -43,7 +43,9 @@ const getFieldValue = (field: CamposDirectus, dataExtra: any) => {
     }
     case FieldTypeDirectus.PHONE: {
       const indicativoCode = `indicativo_${field.codigo}`
-      value = `${dataExtra[indicativoCode].dialling} ${dataExtra[field.codigo]}`
+      value = dataExtra[field.codigo]
+        ? `${dataExtra[indicativoCode]?.dialling} ${dataExtra[field.codigo]}`
+        : ''
       break
     }
     default:
