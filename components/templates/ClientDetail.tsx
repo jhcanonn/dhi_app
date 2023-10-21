@@ -31,29 +31,42 @@ const Tr = ({ children }: { children: React.ReactNode }) => (
 
 const getFieldValue = (field: CamposDirectus, dataExtra: any) => {
   let value = null
-  switch (field.tipo) {
-    case FieldTypeDirectus.DATE:
-    case FieldTypeDirectus.DATETIME:
-      value = getFormatedDateToEs(dataExtra[field.codigo])
-      break
-    case FieldTypeDirectus.DROPDOWN: {
-      const options = field.opciones
-      value = options?.find((o) => o.value === dataExtra[field.codigo])?.name
-      break
+  const fieldValue =
+    dataExtra && dataExtra[field.codigo] ? dataExtra[field.codigo] : ''
+  if (fieldValue) {
+    switch (field.tipo) {
+      case FieldTypeDirectus.DATE:
+      case FieldTypeDirectus.DATETIME:
+        value = getFormatedDateToEs(fieldValue)
+        break
+      case FieldTypeDirectus.DROPDOWN: {
+        const options = field.opciones
+        value = options?.find((o) => o.value === fieldValue)?.name
+        break
+      }
+      case FieldTypeDirectus.PHONE: {
+        const indicativoCode = `indicativo_${field.codigo}`
+        value = `${dataExtra[indicativoCode]?.dialling} ${fieldValue}}`
+        break
+      }
+      default:
+        value = fieldValue
+        break
     }
-    case FieldTypeDirectus.PHONE: {
-      const indicativoCode = `indicativo_${field.codigo}`
-      value = dataExtra[field.codigo]
-        ? `${dataExtra[indicativoCode]?.dialling} ${dataExtra[field.codigo]}`
-        : ''
-      break
-    }
-    default:
-      value = dataExtra[field.codigo]
-      break
   }
+
   return value
 }
+
+const WithoutImage = () => (
+  <div className='flex align-items-center flex-column rounded-2xl w-full border-brand border-[1px] min-w-[330px] max-w-full md:!max-w-[450px]'>
+    <i
+      className='pi pi-image mt-4 p-5 bg-brand/30 text-white rounded-full'
+      style={{ fontSize: '5em' }}
+    ></i>
+    <span className='my-4 text-brand text-lg'>No tiene imagen</span>
+  </div>
+)
 
 const ClientDetail = () => {
   const router = useRouter()
@@ -78,25 +91,19 @@ const ClientDetail = () => {
   return (
     <>
       <Toast ref={toast} />
-      <div className='flex flex-col gap-4 text-sm'>
-        <div className='flex flex-col lg:flex-row gap-4'>
-          <div className='w-full lg:!w-[25%] flex flex-col items-center gap-4 justify-center'>
+      <div className='flex flex-col gap-5 text-sm'>
+        <div className='w-full flex !flex-col lg:!flex-row gap-4'>
+          <section className='flex flex-col grow items-center gap-4 justify-center'>
             {clientInfo?.avatar[0]?.directus_files_id ? (
               <Image
                 src={`${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${clientInfo.avatar[0].directus_files_id.id}?fit=cover`}
                 alt={clientInfo.avatar[0].directus_files_id.title}
                 width='450'
                 preview
-                className='[&_img]:rounded-lg'
+                className='[&_img]:rounded-lg [&_img]:min-w-[450px]'
               />
             ) : (
-              <div className='flex align-items-center flex-column rounded-2xl w-full border-brand border-[1px]'>
-                <i
-                  className='pi pi-image mt-4 p-5 bg-brand/30 text-white rounded-full'
-                  style={{ fontSize: '5em' }}
-                ></i>
-                <span className='my-4 text-brand text-lg'>No tiene imagen</span>
-              </div>
+              <WithoutImage />
             )}
             <UploadProfileImage
               clientInfo={clientInfo}
@@ -107,8 +114,8 @@ const ClientDetail = () => {
                 )
               }}
             />
-          </div>
-          <section className='w-full lg:!w-[75%] '>
+          </section>
+          <section className='grow'>
             <div className='!grid grid-cols-2 md:grid-cols-4 gap-y-1 h-fit'>
               <Th>Número de ficha:</Th>
               <Tr>{clientInfo?.ficha_id?.id ?? 'Sin ficha'}</Tr>
@@ -187,7 +194,7 @@ const ClientDetail = () => {
             )}
           </section>
         </div>
-        <div className='flex gap-2 flex-wrap mb-4 mt-2 justify-end'>
+        <div className='flex gap-2 flex-wrap justify-end'>
           <Button
             className='text-sm w-full md:w-auto'
             label={'Asociar'}
