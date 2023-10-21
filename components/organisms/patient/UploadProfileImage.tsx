@@ -228,7 +228,7 @@ const UploadProfileImage = ({
           {
             'px-4': buttonLabel,
           },
-          { 'rounded-full px-2': !buttonLabel },
+          { '!rounded-full px-2': !buttonLabel },
           { '!w-full md:!w-auto': buttonLabel },
         )}
         rounded={!!buttonLabel}

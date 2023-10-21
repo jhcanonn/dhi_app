@@ -111,7 +111,6 @@ export const GET_INFO_CLIENT = gql`
       estado_civil
       registrado
       fecha_nacimiento
-      genero
     }
   }
 `
@@ -148,7 +147,6 @@ export const GET_CLIENT_BY_ID = gql`
       segundo_nombre
       apellido_paterno
       apellido_materno
-      genero
       fecha_nacimiento
       correo
       indicativo
@@ -156,6 +154,7 @@ export const GET_CLIENT_BY_ID = gql`
       indicativo_2
       telefono_2
       estado_civil
+      datos_extra
       ficha_id {
         id
       }
@@ -224,6 +223,7 @@ export const GET_APPOINTMENTS = gql`
         indicativo
         indicativo_2
         correo
+        datos_extra
         ficha_id {
           id
         }

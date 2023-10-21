@@ -1,6 +1,14 @@
 'use client'
 
-import { Box, Country, DhiEvent, Holiday, Professional, User } from '@models'
+import {
+  Box,
+  Country,
+  DhiEvent,
+  Holiday,
+  PanelsDirectus,
+  Professional,
+  User,
+} from '@models'
 import {
   Dispatch,
   SetStateAction,
@@ -22,6 +30,8 @@ type GlobalContextType = {
   setHolidays: Dispatch<Holiday[]>
   countries: Country[]
   setCountries: Dispatch<Country[]>
+  panels: PanelsDirectus[]
+  setPanels: Dispatch<SetStateAction<PanelsDirectus[]>>
 }
 
 const globalContextDefaultValues: GlobalContextType = {
@@ -37,6 +47,8 @@ const globalContextDefaultValues: GlobalContextType = {
   setHolidays: () => {},
   countries: [],
   setCountries: () => {},
+  panels: [],
+  setPanels: () => {},
 }
 
 const GlobalContext = createContext<GlobalContextType>(
@@ -54,6 +66,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [holidays, setHolidays] = useState<Holiday[]>([])
   const [countries, setCountries] = useState<Country[]>([])
+  const [panels, setPanels] = useState<PanelsDirectus[]>([])
 
   return (
     <GlobalContext.Provider
@@ -70,6 +83,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setHolidays,
         countries,
         setCountries,
+        panels,
+        setPanels,
       }}
     >
       {children}

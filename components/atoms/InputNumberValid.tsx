@@ -12,8 +12,8 @@ export type Props<T> = FieldCommonProps<T> & {
   disabled?: boolean
   icon?: string
   mode?: 'currency' | 'decimal'
-  showButtons?: boolean
   minLength?: number
+  min?: number
   onCustomChange?: (e: InputNumberChangeEvent) => void
 }
 
@@ -24,8 +24,8 @@ const InputNumberValid = <T extends FieldValues>({
   disabled,
   icon,
   mode,
-  showButtons,
   minLength,
+  min = 0,
   required,
   validate,
   onCustomChange,
@@ -62,7 +62,7 @@ const InputNumberValid = <T extends FieldValues>({
             )}
             <InputNumber
               id={name}
-              value={value || null}
+              value={value || undefined}
               inputRef={ref}
               onBlur={(e) => {
                 onBlur()
@@ -74,10 +74,10 @@ const InputNumberValid = <T extends FieldValues>({
               }}
               inputClassName={cx({ 'p-invalid': error })}
               useGrouping={false}
-              showButtons={showButtons}
               mode={mode}
               disabled={disabled}
               className={"[&_[type='button']]:bg-defaultBlue"}
+              min={min}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}

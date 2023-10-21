@@ -57,9 +57,15 @@ import {
 import { Cookies, withCookies } from 'react-cookie'
 import { MultiSelectChangeEvent } from 'primereact/multiselect'
 import moment from 'moment'
-import { EventStateItem, EventStateItemColor } from '@components/molecules'
+import {
+  EventStateItem,
+  EventStateItemColor,
+  PatientDataExtra,
+} from '@components/molecules'
 import { UploadProfileImage } from '../patient'
 import { Skeleton } from 'primereact/skeleton'
+import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
+import { classNames as cx } from 'primereact/utils'
 
 type Props = {
   cookies: Cookies
@@ -70,6 +76,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const [desabledFields, setDesabledFields] = useState<boolean>(false)
   const [blocked, setBlocked] = useState<boolean>(false)
   const [patients, setPatients] = useState<Patient[]>([])
+  const [showDataExtra, setShowDataExtra] = useState(false)
   const { refetch } = useQuery(GET_INFO_CLIENT)
 
   const toast = useRef<Toast>(null)
@@ -78,7 +85,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   const { resourceType, eventStates, pays } = useCalendarContext()
 
   const resourceField = calendarFieldsMapper(resourceType).idField
-  const event: DhiEvent | undefined = scheduler.edited
+  const event = scheduler.edited as DhiEvent | undefined
   const isEvent = !!event
   const isOldDate = isEvent ? moment(event?.start).isBefore() : false
   const resourceId = event
@@ -122,6 +129,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     sent_email: event?.sent_email || false,
     description: event?.description,
     eventStates,
+    data_extra: event?.data_extra || undefined,
   }
 
   const {
@@ -138,6 +146,9 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   )
   const handleForm = useForm({ defaultValues: eventData })
   const { handleSubmit, resetField, setValue, getValues, trigger } = handleForm
+
+  const handleFormExtra = useForm({ defaultValues: {} })
+  const { getValues: getValuesExtra, reset: resetExtra } = handleFormExtra
 
   const blockAppointment = async (data: DhiEvent) => {
     try {
@@ -174,6 +185,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
       scheduler.loading(true)
       data['professional_id'] = data.professional?.professional_id
       data['box_id'] = data.box?.box_id
+      data['data_extra'] = getValuesExtra()
       const appointment = directusAppointmentMapper(data)
       const access_token = await refreshToken(cookies)
       if (event) {
@@ -258,26 +270,26 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     )
   }
 
-  const options = { shouldValidate: true }
-
   const handleCleanForm = () => {
     setDesabledFields(false)
     setValue('client_id', undefined)
     setValue('identification', '')
-    setValue('first_name', '', options)
-    setValue('middle_name', '', options)
-    setValue('last_name', '', options)
-    setValue('last_name_2', '', options)
-    setValue('dialling', { name: '', dialling: '', image_url: '' }, options)
-    setValue('phone', '', options)
-    setValue('email', '', options)
+    setValue('first_name', '')
+    setValue('middle_name', '')
+    setValue('last_name', '')
+    setValue('last_name_2', '')
+    setValue('dialling', undefined)
+    setValue('phone', '')
+    setValue('email', '')
     trigger('identification', { shouldFocus: true })
   }
 
   const handleSetFieldsForm = (e: AutoCompleteChangeEvent) => {
     const patient: Patient = e.value
     if (patient && typeof patient === 'object') {
+      const options = { shouldValidate: true }
       setDesabledFields(true)
+      setShowDataExtra(false)
       setValue('client_id', +patient.id)
       setValue('identification', patient.documento, options)
       setValue('first_name', patient.primer_nombre, options)
@@ -383,11 +395,12 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
       <Toast ref={toast} />
       <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
         <form
+          id='form_calendar_appointment'
           autoComplete='off'
           onSubmit={handleSubmit(onSubmit)}
           className='flex flex-col gap-2'
         >
-          <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-60'>
+          <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-72'>
             {!blocked && (
               <div className='flex flex-col gap-2 w-full'>
                 {event && (
@@ -546,7 +559,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                   required={!blocked}
                   disabled={isOldDate}
                 />
-                {event && (
+                {(event || showDataExtra) && (
                   <PhoneNumberValid
                     name='phone_2'
                     diallingName='dialling_2'
@@ -583,62 +596,92 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
               </div>
             )}
           </div>
-          <div className='flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto'>
-            {event && (
-              <>
-                <Button
-                  label={'Insumos'}
-                  type='button'
-                  severity='secondary'
-                  rounded
-                  onClick={(e: any) => showNotification(e.target.textContent)}
+        </form>
+        {showDataExtra && (
+          <div className='mt-2'>
+            <PatientDataExtra
+              id='calendar_extra'
+              handleForm={handleFormExtra}
+            />
+          </div>
+        )}
+        <section
+          className={cx(
+            'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
+            { 'mt-3': showDataExtra },
+          )}
+        >
+          {(isEvent || (!isEvent && desabledFields)) && (
+            <Button
+              label={'Perfil'}
+              type='button'
+              severity='info'
+              rounded
+              onClick={() => {
+                router.push(
+                  parseUrl(PAGE_PATH.clientDetail, {
+                    id: getValues('client_id')!,
+                  }),
+                )
+              }}
+            />
+          )}
+          {event && (
+            <>
+              <Button
+                label={'Insumos'}
+                type='button'
+                severity='secondary'
+                rounded
+                onClick={(e: any) => showNotification(e.target.textContent)}
+              />
+              <Button
+                label={'Historico'}
+                type='button'
+                severity='warning'
+                rounded
+                onClick={(e: any) => showNotification(e.target.textContent)}
+              />
+              <Button
+                label={'Comentarios'}
+                type='button'
+                severity='help'
+                rounded
+                onClick={(e: any) => showNotification(e.target.textContent)}
+              />
+              <Button
+                label={'Pagar'}
+                type='button'
+                severity='danger'
+                rounded
+                onClick={(e: any) => showNotification(e.target.textContent)}
+              />
+            </>
+          )}
+          {!isOldDate && (
+            <>
+              {!event && !desabledFields && (
+                <ToggleButton
+                  checked={showDataExtra}
+                  onLabel='Eliminar datos extra'
+                  offLabel='Incluir datos extra'
+                  onChange={(e: ToggleButtonChangeEvent) => {
+                    setShowDataExtra(e.value)
+                    !showDataExtra && resetExtra()
+                  }}
+                  className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
                 />
-                <Button
-                  label={'Perfil'}
-                  type='button'
-                  severity='info'
-                  rounded
-                  onClick={() =>
-                    router.push(
-                      parseUrl(PAGE_PATH.clientDetail, {
-                        id: +eventData.client_id!,
-                      }),
-                    )
-                  }
-                />
-                <Button
-                  label={'Historico'}
-                  type='button'
-                  severity='warning'
-                  rounded
-                  onClick={(e: any) => showNotification(e.target.textContent)}
-                />
-                <Button
-                  label={'Comentarios'}
-                  type='button'
-                  severity='help'
-                  rounded
-                  onClick={(e: any) => showNotification(e.target.textContent)}
-                />
-                <Button
-                  label={'Pagar'}
-                  type='button'
-                  severity='danger'
-                  rounded
-                  onClick={(e: any) => showNotification(e.target.textContent)}
-                />
-              </>
-            )}
-            {!isOldDate && (
+              )}
               <Button
                 label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
                 type='submit'
                 severity='success'
                 rounded
+                form='form_calendar_appointment'
               />
-            )}
-          </div>
-        </form>
+            </>
+          )}
+        </section>
       </Card>
     </>
   )

@@ -100,12 +100,6 @@ export const idTypes = [
   { type: 'PEP', name: 'Permiso especial de permanencia' },
 ]
 
-export const genders = [
-  { type: 'M', name: 'Masculino' },
-  { type: 'F', name: 'Femenino' },
-  { type: 'N', name: 'No específica' },
-]
-
 export const civilStatus = [
   { type: 'S', name: 'Solero(a)' },
   { type: 'C', name: 'Casado(a)' },

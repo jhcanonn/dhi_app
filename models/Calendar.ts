@@ -27,6 +27,7 @@ export type DhiEvent = ProcessedEvent & {
   sent_email?: boolean
   description?: string
   eventStates?: EventState[]
+  data_extra: any
 }
 
 export type IdType = {
@@ -91,7 +92,6 @@ export type Patient = {
   estado_civil: string
   registrado: boolean
   fecha_nacimiento: string
-  genero: string
 }
 
 export type ServiceDHI = { box_service_id: number } & ServiceDirectus

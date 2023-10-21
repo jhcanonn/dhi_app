@@ -8,14 +8,15 @@ import {
   InputTextValid,
   PhoneNumberValid,
 } from '@components/atoms'
+import { PatientDataExtra } from '@components/molecules'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { DhiPatient } from '@models'
 import {
   PAGE_PATH,
   UPDATE_PATIENT,
   civilStatus,
+  convertValuesToDateIfSo,
   directusClientMapper,
-  genders,
   idTypes,
   parseUrl,
   regexPatterns,
@@ -45,7 +46,6 @@ const ClientEdit = () => {
     segundo_nombre: clientInfo?.segundo_nombre || '',
     apellido_paterno: clientInfo?.apellido_paterno || '',
     apellido_materno: clientInfo?.apellido_materno || '',
-    genero: genders.find((g) => g.type === clientInfo?.genero),
     fecha_nacimiento: clientInfo?.fecha_nacimiento
       ? moment(clientInfo?.fecha_nacimiento as string).toDate()
       : null,
@@ -59,10 +59,24 @@ const ClientEdit = () => {
       indicativoDefault,
     telefono_2: clientInfo?.telefono_2 || null,
     estado_civil: civilStatus.find((c) => c.type === clientInfo?.estado_civil),
+    datos_extra: clientInfo?.datos_extra
+      ? convertValuesToDateIfSo(clientInfo.datos_extra)
+      : undefined,
   }
 
-  const handleForm = useForm({ defaultValues: dataClient })
-  const { handleSubmit, setValue, getValues } = handleForm
+  const handleForm = useForm<DhiPatient>({ defaultValues: dataClient })
+  const {
+    handleSubmit: handleSubmitMain,
+    setValue: setValueMain,
+    getValues: getValuesMain,
+  } = handleForm
+
+  const handleFormExtra = useForm({ defaultValues: dataClient.datos_extra })
+  const {
+    handleSubmit: handleSubmitExtra,
+    setValue: setValueExtra,
+    getValues: getValuesExtra,
+  } = handleFormExtra
 
   const showError = (status: string, message: string) => {
     toast.current?.show({
@@ -73,8 +87,8 @@ const ClientEdit = () => {
     })
   }
 
-  const editClient = async (data: DhiPatient) => {
-    const client = directusClientMapper(data)
+  const editPatient = async () => {
+    const client = directusClientMapper(getValuesMain())
     try {
       await updatePatient({
         variables: {
@@ -86,14 +100,19 @@ const ClientEdit = () => {
       showError(error.response.data.status, error.response.data.message)
     }
     setClientInfo({ ...clientInfo, ...client })
+    setLoading(false)
     clientInfo &&
       router.push(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }))
   }
 
-  const onSubmit = async (data: DhiPatient) => {
-    setLoading(true)
-    await editClient(data)
-    setLoading(false)
+  const onSubmit = async () => {
+    await handleSubmitExtra(async (dataExtra: any) => {
+      await handleSubmitMain(async () => {
+        setLoading(true)
+        setValueMain('datos_extra', dataExtra)
+        await editPatient()
+      })()
+    })()
   }
 
   const fetchCountries = () => {
@@ -106,40 +125,39 @@ const ClientEdit = () => {
     } else setCountries(JSON.parse(lsC))
   }
 
+  const options = { shouldValidate: true }
+
+  const initDataMain = () => {
+    if (!getValuesMain().documento)
+      for (const key in dataClient)
+        setValueMain(key as 'stringify', dataClient[key], options)
+  }
+
+  const initDataExtra = () => {
+    const dataExtra = getValuesExtra() as any
+    if (!dataExtra.identidad_de_genero) {
+      const datosExtra: any = dataClient.datos_extra
+      for (const key in datosExtra)
+        setValueExtra(key as 'stringify', datosExtra[key], options)
+    }
+  }
+
+  useEffect(() => {
+    initDataMain()
+    initDataExtra()
+  }, [clientInfo])
+
   useEffect(() => {
     fetchCountries()
   }, [])
 
-  useEffect(() => {
-    if (!getValues().documento) {
-      setValue('documento', dataClient.documento)
-      setValue('tipo_documento', dataClient.tipo_documento)
-      setValue('primer_nombre', dataClient.primer_nombre)
-      setValue('segundo_nombre', dataClient.segundo_nombre)
-      setValue('apellido_paterno', dataClient.apellido_paterno)
-      setValue('apellido_materno', dataClient.apellido_materno)
-      setValue('genero', dataClient.genero)
-      setValue('fecha_nacimiento', dataClient.fecha_nacimiento)
-      setValue('correo', dataClient.correo)
-      setValue('indicativo', dataClient.indicativo)
-      setValue('telefono', dataClient.telefono)
-      setValue('indicativo_2', dataClient.indicativo_2)
-      setValue('telefono_2', dataClient.telefono_2)
-      setValue('estado_civil', dataClient.estado_civil)
-    }
-  }, [clientInfo])
-
   return (
     <>
       <Toast ref={toast} />
-      <form
-        autoComplete='off'
-        onSubmit={handleSubmit(onSubmit)}
-        className='flex flex-col gap-2 text-sm'
-      >
-        <div className='flex flex-col gap-4'>
-          <div className='flex flex-col md:flex-row gap-4 px-3 pb-3 pt-5 bg-white rounded-md'>
-            <div className='w-full md:!w-[50%]'>
+      <section className='flex flex-col gap-4 text-sm'>
+        <section className='flex flex-col gap-y-1 bg-white rounded-md px-3 pb-3 pt-4'>
+          <form id='form_patient_main' autoComplete='off'>
+            <div className='!grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-1'>
               <DropdownValid
                 name='tipo_documento'
                 label='Tipo de identificación'
@@ -184,14 +202,6 @@ const ClientEdit = () => {
                 icon='user'
                 pattern={regexPatterns.onlyEmpty}
               />
-            </div>
-            <div className='w-full md:!w-[50%]'>
-              <DropdownValid
-                name='genero'
-                label='Género'
-                handleForm={handleForm}
-                list={genders}
-              />
               <DateTimeValid
                 name='fecha_nacimiento'
                 label='Fecha de nacimiento'
@@ -229,32 +239,35 @@ const ClientEdit = () => {
                 list={civilStatus}
               />
             </div>
-          </div>
-          <div className='flex gap-2 flex-wrap mb-4 justify-end'>
-            <Button
-              label={'Cancelar'}
-              type='button'
-              severity='danger'
-              rounded
-              onClick={() => {
-                clientInfo &&
-                  router.push(
-                    parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
-                  )
-              }}
-              className='text-sm w-full md:w-auto'
-            />
-            <Button
-              label={'Guardar'}
-              type='submit'
-              severity='success'
-              rounded
-              className='text-sm w-full md:w-auto'
-              loading={loading}
-            />
-          </div>
+          </form>
+          <PatientDataExtra id='extra' handleForm={handleFormExtra} />
+        </section>
+        <div className='flex gap-2 flex-wrap mb-4 justify-end'>
+          <Button
+            label={'Cancelar'}
+            type='button'
+            severity='danger'
+            rounded
+            onClick={() => {
+              clientInfo &&
+                router.push(
+                  parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
+                )
+            }}
+            className='text-sm w-full md:w-auto'
+          />
+          <Button
+            label={'Guardar'}
+            type='submit'
+            severity='success'
+            rounded
+            className='text-sm w-full md:w-auto'
+            loading={loading}
+            onClick={onSubmit}
+            form='form_patient_extra'
+          />
         </div>
-      </form>
+      </section>
     </>
   )
 }

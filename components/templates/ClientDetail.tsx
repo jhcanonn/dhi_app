@@ -6,7 +6,6 @@ import {
   PAGE_PATH,
   calcularEdadConMeses,
   civilStatus,
-  genders,
   getOnlyDate,
   idTypes,
   parseUrl,
@@ -116,17 +115,9 @@ const ClientDetail = () => {
               <tbody>
                 <tr>
                   <td className='border w-[45%] md:w-[35%] font-bold'>
-                    Género:
+                    Fecha de nacimiento:
                   </td>
                   <td className='border w-[55%] md:w-[65%]'>
-                    {clientInfo?.genero
-                      ? genders.find((g) => g.type === clientInfo.genero)?.name
-                      : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='border font-bold'>Fecha de nacimiento:</td>
-                  <td className='border'>
                     {birthDate && getOnlyDate(birthDate)}
                   </td>
                 </tr>

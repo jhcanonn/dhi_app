@@ -12,10 +12,12 @@ import { Avatar } from 'primereact/avatar'
 import { useRouter } from 'next/navigation'
 import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
+import { getPanelsFromDirectus, refreshToken } from '@utils/api'
+import { PanelsDirectus } from '@models'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
-  const { setUser } = useGlobalContext()
+  const { setUser, setPanels } = useGlobalContext()
   const { toggleVisible } = useAsideContext()
 
   const { data, loading } = useQuery(GET_USER_ME, {
@@ -27,9 +29,19 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
     router.push(PAGE_PATH.login)
   }
 
+  const getPanels = async () => {
+    const access_token = await refreshToken(cookies)
+    const panels: PanelsDirectus[] = await getPanelsFromDirectus(access_token)
+    setPanels(panels)
+  }
+
   useEffect(() => {
     if (!loading) setUser(data.users_me)
   }, [data])
+
+  useEffect(() => {
+    getPanels()
+  }, [])
 
   return (
     <nav className='flex justify-between items-center h-full'>
