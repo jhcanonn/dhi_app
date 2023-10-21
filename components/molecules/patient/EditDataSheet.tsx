@@ -2,7 +2,7 @@
 
 import { DataSheet, UpdatedAttention } from '@models'
 import PanelForm from '../PanelForm'
-import { useClientContext } from '@contexts'
+import { useClientContext, useGlobalContext } from '@contexts'
 import { useMutation } from '@apollo/client'
 import { UPDATE_ATTENTION } from '@utils'
 
@@ -12,11 +12,11 @@ type Props = {
 }
 
 const EditDataSheet = ({ data, onHide }: Props) => {
-  const { dataSheetPanels, dataSheets, setDataSheets, setSavingDataSheet } =
-    useClientContext()
+  const { panels } = useGlobalContext()
+  const { dataSheets, setDataSheets, setSavingDataSheet } = useClientContext()
   const [updateAttention] = useMutation(UPDATE_ATTENTION)
 
-  const panel = dataSheetPanels.find((p) => p.code === data.type.code)
+  const panel = panels.find((p) => p.code === data.type.code)
 
   const updateAttentionOnTable = (attention: UpdatedAttention) => {
     const updatedDataSheets = dataSheets.map((ds) =>

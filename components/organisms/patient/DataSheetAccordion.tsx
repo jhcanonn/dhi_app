@@ -2,33 +2,21 @@
 
 import { ComingSoon } from '@components/templates'
 import { useClientContext, useGlobalContext } from '@contexts'
-import {
-  AccordionLabels,
-  CreatedAttention,
-  DataSheet,
-  PanelsDirectus,
-} from '@models'
-import { getPanelsFromDirectus, refreshToken } from '@utils/api'
+import { AccordionLabels, CreatedAttention, DataSheet } from '@models'
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Button } from 'primereact/button'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import { useEffect, useRef, useState } from 'react'
-import { Cookies, withCookies } from 'react-cookie'
+import { useRef, useState } from 'react'
 import { PanelForm } from '@components/molecules'
 import { CREATE_ATTENTION, DHI_SUCRUSAL, getFormatedDateToEs } from '@utils'
 import { useMutation } from '@apollo/client'
 import { Toast } from 'primereact/toast'
 
-type Props = {
-  cookies: Cookies
-}
-
-const DataSheetAccordion = ({ cookies }: Props) => {
+const DataSheetAccordion = () => {
   const toast = useRef<Toast>(null)
   const [accordionIndex, setAccordionIndex] = useState<number[]>([0])
-  const { clientInfo, setDataSheets, dataSheetPanels, setDataSheetPanels } =
-    useClientContext()
-  const { user } = useGlobalContext()
+  const { clientInfo, setDataSheets } = useClientContext()
+  const { user, panels } = useGlobalContext()
 
   const [createAttention] = useMutation(CREATE_ATTENTION)
 
@@ -45,12 +33,6 @@ const DataSheetAccordion = ({ cookies }: Props) => {
     }
 
     setAccordionIndex(_accordionIndex)
-  }
-
-  const getPanels = async () => {
-    const access_token = await refreshToken(cookies)
-    const panels: PanelsDirectus[] = await getPanelsFromDirectus(access_token)
-    setDataSheetPanels(panels)
   }
 
   const addAttentionOnTable = (attention: CreatedAttention) => {
@@ -98,10 +80,6 @@ const DataSheetAccordion = ({ cookies }: Props) => {
     }
   }
 
-  useEffect(() => {
-    getPanels()
-  }, [])
-
   return (
     <>
       <Toast ref={toast} />
@@ -111,12 +89,10 @@ const DataSheetAccordion = ({ cookies }: Props) => {
         onTabChange={(e: any) => setAccordionIndex(e.index)}
       >
         <AccordionTab header={AccordionLabels.CONSULTA_PRIMERA_VEZ}>
-          {dataSheetPanels.length ? (
+          {panels.length ? (
             <PanelForm
               formId='accordion'
-              panel={dataSheetPanels.find(
-                (p) => p.code === 'consulta_primera_vez',
-              )}
+              panel={panels.find((p) => p.code === 'consulta_primera_vez')}
               onFormData={(formData: any) => {
                 closeAccordionTab(0)
                 onSaveAttention(formData, 'consulta_primera_vez')
@@ -163,4 +139,4 @@ const DataSheetAccordion = ({ cookies }: Props) => {
   )
 }
 
-export default withCookies(DataSheetAccordion)
+export default DataSheetAccordion

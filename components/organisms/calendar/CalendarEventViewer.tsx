@@ -61,7 +61,7 @@ const CalendarEventViewer = ({ event, closeFn }: Props) => {
           (e) => e.event_id !== deletedId,
         )
         scheduler.handleState(updatedEvents, 'events')
-        setEvents(updatedEvents)
+        setEvents(updatedEvents as DhiEvent[])
       }
     } catch (error) {
       console.error(error)

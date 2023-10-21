@@ -25,6 +25,7 @@ export type AppointmentDirectus = {
   description: string
   state_id: number
   pay_id: number
+  data_extra: JSON
 }
 
 export type ProfessionalDirectus = {
@@ -100,7 +101,6 @@ export type ClientDirectus = {
   segundo_nombre: string
   apellido_paterno: string
   apellido_materno: string
-  genero: string
   fecha_nacimiento: string
   correo: string
   indicativo: string
@@ -108,6 +108,7 @@ export type ClientDirectus = {
   indicativo_2: string
   telefono_2: string
   estado_civil: string
+  datos_extra: JSON
   ficha_id: {
     id: number
   }
@@ -230,4 +231,5 @@ export enum FieldTypeDirectus {
   TIME = 'time',
   DATETIME = 'datetime',
   CHECKBOX = 'checkbox',
+  PHONE = 'phone',
 }

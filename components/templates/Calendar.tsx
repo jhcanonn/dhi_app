@@ -6,7 +6,6 @@ import { Scheduler } from 'react-scheduler-lib'
 import {
   CellRenderedProps,
   EventRendererProps,
-  ProcessedEvent,
   SchedulerHelpers,
   SchedulerRef,
 } from 'react-scheduler-lib/types'
@@ -39,6 +38,7 @@ import {
   AppointmentQuery,
   BoxDirectus,
   CalendarType,
+  DhiEvent,
   DhiResource,
   EventStateDirectus,
   PaysDirectus,
@@ -152,7 +152,7 @@ const Calendar = ({ cookies }: Props) => {
     <CalendarHeader {...resource} />
   )
 
-  const handleCustomViewer = (event: ProcessedEvent, closeFn: () => void) => (
+  const handleCustomViewer = (event: DhiEvent, closeFn: () => void) => (
     <CalendarEventViewerAvoided event={event} closeFn={closeFn} />
   )
 

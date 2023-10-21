@@ -110,7 +110,6 @@ export const directusClientMapper = (data: DhiPatient) => {
     segundo_nombre: data.segundo_nombre,
     apellido_paterno: data.apellido_paterno,
     apellido_materno: data.apellido_materno,
-    genero: data.genero?.type,
     fecha_nacimiento: data.fecha_nacimiento?.toISOString(),
     correo: data.correo,
     indicativo: data.indicativo?.dialling,
@@ -118,6 +117,7 @@ export const directusClientMapper = (data: DhiPatient) => {
     indicativo_2: data.indicativo_2?.dialling,
     telefono_2: data.telefono_2,
     estado_civil: data.estado_civil?.type,
+    datos_extra: data.datos_extra,
   } as ClientDirectus
 }
 
@@ -151,6 +151,7 @@ export const directusAppointmentMapper = (data: DhiEvent) => {
     description: data.description || '',
     state_id: data.state?.state_id,
     pay_id: data.pay?.pay_id,
+    data_extra: data.data_extra,
   } as AppointmentDirectus
 }
 
@@ -225,6 +226,7 @@ export const dhiAppointmentMapper = (
     sent_email: data.enviar_correo,
     description: data.comentario,
     eventStates,
+    data_extra: clientInfo?.datos_extra,
   } as DhiEvent
 }
 
