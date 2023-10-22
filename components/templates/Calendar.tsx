@@ -27,6 +27,7 @@ import {
   directusAppointmentMapper,
   calendarWeek,
   calendarDay,
+  LOCAL_STORAGE_TAGS,
 } from '@utils'
 import {
   CalendarEditor,
@@ -129,20 +130,26 @@ const Calendar = ({ cookies }: Props) => {
   )
 
   const fetchHolidays = () => {
-    const lsH = window.localStorage.getItem('holidays')
+    const lsH = window.localStorage.getItem(LOCAL_STORAGE_TAGS.HOLIDAYS)
     if (!lsH) {
       getHolidays(new Date().getFullYear()).then((h) => {
-        window.localStorage.setItem('holidays', JSON.stringify(h))
+        window.localStorage.setItem(
+          LOCAL_STORAGE_TAGS.HOLIDAYS,
+          JSON.stringify(h),
+        )
         setHolidays(h)
       })
     } else setHolidays(JSON.parse(lsH))
   }
 
   const fetchCountries = () => {
-    const lsC = window.localStorage.getItem('countries')
+    const lsC = window.localStorage.getItem(LOCAL_STORAGE_TAGS.COUNTRIES)
     if (!lsC) {
       getCountries().then((c) => {
-        window.localStorage.setItem('countries', JSON.stringify(c))
+        window.localStorage.setItem(
+          LOCAL_STORAGE_TAGS.COUNTRIES,
+          JSON.stringify(c),
+        )
         setCountries(c)
       })
     } else setCountries(JSON.parse(lsC))

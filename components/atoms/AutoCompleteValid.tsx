@@ -16,6 +16,7 @@ export type Props<T> = FieldCommonProps<T> & {
   label?: string
   icon?: string
   disabled?: boolean
+  className?: string
   field: string
   itemTemplate: ReactNode | ((option: any) => ReactNode)
   suggestions: any[]
@@ -29,6 +30,7 @@ const AutoCompleteValid = <T extends FieldValues>({
   label,
   icon,
   disabled,
+  className,
   field,
   itemTemplate,
   suggestions,
@@ -55,7 +57,7 @@ const AutoCompleteValid = <T extends FieldValues>({
         field: { value, name, ref, onChange },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col w-full'>
+        <div className={`flex flex-col w-full ${className}`}>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i

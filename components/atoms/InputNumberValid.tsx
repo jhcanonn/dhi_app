@@ -14,6 +14,7 @@ export type Props<T> = FieldCommonProps<T> & {
   mode?: 'currency' | 'decimal'
   minLength?: number
   min?: number
+  className?: string
   onCustomChange?: (e: InputNumberChangeEvent) => void
 }
 
@@ -26,6 +27,7 @@ const InputNumberValid = <T extends FieldValues>({
   mode,
   minLength,
   min = 0,
+  className,
   required,
   validate,
   onCustomChange,
@@ -52,7 +54,7 @@ const InputNumberValid = <T extends FieldValues>({
         field: { onChange, onBlur, value, name, ref },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col'>
+        <div className={`flex flex-col ${className}`}>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i

@@ -16,6 +16,7 @@ export type Props<T> = FieldCommonProps<T> & {
   disabled?: boolean
   icon?: string
   minLength?: number
+  className?: string
 }
 
 const PhoneNumberValid = <T extends FieldValues>({
@@ -26,6 +27,7 @@ const PhoneNumberValid = <T extends FieldValues>({
   disabled,
   icon,
   minLength,
+  className,
   required,
   validate,
 }: Props<T>) => {
@@ -63,7 +65,7 @@ const PhoneNumberValid = <T extends FieldValues>({
   }
 
   return (
-    <div className='flex flex-col'>
+    <div className={`flex flex-col ${className}`}>
       <div className='p-inputgroup flex [&>*:nth-child(1)]:!w-[36%] [&>*:nth-child(2)]:!w-[64%]'>
         {/* Dailling field */}
         <Controller
