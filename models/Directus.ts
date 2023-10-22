@@ -177,6 +177,7 @@ export type CamposDirectus = {
   fuente_datos: CamposFuenteDatos
   variable_datos: string
   ancho_completo: boolean
+  sin_autoresize: boolean
 } & DefaultFieldsDirectus
 
 export type CamposRelDirectus = {

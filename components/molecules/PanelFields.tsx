@@ -140,6 +140,7 @@ const PanelFields = ({ group, handleForm, disabledData }: Props) => {
                   required={field.validaciones?.required}
                   pattern={regexPatterns.onlyEmpty}
                   disabled={fieldDisable}
+                  autoResize={!field.sin_autoresize}
                   className={fieldClassName}
                 />
               )
