@@ -12,6 +12,7 @@ export type Props<T> = FieldCommonProps<T> & {
   gridRows?: number
   disabled?: boolean
   rows?: number
+  autoResize?: boolean
   pattern?: RegExp
   className?: string
 }
@@ -23,6 +24,7 @@ const InputTextareaValid = <T extends FieldValues>({
   gridRows,
   disabled,
   rows,
+  autoResize = true,
   pattern,
   className,
   required,
@@ -72,7 +74,7 @@ const InputTextareaValid = <T extends FieldValues>({
               onChange={(e) => onChange(e.target.value)}
               rows={rows}
               className={cx({ 'p-invalid': error }, 'w-full')}
-              autoResize
+              autoResize={autoResize}
               disabled={disabled}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>

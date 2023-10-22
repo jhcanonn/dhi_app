@@ -53,7 +53,10 @@ const PanelFieldAutocomplete = ({
 
   const handleCustomChange = (e: AutoCompleteChangeEvent) => {
     const item = e.value
-    onChange(item, getSelectedValue(item))
+    if (item && typeof item === 'object') {
+      onChange(item, getSelectedValue(item))
+      handleForm.resetField(name)
+    }
   }
 
   return (
