@@ -12,6 +12,7 @@ export type Props<T> = FieldCommonProps<T> & {
   icon?: string
   disabled?: boolean
   pattern?: RegExp
+  className?: string
 }
 
 const InputTextValid = <T extends FieldValues>({
@@ -21,6 +22,7 @@ const InputTextValid = <T extends FieldValues>({
   icon,
   disabled = false,
   pattern,
+  className,
   required,
   validate,
 }: Props<T>) => {
@@ -46,7 +48,7 @@ const InputTextValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col w-full'>
+        <div className={`flex flex-col w-full ${className}`}>
           <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
             {icon && (
               <i

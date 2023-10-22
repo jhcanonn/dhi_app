@@ -18,6 +18,7 @@ export type Props<T> = FieldCommonProps<T> & {
   label?: string
   disabled?: boolean
   placeholder?: string
+  className?: string
   emptyMessage?: ReactNode | ((props: DropdownProps) => ReactNode)
   itemTemplate?: ReactNode | ((option: any) => ReactNode)
   valueTemplate?: ReactNode | ((option: any, props: DropdownProps) => ReactNode)
@@ -30,6 +31,7 @@ const DropdownValid = <T extends FieldValues>({
   label,
   disabled,
   placeholder,
+  className,
   list,
   showClear = false,
   required,
@@ -57,7 +59,7 @@ const DropdownValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col'>
+        <div className={`flex flex-col ${className}`}>
           <span className='p-float-label'>
             <Dropdown
               id={name}

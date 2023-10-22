@@ -144,6 +144,14 @@ export type CamposOpcionesDirectus = {
   value: string
 }
 
+export enum CamposFuenteDatos {
+  LOCAL_STORAGE = 'local_storage',
+  CONTEXT = 'context',
+  CMS = 'cms',
+  FETCH = 'fetch',
+  OPTIONS_JSON = 'json',
+}
+
 type DefaultFieldsDirectus = {
   estado: string
   orden: number | null
@@ -166,6 +174,9 @@ export type CamposDirectus = {
   valor_predeterminado: any
   valor_accionado: any
   deshabilitado: boolean
+  fuente_datos: CamposFuenteDatos
+  variable_datos: string
+  ancho_completo: boolean
 } & DefaultFieldsDirectus
 
 export type CamposRelDirectus = {
@@ -232,4 +243,5 @@ export enum FieldTypeDirectus {
   DATETIME = 'datetime',
   CHECKBOX = 'checkbox',
   PHONE = 'phone',
+  AUTOCOMPLETE = 'autocomplete',
 }

@@ -14,6 +14,7 @@ export type Props<T> = FieldCommonProps<T> & {
   gridRows?: number
   disabled?: boolean
   pattern?: RegExp
+  className?: string
 }
 
 const CheckboxValid = <T extends FieldValues>({
@@ -24,6 +25,7 @@ const CheckboxValid = <T extends FieldValues>({
   gridRows,
   disabled = false,
   pattern,
+  className,
   required,
   validate,
 }: Props<T>) => {
@@ -68,6 +70,7 @@ const CheckboxValid = <T extends FieldValues>({
         return (
           <div
             className={cx(
+              className,
               'flex flex-col w-full',
               { 'row-span-2': gridRows === 2 },
               { 'row-span-3': gridRows === 3 },

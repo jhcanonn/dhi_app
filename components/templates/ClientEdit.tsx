@@ -12,6 +12,7 @@ import { PatientDataExtra } from '@components/molecules'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { DhiPatient } from '@models'
 import {
+  LOCAL_STORAGE_TAGS,
   PAGE_PATH,
   UPDATE_PATIENT,
   civilStatus,
@@ -116,10 +117,13 @@ const ClientEdit = () => {
   }
 
   const fetchCountries = () => {
-    const lsC = window.localStorage.getItem('countries')
+    const lsC = window.localStorage.getItem(LOCAL_STORAGE_TAGS.COUNTRIES)
     if (!lsC) {
       getCountries().then((c) => {
-        window.localStorage.setItem('countries', JSON.stringify(c))
+        window.localStorage.setItem(
+          LOCAL_STORAGE_TAGS.COUNTRIES,
+          JSON.stringify(c),
+        )
         setCountries(c)
       })
     } else setCountries(JSON.parse(lsC))

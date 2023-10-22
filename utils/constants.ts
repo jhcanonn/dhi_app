@@ -57,6 +57,12 @@ export const ROLES = {
   dhi_comercial: '46313e3f-942b-4456-a116-aeb759bb02b0',
 }
 
+export enum LOCAL_STORAGE_TAGS {
+  COUNTRIES = 'countries',
+  HOLIDAYS = 'holidays',
+  CIE10 = 'cie10',
+}
+
 export const DHI_SESSION = 'dhi_session'
 export const BLOCK_BOX = 'Bloqueo'
 export const BLOCK_SERVICE = 'Bloqueo Otra Razón'

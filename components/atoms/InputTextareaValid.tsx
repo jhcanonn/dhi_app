@@ -13,6 +13,7 @@ export type Props<T> = FieldCommonProps<T> & {
   disabled?: boolean
   rows?: number
   pattern?: RegExp
+  className?: string
 }
 
 const InputTextareaValid = <T extends FieldValues>({
@@ -23,6 +24,7 @@ const InputTextareaValid = <T extends FieldValues>({
   disabled,
   rows,
   pattern,
+  className,
   required,
   validate,
 }: Props<T>) => {
@@ -50,6 +52,7 @@ const InputTextareaValid = <T extends FieldValues>({
       }) => (
         <div
           className={cx(
+            className,
             'flex flex-col',
             { 'row-span-2': gridRows === 2 },
             { 'row-span-3': gridRows === 3 },

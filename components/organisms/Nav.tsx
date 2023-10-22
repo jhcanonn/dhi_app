@@ -4,7 +4,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from 'primereact/button'
 import { useAsideContext, useGlobalContext } from '@contexts'
-import { DHI_SESSION, GET_USER_ME, PAGE_PATH } from '@utils'
+import {
+  DHI_SESSION,
+  GET_CIE_10,
+  GET_USER_ME,
+  LOCAL_STORAGE_TAGS,
+  PAGE_PATH,
+} from '@utils'
 import { Cookies, withCookies } from 'react-cookie'
 import { useQuery } from '@apollo/client'
 import { directusSystemClient } from '@components/templates/Providers'
@@ -24,6 +30,8 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
     client: directusSystemClient,
   })
 
+  const { refetch: refetchCie10 } = useQuery(GET_CIE_10)
+
   const handleLogout = () => {
     cookies.remove(DHI_SESSION)
     router.push(PAGE_PATH.login)
@@ -35,12 +43,24 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
     setPanels(panels)
   }
 
+  const getCie10 = async () => {
+    const lsCie10 = window.localStorage.getItem(LOCAL_STORAGE_TAGS.CIE10)
+    if (!lsCie10) {
+      const cie10Data = await refetchCie10()
+      window.localStorage.setItem(
+        LOCAL_STORAGE_TAGS.CIE10,
+        JSON.stringify(cie10Data.data.cie_10),
+      )
+    }
+  }
+
   useEffect(() => {
     if (!loading) setUser(data.users_me)
   }, [data])
 
   useEffect(() => {
     getPanels()
+    getCie10()
   }, [])
 
   return (

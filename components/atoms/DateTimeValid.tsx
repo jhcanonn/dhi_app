@@ -15,6 +15,7 @@ export type Props<T> = FieldCommonProps<T> & {
   stepMinute?: number
   showIcon?: boolean
   showTime?: boolean
+  className?: string
 }
 
 const DateTimeValid = <T extends FieldValues>({
@@ -25,6 +26,7 @@ const DateTimeValid = <T extends FieldValues>({
   stepMinute = 30,
   showIcon = true,
   showTime = true,
+  className,
   required,
   validate,
 }: Props<T>) => {
@@ -50,7 +52,7 @@ const DateTimeValid = <T extends FieldValues>({
         field: { value, name, ref, onBlur, onChange },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col'>
+        <div className={`flex flex-col ${className}`}>
           <span className='p-float-label'>
             <Calendar
               ref={ref}

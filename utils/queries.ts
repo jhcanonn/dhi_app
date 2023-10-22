@@ -86,6 +86,15 @@ export const PAYS = gql`
   }
 `
 
+export const GET_CIE_10 = gql`
+  query {
+    cie_10(filter: { estado: { _eq: "published" } }, limit: 13000) {
+      code
+      descripcion
+    }
+  }
+`
+
 export const GET_INFO_CLIENT = gql`
   query ($text: String!) {
     pacientes(
