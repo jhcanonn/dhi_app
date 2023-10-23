@@ -47,7 +47,7 @@ const ClientLayout = ({ children, params }: Props) => {
       command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id })),
     },
     {
-      label: 'Ficha',
+      label: 'Atenciones',
       icon: PrimeIcons.BOOK,
       command: () => goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id })),
     },

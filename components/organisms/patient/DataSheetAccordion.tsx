@@ -1,14 +1,17 @@
 'use client'
 
-import { ComingSoon } from '@components/templates'
-import { useClientContext, useGlobalContext } from '@contexts'
-import { AccordionLabels, CreatedAttention, DataSheet } from '@models'
-import { Accordion, AccordionTab } from 'primereact/accordion'
-import { Button } from 'primereact/button'
-import { ProgressSpinner } from 'primereact/progressspinner'
 import { useRef, useState } from 'react'
+import { useClientContext, useGlobalContext } from '@contexts'
+import { CreatedAttention, DataSheet } from '@models'
+import { Accordion, AccordionTab } from 'primereact/accordion'
+import { ProgressSpinner } from 'primereact/progressspinner'
 import { PanelForm } from '@components/molecules'
-import { CREATE_ATTENTION, DHI_SUCRUSAL, getFormatedDateToEs } from '@utils'
+import {
+  CREATE_ATTENTION,
+  DHI_SUCRUSAL,
+  PanelTags,
+  getFormatedDateToEs,
+} from '@utils'
 import { useMutation } from '@apollo/client'
 import { Toast } from 'primereact/toast'
 
@@ -38,7 +41,7 @@ const DataSheetAccordion = () => {
   const addAttentionOnTable = (attention: CreatedAttention) => {
     const newAttention: DataSheet = {
       id: attention.id,
-      date: getFormatedDateToEs(attention.date_created),
+      date: getFormatedDateToEs(attention.date_created, 'ddd ll'),
       professional: attention.user_created.profesional.nombre,
       sucursal: attention.sucursal,
       type: {
@@ -83,58 +86,33 @@ const DataSheetAccordion = () => {
   return (
     <>
       <Toast ref={toast} />
-      <Accordion
-        multiple
-        activeIndex={accordionIndex}
-        onTabChange={(e: any) => setAccordionIndex(e.index)}
-      >
-        <AccordionTab header={AccordionLabels.CONSULTA_PRIMERA_VEZ}>
-          {panels.length ? (
-            <PanelForm
-              formId='accordion'
-              panel={panels.find((p) => p.code === 'consulta_primera_vez')}
-              onFormData={(formData: any) => {
-                closeAccordionTab(0)
-                onSaveAttention(formData, 'consulta_primera_vez')
-              }}
-            />
-          ) : (
-            <div className='flex justify-center'>
-              <ProgressSpinner />
-            </div>
-          )}
-        </AccordionTab>
-        <AccordionTab header={AccordionLabels.CONSULTA_CONTROL}>
-          <div className='flex flex-col gap-4 items-center'>
-            <ComingSoon />
-            <Button
-              label='Guardar atención'
-              className='text-sm w-fit'
-              onClick={() => closeAccordionTab(1)}
-            />
-          </div>
-        </AccordionTab>
-        <AccordionTab header={AccordionLabels.COTIZACION}>
-          <div className='flex flex-col gap-4 items-center'>
-            <ComingSoon />
-            <Button
-              label='Guardar atención'
-              className='text-sm w-fit'
-              onClick={() => closeAccordionTab(2)}
-            />
-          </div>
-        </AccordionTab>
-        <AccordionTab header={AccordionLabels.RISP_AC}>
-          <div className='flex flex-col gap-4 items-center'>
-            <ComingSoon />
-            <Button
-              label='Guardar atención'
-              className='text-sm w-fit'
-              onClick={() => closeAccordionTab(3)}
-            />
-          </div>
-        </AccordionTab>
-      </Accordion>
+      {panels.length ? (
+        <Accordion
+          multiple
+          activeIndex={accordionIndex}
+          onTabChange={(e: any) => setAccordionIndex(e.index)}
+        >
+          {panels
+            .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
+            .sort((a, b) => a.orden - b.orden)
+            .map((panel) => (
+              <AccordionTab key={panel.code} header={panel.nombre}>
+                <PanelForm
+                  formId='accordion'
+                  panel={panel}
+                  onFormData={(formData: any) => {
+                    closeAccordionTab(panel.orden - 1)
+                    onSaveAttention(formData, panel.code)
+                  }}
+                />
+              </AccordionTab>
+            ))}
+        </Accordion>
+      ) : (
+        <div className='flex justify-center'>
+          <ProgressSpinner />
+        </div>
+      )}
     </>
   )
 }
