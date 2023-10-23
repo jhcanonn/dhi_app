@@ -24,6 +24,7 @@ import PanelFieldAutocomplete from './PanelFieldAutocomplete'
 import { handlesAutoField } from '@hooks'
 
 type Props = {
+  panelCode: string
   group: AgrupadoresDirectus
   handleForm: UseFormReturn<any, any, undefined>
   disabledData?: boolean
@@ -97,7 +98,7 @@ const getFieldList = (field: CamposDirectus) => {
   return list
 }
 
-const PanelFields = ({ group, handleForm, disabledData }: Props) => {
+const PanelFields = ({ panelCode, group, handleForm, disabledData }: Props) => {
   const responsive = group.diseno_responsivo
   return (
     <div className={cssColsResponsive(responsive, disabledData)}>
@@ -233,7 +234,7 @@ const PanelFields = ({ group, handleForm, disabledData }: Props) => {
                 selectedValue: string,
               ) => {
                 const handleChange = handlesAutoField[field.variable_datos]
-                handleChange(item, selectedValue, handleForm)
+                handleChange(item, selectedValue, handleForm, panelCode)
               }
               return (
                 <PanelFieldAutocomplete
