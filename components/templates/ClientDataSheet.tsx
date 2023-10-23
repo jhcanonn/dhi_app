@@ -20,7 +20,7 @@ const ClientDataSheet = () => {
 
   const items: MenuItem[] = [
     {
-      label: 'Fichas',
+      label: 'Historial',
       icon: PrimeIcons.BOOK,
     },
     {

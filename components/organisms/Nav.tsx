@@ -8,7 +8,7 @@ import {
   DHI_SESSION,
   GET_CIE_10,
   GET_USER_ME,
-  LOCAL_STORAGE_TAGS,
+  LocalStorageTags,
   PAGE_PATH,
 } from '@utils'
 import { Cookies, withCookies } from 'react-cookie'
@@ -44,11 +44,11 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
   }
 
   const getCie10 = async () => {
-    const lsCie10 = window.localStorage.getItem(LOCAL_STORAGE_TAGS.CIE10)
+    const lsCie10 = window.localStorage.getItem(LocalStorageTags.CIE10)
     if (!lsCie10) {
       const cie10Data = await refetchCie10()
       window.localStorage.setItem(
-        LOCAL_STORAGE_TAGS.CIE10,
+        LocalStorageTags.CIE10,
         JSON.stringify(cie10Data.data.cie_10),
       )
     }

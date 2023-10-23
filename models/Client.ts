@@ -79,10 +79,3 @@ export type DataSheet = {
   sucursal: string
   data: JSON
 }
-
-export enum AccordionLabels {
-  CONSULTA_PRIMERA_VEZ = 'Consulta primera vez',
-  CONSULTA_CONTROL = 'Consulta control',
-  COTIZACION = 'Cotizacion',
-  RISP_AC = 'RISP AC',
-}

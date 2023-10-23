@@ -1,9 +1,9 @@
-import { LOCAL_STORAGE_TAGS } from '@utils'
+import { LocalStorageTags } from '@utils'
 import { UseFormReturn } from 'react-hook-form'
 
 const handlesAutoField: any = {}
 
-handlesAutoField[LOCAL_STORAGE_TAGS.CIE10 as keyof any] = (
+handlesAutoField[LocalStorageTags.CIE10 as keyof any] = (
   _: any,
   selectedValue: string,
   handleForm: UseFormReturn<any, any, undefined>,

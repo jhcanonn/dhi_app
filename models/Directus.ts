@@ -205,10 +205,12 @@ export type AgrupadoresRelDirectus = {
 
 export type PanelsDirectus = {
   code: string
+  orden: number
   nombre: string
   descripcion: string
   agrupadores_id: AgrupadoresRelDirectus[]
   bloque_de_firma: boolean
+  view_forms: string[]
 } & DefaultFieldsDirectus
 
 export type DataSheetDirectus = {
