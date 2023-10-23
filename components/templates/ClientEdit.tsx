@@ -38,7 +38,6 @@ const ClientEdit = () => {
   const router = useRouter()
   const [updatePatient] = useMutation(UPDATE_PATIENT)
 
-  const indicativoDefault = { name: '', dialling: '', image_url: '' }
   const dataClient: DhiPatient = {
     id: clientInfo?.id,
     tipo_documento: idTypes.find((t) => t.type === clientInfo?.tipo_documento),
@@ -51,13 +50,9 @@ const ClientEdit = () => {
       ? moment(clientInfo?.fecha_nacimiento as string).toDate()
       : null,
     correo: clientInfo?.correo || '',
-    indicativo:
-      countries.find((c) => c.dialling === clientInfo?.indicativo) ||
-      indicativoDefault,
+    indicativo: undefined,
     telefono: clientInfo?.telefono || null,
-    indicativo_2:
-      countries.find((c) => c.dialling === clientInfo?.indicativo_2) ||
-      indicativoDefault,
+    indicativo_2: undefined,
     telefono_2: clientInfo?.telefono_2 || null,
     estado_civil: civilStatus.find((c) => c.type === clientInfo?.estado_civil),
     datos_extra: clientInfo?.datos_extra
@@ -145,6 +140,21 @@ const ClientEdit = () => {
         setValueExtra(key as 'stringify', datosExtra[key], options)
     }
   }
+
+  useEffect(() => {
+    if (clientInfo && countries.length) {
+      setValueMain(
+        'indicativo',
+        countries.find((c) => c.dialling === clientInfo.indicativo),
+        options,
+      )
+      setValueMain(
+        'indicativo_2',
+        countries.find((c) => c.dialling === clientInfo.indicativo_2),
+        options,
+      )
+    }
+  }, [countries])
 
   useEffect(() => {
     initDataMain()
