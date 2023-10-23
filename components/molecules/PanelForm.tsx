@@ -88,8 +88,13 @@ const PanelForm = ({
   const handleExtraButton = (fields: CamposRelDirectus[]) => {
     fields.forEach((f) => {
       const field = f.campos_id
-      field.valor_accionado &&
-        setValue(field.codigo, field.valor_accionado, { shouldValidate: true })
+      if (field.valor_accionado) {
+        const value =
+          field.tipo === FieldTypeDirectus.CHECKBOX
+            ? JSON.parse(field.valor_accionado)
+            : field.valor_accionado
+        setValue(field.codigo, value, { shouldValidate: true })
+      }
     })
   }
 
@@ -124,6 +129,7 @@ const PanelForm = ({
                 />
               )}
               <PanelFields
+                panelCode={panel.code}
                 group={group}
                 handleForm={handleForm}
                 disabledData={disabledData}

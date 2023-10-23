@@ -96,7 +96,11 @@ const CheckboxValid = <T extends FieldValues>({
                           onChange={(e) => {
                             onOptionChange(e, onChange)
                           }}
-                          checked={options.some((item) => item.value === key)}
+                          checked={
+                            options?.length > 0
+                              ? options.some((item) => item.value === key)
+                              : false
+                          }
                           className={cx({ 'p-invalid': error }, 'w-full')}
                         />
                       </div>
