@@ -1,12 +1,12 @@
 'use client'
 
 import { ErrorText } from '.'
-import { Controller, FieldValues } from 'react-hook-form'
+import { Controller, FieldValues, useWatch } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
 import { CamposOpcionesDirectus, FieldCommonProps } from '@models'
 import { errorMessages } from '@utils'
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export type Props<T> = FieldCommonProps<T> & {
   list: CamposOpcionesDirectus[]
@@ -30,13 +30,19 @@ const CheckboxValid = <T extends FieldValues>({
   validate,
 }: Props<T>) => {
   const {
-    formState: { errors, defaultValues },
+    formState: { errors },
     control,
+    watch,
   } = handleForm
 
-  const df = { ...defaultValues }
+  const checkboxValue: CamposOpcionesDirectus[] = useWatch({
+    control,
+    name: name as any,
+    defaultValue: watch(name as any),
+  })
+
   const [options, setOptions] = useState<CamposOpcionesDirectus[]>(
-    df[name] ?? [],
+    checkboxValue ?? [],
   )
 
   const onOptionChange = (
@@ -49,6 +55,11 @@ const CheckboxValid = <T extends FieldValues>({
     setOptions(_options)
     onChange(_options)
   }
+
+  useEffect(() => {
+    checkboxValue?.length > 0 &&
+      setOptions((prev) => [...prev, ...checkboxValue])
+  }, [checkboxValue])
 
   return (
     <Controller
