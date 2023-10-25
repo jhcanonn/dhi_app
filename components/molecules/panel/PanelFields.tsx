@@ -20,8 +20,8 @@ import {
 import { regexPatterns } from '@utils'
 import { UseFormReturn } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
-import PanelFieldAutocomplete from './PanelFieldAutocomplete'
 import { handlesAutoField } from '@hooks'
+import { PanelFieldAutocomplete } from '.'
 
 type Props = {
   panelCode: string
@@ -101,7 +101,9 @@ const getFieldList = (field: CamposDirectus) => {
 const PanelFields = ({ panelCode, group, handleForm, disabledData }: Props) => {
   const responsive = group.diseno_responsivo
   return (
-    <div className={cssColsResponsive(responsive, disabledData)}>
+    <div
+      className={responsive ? cssColsResponsive(responsive, disabledData) : ''}
+    >
       {group.campos_id
         .sort((a, b) => a.orden - b.orden)
         .map((c) => {

@@ -10,7 +10,7 @@ import { Fieldset } from 'primereact/fieldset'
 import { Message } from 'primereact/message'
 import { classNames as cx } from 'primereact/utils'
 import { UseFormReturn, useForm } from 'react-hook-form'
-import PanelFields from './PanelFields'
+import { PanelFields, PanelGroupCustom } from '.'
 
 type Props = {
   formId: string
@@ -111,31 +111,35 @@ const PanelForm = ({
           const group = a.agrupadores_code
           const groupLabel = group.etiqueta?.trim()
           const buttonExtraLabel = group.etiqueta_boton_extra?.trim()
+          const customGroup = group.es_personalizado
 
-          const ButtonExtraAndFields = () => (
-            <>
-              {!disabledData && buttonExtraLabel && (
-                <Button
-                  type='button'
-                  label={buttonExtraLabel}
-                  severity='help'
-                  size='small'
-                  className={cx(
-                    'w-full mb-4 md:w-fit md:mb-0 md:absolute md:right-4',
-                    { 'md:top-[-2.1rem]': groupLabel },
-                    { 'md:top-[-1.2rem]': !groupLabel },
-                  )}
-                  onClick={() => handleExtraButton(group.campos_id)}
+          const ButtonExtraAndFields = () =>
+            customGroup ? (
+              <PanelGroupCustom group={group} />
+            ) : (
+              <>
+                {!disabledData && buttonExtraLabel && (
+                  <Button
+                    type='button'
+                    label={buttonExtraLabel}
+                    severity='help'
+                    size='small'
+                    className={cx(
+                      'w-full mb-4 md:w-fit md:mb-0 md:absolute md:right-4',
+                      { 'md:top-[-2.1rem]': groupLabel },
+                      { 'md:top-[-1.2rem]': !groupLabel },
+                    )}
+                    onClick={() => handleExtraButton(group.campos_id)}
+                  />
+                )}
+                <PanelFields
+                  panelCode={panel.code}
+                  group={group}
+                  handleForm={handleForm}
+                  disabledData={disabledData}
                 />
-              )}
-              <PanelFields
-                panelCode={panel.code}
-                group={group}
-                handleForm={handleForm}
-                disabledData={disabledData}
-              />
-            </>
-          )
+              </>
+            )
 
           return groupLabel ? (
             <Fieldset key={group.code} legend={groupLabel} className='relative'>

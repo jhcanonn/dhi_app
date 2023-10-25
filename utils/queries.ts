@@ -55,6 +55,7 @@ export const GET_USER_ME = gql`
         id
         nombre
         no_registro_medico
+        cargo
       }
       avatar {
         id

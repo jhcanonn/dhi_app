@@ -21,7 +21,7 @@ const ClientDataSheet = () => {
   const items: MenuItem[] = [
     {
       label: 'Historial',
-      icon: PrimeIcons.BOOK,
+      icon: PrimeIcons.LIST,
     },
     {
       label: 'Próximas citas',
@@ -29,19 +29,15 @@ const ClientDataSheet = () => {
     },
     {
       label: 'Recetas y exámenes',
-      icon: PrimeIcons.FILE,
+      icon: PrimeIcons.BOOK,
     },
     {
-      label: 'Imágenes y archivos',
+      label: 'Imágenes',
       icon: PrimeIcons.IMAGES,
     },
     {
-      label: 'Repositorio de archivos',
-      icon: PrimeIcons.FOLDER,
-    },
-    {
-      label: 'Consentimientos',
-      icon: PrimeIcons.PAPERCLIP,
+      label: 'Archivos',
+      icon: PrimeIcons.FILE,
     },
   ]
 
@@ -56,8 +52,6 @@ const ClientDataSheet = () => {
       case 3:
         return <ComingSoon />
       case 4:
-        return <ComingSoon />
-      case 5:
         return <ComingSoon />
     }
   }

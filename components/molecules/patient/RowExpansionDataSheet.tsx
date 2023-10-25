@@ -1,7 +1,7 @@
 'use client'
 
 import { DataSheet } from '@models'
-import PanelForm from '../PanelForm'
+import { PanelForm } from '../panel'
 import { useGlobalContext } from '@contexts'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { classNames as cx } from 'primereact/utils'

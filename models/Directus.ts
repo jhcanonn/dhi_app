@@ -194,6 +194,7 @@ export type AgrupadoresDirectus = {
   diseno_responsivo: DisenioResponsivoDirectus
   campos_id: CamposRelDirectus[]
   etiqueta_boton_extra: string | null
+  es_personalizado: boolean
 } & DefaultFieldsDirectus
 
 export type AgrupadoresRelDirectus = {
@@ -211,6 +212,7 @@ export type PanelsDirectus = {
   agrupadores_id: AgrupadoresRelDirectus[]
   bloque_de_firma: boolean
   view_forms: string[]
+  cargo: string[]
 } & DefaultFieldsDirectus
 
 export type DataSheetDirectus = {

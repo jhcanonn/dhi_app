@@ -1,5 +1,6 @@
-export { default as PanelForm } from './PanelForm'
-export { default as PanelFields } from './PanelFields'
+export { default as PanelForm } from './panel/PanelForm'
+export { default as PanelFields } from './panel/PanelFields'
 export * from './calendar'
 export * from './skeletons'
 export * from './patient'
+export * from './panel'
