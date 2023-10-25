@@ -69,6 +69,7 @@ export type User = {
     id: string
     nombre: string
     no_registro_medico: string
+    cargo: string
   }
   avatar: {
     id: string

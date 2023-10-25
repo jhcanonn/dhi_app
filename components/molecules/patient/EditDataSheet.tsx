@@ -1,10 +1,10 @@
 'use client'
 
 import { DataSheet, UpdatedAttention } from '@models'
-import PanelForm from '../PanelForm'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { useMutation } from '@apollo/client'
 import { UPDATE_ATTENTION } from '@utils'
+import { PanelForm } from '../panel'
 
 type Props = {
   data: DataSheet

@@ -107,3 +107,10 @@ export const civilStatus = [
   { type: 'V', name: 'Viudo(a)' },
   { type: 'D', name: 'Divorciado(a)' },
 ]
+
+export const PanelGroupCustomCodes = {
+  FOLICULOS_ZONA_DONANTE: 'hc_foliculos_zona_donante',
+  FOLICULOS_CAPILAR: 'hc_foliculos_capilar',
+  FOLICULOS_BARBA: 'hc_foliculos_barba',
+  FOLICULOS_CEJA: 'hc_foliculos_ceja',
+}

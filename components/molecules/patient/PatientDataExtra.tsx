@@ -1,6 +1,6 @@
 'use client'
 
-import PanelForm from '../PanelForm'
+import { PanelForm } from '../panel'
 import { useGlobalContext } from '@contexts'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { UseFormReturn } from 'react-hook-form'

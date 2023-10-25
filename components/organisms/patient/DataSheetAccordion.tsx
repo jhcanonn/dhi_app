@@ -93,7 +93,12 @@ const DataSheetAccordion = () => {
           onTabChange={(e: any) => setAccordionIndex(e.index)}
         >
           {panels
-            .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
+            .filter(
+              (p) =>
+                p.view_forms.includes(PanelTags.ATENTIONS) &&
+                user?.profesional &&
+                p.cargo?.includes(user.profesional.cargo),
+            )
             .sort((a, b) => a.orden - b.orden)
             .map((panel) => (
               <AccordionTab key={panel.code} header={panel.nombre}>
