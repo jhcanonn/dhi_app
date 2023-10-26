@@ -115,7 +115,7 @@ const PanelForm = ({
 
           const ButtonExtraAndFields = () =>
             customGroup ? (
-              <PanelGroupCustom group={group} />
+              <PanelGroupCustom code={group.code} handleForm={handleForm} />
             ) : (
               <>
                 {!disabledData && buttonExtraLabel && (
@@ -142,7 +142,11 @@ const PanelForm = ({
             )
 
           return groupLabel ? (
-            <Fieldset key={group.code} legend={groupLabel} className='relative'>
+            <Fieldset
+              key={group.code}
+              legend={groupLabel}
+              className={cx('relative', { 'min-w-0': customGroup })}
+            >
               {ButtonExtraAndFields()}
             </Fieldset>
           ) : (

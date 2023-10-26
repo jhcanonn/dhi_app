@@ -185,6 +185,7 @@ const ClientEdit = () => {
                 handleForm={handleForm}
                 icon='id-card'
                 required
+                min={0}
               />
               <InputTextValid
                 name='primer_nombre'
