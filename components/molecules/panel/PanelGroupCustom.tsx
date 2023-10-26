@@ -1,6 +1,5 @@
 'use client'
 
-import { AgrupadoresDirectus } from '@models'
 import { PanelGroupCustomCodes } from '@utils'
 import {
   FoliculosBarbaTable,
@@ -9,15 +8,17 @@ import {
   FoliculosZonaDonanteTable,
 } from './customGroups'
 import { Message } from 'primereact/message'
+import { UseFormReturn } from 'react-hook-form'
 
 type Props = {
-  group: AgrupadoresDirectus
+  code: string
+  handleForm: UseFormReturn<any, any, undefined>
 }
 
-const getGroupCustom = (code: string) => {
+const getGroupCustom = ({ code, handleForm }: Props) => {
   switch (code) {
     case PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE:
-      return <FoliculosZonaDonanteTable />
+      return <FoliculosZonaDonanteTable handleForm={handleForm} />
     case PanelGroupCustomCodes.FOLICULOS_CAPILAR:
       return <FoliculosCapilarTable />
     case PanelGroupCustomCodes.FOLICULOS_BARBA:
@@ -40,6 +41,6 @@ const getGroupCustom = (code: string) => {
   }
 }
 
-const PanelGroupCustom = ({ group }: Props) => getGroupCustom(group.code)
+const PanelGroupCustom = (props: Props) => getGroupCustom(props)
 
 export default PanelGroupCustom

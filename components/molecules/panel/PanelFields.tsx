@@ -22,6 +22,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
 import { handlesAutoField } from '@hooks'
 import { PanelFieldAutocomplete } from '.'
+import { InputNumberMode } from '@components/atoms/InputNumberValid'
 
 type Props = {
   panelCode: string
@@ -155,9 +156,11 @@ const PanelFields = ({ panelCode, group, handleForm, disabledData }: Props) => {
                   label={field.etiqueta}
                   handleForm={handleForm}
                   required={field.validaciones?.required}
-                  mode='decimal'
+                  mode={field.es_decimal ? InputNumberMode.DECIMAL : undefined}
+                  suffix={field.sufijo}
                   disabled={fieldDisable}
                   className={fieldClassName}
+                  min={0}
                 />
               )
             case FieldTypeDirectus.DROPDOWN:

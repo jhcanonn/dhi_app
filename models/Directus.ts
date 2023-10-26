@@ -178,6 +178,8 @@ export type CamposDirectus = {
   variable_datos: string
   ancho_completo: boolean
   sin_autoresize: boolean
+  es_decimal: boolean
+  sufijo: string
 } & DefaultFieldsDirectus
 
 export type CamposRelDirectus = {

@@ -7,13 +7,21 @@ import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber'
 import { FieldCommonProps } from '@models'
 import { colors, errorMessages } from '@utils'
 
+export enum InputNumberMode {
+  CURRENCY = 'currency',
+  DECIMAL = 'decimal',
+}
+
 export type Props<T> = FieldCommonProps<T> & {
   label?: string
   disabled?: boolean
   icon?: string
-  mode?: 'currency' | 'decimal'
+  mode?: InputNumberMode
+  suffix?: string
   minLength?: number
   min?: number
+  minFractionDigits?: number
+  maxFractionDigits?: number
   className?: string
   onCustomChange?: (e: InputNumberChangeEvent) => void
 }
@@ -25,8 +33,11 @@ const InputNumberValid = <T extends FieldValues>({
   disabled,
   icon,
   mode,
+  suffix,
   minLength,
-  min = 0,
+  min,
+  minFractionDigits,
+  maxFractionDigits,
   className,
   required,
   validate,
@@ -53,41 +64,55 @@ const InputNumberValid = <T extends FieldValues>({
       render={({
         field: { onChange, onBlur, value, name, ref },
         fieldState: { error },
-      }) => (
-        <div className={`flex flex-col ${className}`}>
-          <span className={cx('p-float-label', { 'p-input-icon-left': icon })}>
-            {icon && (
-              <i
-                className={cx(`pi pi-${icon}`)}
-                style={{ color: error ? colors.invalid : '' }}
-              />
-            )}
-            <InputNumber
-              id={name}
-              value={value || undefined}
-              inputRef={ref}
-              onBlur={(e) => {
-                onBlur()
-                onChange(e.target.value)
-              }}
-              onChange={(e) => {
-                onChange(e.value)
-                onCustomChange && onCustomChange(e)
-              }}
-              inputClassName={cx({ 'p-invalid': error })}
-              useGrouping={false}
-              mode={mode}
-              disabled={disabled}
-              className={"[&_[type='button']]:bg-defaultBlue"}
-              min={min}
-            />
-            <label htmlFor={name} className={cx({ 'p-error': error })}>
-              {label}
-            </label>
-          </span>
-          <ErrorText name={name} errors={errors} />
-        </div>
-      )}
+      }) => {
+        let inputNumberProps: any = {
+          id: name,
+          value: value ?? undefined,
+          inputRef: ref,
+          onBlur,
+          onChange: (e: InputNumberChangeEvent) => {
+            onChange(e.value)
+            onCustomChange && onCustomChange(e)
+          },
+          inputClassName: cx({ 'p-invalid': error }),
+          useGrouping: false,
+          mode,
+          disabled,
+          className: "[&_[type='button']]:bg-defaultBlue",
+          suffix,
+          minFractionDigits:
+            mode === InputNumberMode.DECIMAL
+              ? minFractionDigits ?? 2
+              : undefined,
+
+          maxFractionDigits:
+            mode === InputNumberMode.DECIMAL
+              ? maxFractionDigits ?? 5
+              : undefined,
+        }
+
+        if (min !== undefined) inputNumberProps = { ...inputNumberProps, min }
+
+        return (
+          <div className={`flex flex-col ${className}`}>
+            <span
+              className={cx('p-float-label', { 'p-input-icon-left': icon })}
+            >
+              {icon && (
+                <i
+                  className={cx(`pi pi-${icon}`)}
+                  style={{ color: error ? colors.invalid : '' }}
+                />
+              )}
+              <InputNumber {...inputNumberProps} />
+              <label htmlFor={name} className={cx({ 'p-error': error })}>
+                {label}
+              </label>
+            </span>
+            <ErrorText name={name} errors={errors} />
+          </div>
+        )
+      }}
     />
   )
 }
