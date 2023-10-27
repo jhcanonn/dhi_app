@@ -130,6 +130,13 @@ export const GET_CLIENTS = gql`
     pacientes(
       filter: { estado: { _eq: "published" } }
     ) {
+      avatar {
+        id
+        directus_files_id {
+          id
+          title
+        }
+      }
       id
       documento
       tipo_documento

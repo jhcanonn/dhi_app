@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { DhiPatient } from '@models'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -8,11 +8,12 @@ import { DataTable } from 'primereact/datatable'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { useQuery } from '@apollo/client'
 import { GET_CLIENTS, PAGE_PATH, parseUrl } from '@utils'
-import { FilterMatchMode } from 'primereact/api'
+import { FilterMatchMode, PrimeIcons } from 'primereact/api'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { useRouter } from 'next/navigation'
-import { useClientContext } from '@contexts'
+import { Avatar } from 'primereact/avatar'
+import { OverlayPanel } from 'primereact/overlaypanel'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
@@ -45,7 +46,7 @@ const ClientList = () => {
 
   const onGlobalFilterChange = (e: any) => {
     const value = e.target.value
-    let _filters = { ...filters }
+    const _filters = { ...filters }
 
     _filters['global'].value = value
 
@@ -53,22 +54,59 @@ const ClientList = () => {
     setGlobalFilterValue(value)
   }
 
-  const editClient = (client: DhiPatient) => {
-    goToPage(parseUrl(PAGE_PATH.clientDetail, { id: client.id! }))
-  }
-
   const actionBodyTemplate = (rowData: DhiPatient) => {
-    return (
-      <React.Fragment>
+    return  (
+      <>
         <Button
-          icon='pi pi-pencil'
-          rounded
+          className='text-sm mr-2'
+          icon={PrimeIcons.USER_EDIT}
+          type='button'
           outlined
-          className='mr-2'
-          onClick={() => editClient(rowData)}
+          severity='success'
+          tooltip="Ver Paciente" tooltipOptions={{ position: 'bottom' }}
+          onClick={() =>
+            goToPage(parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }))
+          }
         />
-      </React.Fragment>
+        <Button
+          className='text-sm mr-2'
+          icon={PrimeIcons.BOOK}
+          type='button'
+          outlined
+          tooltip="Ver Atenciones" tooltipOptions={{ position: 'bottom' }}
+          severity='danger'
+          onClick={() =>
+            goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }))
+          }
+        />
+      </>
     )
+  }
+ 
+  const imageBodyTemplate = (rowData: DhiPatient) => {
+    const op = useRef<OverlayPanel>(null)
+    if (rowData?.avatar && rowData?.avatar?.length > 0) {
+      const imageUrl = `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${rowData?.avatar[0].directus_files_id?.id}?fit=cover`
+      return (
+        <div onMouseEnter={(e) => op?.current?.toggle(e)}
+        onMouseLeave={(e) => op?.current?.toggle(e)}>
+          <Avatar
+            image={imageUrl}
+            size='xlarge'
+            shape='circle'
+            
+          />
+
+          <OverlayPanel ref={op} style={{ width: "350px" }}>
+            <img
+              src={imageUrl}
+              alt={'Foto'+ rowData.documento}
+            ></img>
+          </OverlayPanel>
+        </div>
+      )
+    }
+    return <Avatar icon='pi pi-user' size='xlarge' shape='circle' />
   }
 
   const renderHeader = () => {
@@ -118,6 +156,8 @@ const ClientList = () => {
                 ]}
                 header={header}
               >
+                <Column header='' body={imageBodyTemplate} />
+
                 <Column
                   key='documento'
                   field='documento'
@@ -162,7 +202,8 @@ const ClientList = () => {
                   filterPlaceholder='Buscar por Teléfono'
                   style={{ minWidth: '10%' }}
                 />
-                <Column
+
+                <Column style={{ width: '8%' }}
                   headerStyle={{ width: '5rem', textAlign: 'center' }}
                   bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
                   body={actionBodyTemplate}
