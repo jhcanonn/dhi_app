@@ -33,9 +33,19 @@ const getGroupCustom = ({ code, handleForm, disabledData }: Props) => {
         />
       )
     case PanelGroupCustomCodes.FOLICULOS_BARBA:
-      return <FoliculosBarbaTable />
+      return (
+        <FoliculosBarbaTable
+          handleForm={handleForm}
+          disabledData={disabledData}
+        />
+      )
     case PanelGroupCustomCodes.FOLICULOS_CEJA:
-      return <FoliculosCejaTable />
+      return (
+        <FoliculosCejaTable
+          handleForm={handleForm}
+          disabledData={disabledData}
+        />
+      )
     default:
       return (
         <Message

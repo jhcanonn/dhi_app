@@ -4,6 +4,9 @@ import InputNumberValid, {
 import { InputNumberChangeEvent } from 'primereact/inputnumber'
 import { classNames as cx } from 'primereact/utils'
 import { UseFormReturn } from 'react-hook-form'
+import { RowsCodeFC } from './foliculosCapilarTable/dataFCT'
+import { RowsCodeFB } from './foliculosBarbaTable/dataFBT'
+import { RowsCodeFCJ } from './foliculosCejaTable/dataFCT'
 
 export type FoliculosRow = {
   title: string
@@ -83,3 +86,55 @@ export const TrFoliculos = ({
       </tr>
     )
   })
+
+export enum FoliculosType {
+  CAPILAR = 'capilar',
+  BARBA = 'barba',
+  CEJA = 'ceja',
+}
+
+export const calcDensidadRestante = (
+  currentValue: number,
+  drField: RowsCodeFC | RowsCodeFB | RowsCodeFCJ,
+  type: FoliculosType,
+  handleForm: UseFormReturn<any, any, undefined>,
+  setCantidad: boolean = true,
+) => {
+  const { setValue, getValues } = handleForm
+  const resta = getValues(`foliculos_${type}_odp`) - currentValue
+  setValue(`foliculos_${type}_${drField}_dr`, resta >= 0 ? resta : 0)
+  setCantidad &&
+    setValue(
+      `foliculos_${type}_${drField}_cantidad`,
+      getValues(`foliculos_${type}_${drField}_dr`) *
+        getValues(`foliculos_${type}_${drField}_area_total`),
+    )
+}
+
+export const calcNoFoliculos = (
+  code: string,
+  type: FoliculosType,
+  handleForm: UseFormReturn<any, any, undefined>,
+) => {
+  const { setValue, getValues } = handleForm
+  const drValue = getValues(`foliculos_${type}_${code}_dr`) || 0
+  const atValue = getValues(`foliculos_${type}_${code}_area_total`) || 0
+  setValue(`foliculos_${type}_${code}_cantidad`, drValue * atValue)
+}
+
+export const calcTotalArea = (
+  currentValue: number,
+  otherZone: 'a' | 'b',
+  rowCode: RowsCodeFC | RowsCodeFB | RowsCodeFCJ,
+  type: FoliculosType,
+  handleForm: UseFormReturn<any, any, undefined>,
+  withPi?: boolean,
+) => {
+  const { setValue, getValues } = handleForm
+  const otherValue =
+    getValues(`foliculos_${type}_${rowCode}_area_${otherZone}`) || 0
+  const multiplication = currentValue * otherValue
+  const result = withPi ? (multiplication * Math.PI) / 4 : multiplication
+  setValue(`foliculos_${type}_${rowCode}_area_total`, result)
+  calcNoFoliculos(rowCode, type, handleForm)
+}
