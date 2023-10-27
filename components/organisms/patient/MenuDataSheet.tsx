@@ -266,7 +266,7 @@ const MenuDataSheet = () => {
         )}
       </Dialog>
       <DataTable
-        value={dataSheets}
+        value={dataSheets.filter((ds) => !!ds.type.code)}
         expandedRows={expandedRows}
         onRowToggle={(e) => setExpandedRows(e.data)}
         rowExpansionTemplate={rowExpansionTemplate}
@@ -281,6 +281,9 @@ const MenuDataSheet = () => {
         emptyMessage='No se encontraron resultados'
         className='custom-table'
         loading={dataSheetsLoading}
+        removableSort
+        sortField='date'
+        sortOrder={-1}
       >
         <Column expander={true} style={{ width: '3%' }} />
         <Column field='date' header='Fecha' sortable style={{ width: '15%' }} />

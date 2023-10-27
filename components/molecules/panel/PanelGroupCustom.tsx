@@ -26,7 +26,12 @@ const getGroupCustom = ({ code, handleForm, disabledData }: Props) => {
         />
       )
     case PanelGroupCustomCodes.FOLICULOS_CAPILAR:
-      return <FoliculosCapilarTable />
+      return (
+        <FoliculosCapilarTable
+          handleForm={handleForm}
+          disabledData={disabledData}
+        />
+      )
     case PanelGroupCustomCodes.FOLICULOS_BARBA:
       return <FoliculosBarbaTable />
     case PanelGroupCustomCodes.FOLICULOS_CEJA:
