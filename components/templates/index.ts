@@ -1,4 +1,5 @@
 export { default as Calendar } from './Calendar'
+export { default as ClientList } from './ClientDetail'
 export { default as ClientDetail } from './ClientDetail'
 export { default as ClientEdit } from './ClientEdit'
 export { default as ClientGallery } from './ClientGallery'
