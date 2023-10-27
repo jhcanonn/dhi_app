@@ -236,8 +236,8 @@ export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
     status: dataSheet.status,
     date: getFormatedDateToEs(dataSheet.date_created, 'ddd ll'),
     type: {
-      code: dataSheet.panel_id.code,
-      name: dataSheet.panel_id.nombre,
+      code: dataSheet.panel_id?.code,
+      name: dataSheet.panel_id?.nombre,
     },
     professional: dataSheet.user_created.profesional?.nombre,
     sucursal: dataSheet.sucursal,

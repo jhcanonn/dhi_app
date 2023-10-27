@@ -1,0 +1,7 @@
+.foliculos-table-wrapper {
+  @apply border border-brandGrouperColor rounded-[4px] pl-3 pr-4 pt-3 overflow-auto;
+}
+
+.foliculos-table {
+  @apply w-full [&_th]:bg-gray-300/40 [&_th]:text-center;
+}

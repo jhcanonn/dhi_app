@@ -1,55 +1,50 @@
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { InputNumberChangeEvent } from 'primereact/inputnumber'
 import { UseFormReturn } from 'react-hook-form'
+import { FoliculosField, FoliculosRow } from '../FoliculosCommon'
+
+export enum RowsCodeFZD {
+  FZD_O = 'occipital',
+  FZD_T = 'temporal',
+}
 
 export enum FieldsCodeFZD {
-  FZD_ODE = 'foliculos_zd_occipital_de',
-  FZD_ODR = 'foliculos_zd_occipital_dr',
-  FZD_OAA = 'foliculos_zd_occipital_area_za',
-  FZD_OAB = 'foliculos_zd_occipital_area_zb',
-  FZD_OAT = 'foliculos_zd_occipital_area_total',
-  FZD_OC = 'foliculos_zd_occipital_cantidad',
-  FZD_TDE = 'foliculos_zd_temporal_de',
-  FZD_TDR = 'foliculos_zd_temporal_dr',
-  FZD_TAA = 'foliculos_zd_temporal_area_za',
-  FZD_TAB = 'foliculos_zd_temporal_area_zb',
-  FZD_TAT = 'foliculos_zd_temporal_area_total',
-  FZD_TC = 'foliculos_zd_temporal_cantidad',
+  FZD_ODE = `foliculos_zd_${RowsCodeFZD.FZD_O}_de`,
+  FZD_ODR = `foliculos_zd_${RowsCodeFZD.FZD_O}_dr`,
+  FZD_OAA = `foliculos_zd_${RowsCodeFZD.FZD_O}_area_a`,
+  FZD_OAB = `foliculos_zd_${RowsCodeFZD.FZD_O}_area_b`,
+  FZD_OAT = `foliculos_zd_${RowsCodeFZD.FZD_O}_area_total`,
+  FZD_OC = `foliculos_zd_${RowsCodeFZD.FZD_O}_cantidad`,
+  FZD_TDE = `foliculos_zd_${RowsCodeFZD.FZD_T}_de`,
+  FZD_TDR = `foliculos_zd_${RowsCodeFZD.FZD_T}_dr`,
+  FZD_TAA = `foliculos_zd_${RowsCodeFZD.FZD_T}_area_a`,
+  FZD_TAB = `foliculos_zd_${RowsCodeFZD.FZD_T}_area_b`,
+  FZD_TAT = `foliculos_zd_${RowsCodeFZD.FZD_T}_area_total`,
+  FZD_TC = `foliculos_zd_${RowsCodeFZD.FZD_T}_cantidad`,
   FZD_PDE = 'foliculos_zd_promedio_de',
   FZD_TF = 'foliculos_zd_total_foliculos',
   FZD_FD = 'foliculos_zd_foliculos_donar',
-  FZD_OBS = 'foliculos_zd_foliculos_obs',
-}
-
-type Field = {
-  code: string
-  defaultValue?: number
-  mode?: InputNumberMode
-  disabled?: boolean
-  suffix?: string
-  onCustomChange?: (
-    e: InputNumberChangeEvent,
-    handleForm: UseFormReturn<any, any, undefined>,
-  ) => void
+  FZD_OBS = 'foliculos_zd_obs',
 }
 
 const calcTotalArea = (
   currentValue: number,
   otherZone: 'a' | 'b',
-  rowTitle: 'occipital' | 'temporal',
+  rowCode: RowsCodeFZD,
   handleForm: UseFormReturn<any, any, undefined>,
 ) => {
   const { setValue, getValues } = handleForm
-  const otherValue =
-    +getValues(`foliculos_zd_${rowTitle}_area_z${otherZone}`) || 0
+  const otherValue = getValues(`foliculos_zd_${rowCode}_area_${otherZone}`) || 0
   const result =
-    rowTitle === 'occipital'
+    rowCode === RowsCodeFZD.FZD_O
       ? currentValue * otherValue
       : currentValue * otherValue * 2
-  setValue(`foliculos_zd_${rowTitle}_area_total`, result)
+  setValue(`foliculos_zd_${rowCode}_area_total`, result)
+
+  const dpeValue = getValues(FieldsCodeFZD.FZD_PDE) || 0
+  const atValue = getValues(`foliculos_zd_${rowCode}_area_total`) || 0
+  setValue(`foliculos_zd_${rowCode}_cantidad`, dpeValue * atValue)
 }
 
-const calcAverageDensidadExistenteFZD = (
+const calcAverageDensidadExistente = (
   currentValue: number,
   otherDE: 'O' | 'T',
   handleForm: UseFormReturn<any, any, undefined>,
@@ -61,23 +56,23 @@ const calcAverageDensidadExistenteFZD = (
   setValue(FieldsCodeFZD.FZD_PDE, average)
 }
 
-const occipitalFields: Field[] = [
+const occipitalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_ODE,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
-      calcAverageDensidadExistenteFZD(e.value || 0, 'T', handleForm),
+      calcAverageDensidadExistente(e.value || 0, 'T', handleForm),
   },
   { code: FieldsCodeFZD.FZD_ODR, suffix: ' cm²' },
   {
     code: FieldsCodeFZD.FZD_OAA,
     onCustomChange: (e, handleForm) =>
-      calcTotalArea(e.value || 0, 'b', 'occipital', handleForm),
+      calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAB,
     onCustomChange: (e, handleForm) =>
-      calcTotalArea(e.value || 0, 'a', 'occipital', handleForm),
+      calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAT,
@@ -91,23 +86,23 @@ const occipitalFields: Field[] = [
   },
 ]
 
-const temporalFields: Field[] = [
+const temporalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_TDE,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
-      calcAverageDensidadExistenteFZD(e.value || 0, 'O', handleForm),
+      calcAverageDensidadExistente(e.value || 0, 'O', handleForm),
   },
   { code: FieldsCodeFZD.FZD_TDR, suffix: ' cm²' },
   {
     code: FieldsCodeFZD.FZD_TAA,
     onCustomChange: (e, handleForm) =>
-      calcTotalArea(e.value || 0, 'b', 'temporal', handleForm),
+      calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAB,
     onCustomChange: (e, handleForm) =>
-      calcTotalArea(e.value || 0, 'a', 'temporal', handleForm),
+      calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAT,
@@ -117,7 +112,7 @@ const temporalFields: Field[] = [
   { code: FieldsCodeFZD.FZD_TC, defaultValue: 0, disabled: true },
 ]
 
-export const fieldsRow = [
+export const zonaDonanteRows: FoliculosRow[] = [
   {
     title: 'Occipital',
     fields: occipitalFields,
