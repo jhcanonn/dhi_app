@@ -13,12 +13,18 @@ import { UseFormReturn } from 'react-hook-form'
 type Props = {
   code: string
   handleForm: UseFormReturn<any, any, undefined>
+  disabledData?: boolean
 }
 
-const getGroupCustom = ({ code, handleForm }: Props) => {
+const getGroupCustom = ({ code, handleForm, disabledData }: Props) => {
   switch (code) {
     case PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE:
-      return <FoliculosZonaDonanteTable handleForm={handleForm} />
+      return (
+        <FoliculosZonaDonanteTable
+          handleForm={handleForm}
+          disabledData={disabledData}
+        />
+      )
     case PanelGroupCustomCodes.FOLICULOS_CAPILAR:
       return <FoliculosCapilarTable />
     case PanelGroupCustomCodes.FOLICULOS_BARBA:
