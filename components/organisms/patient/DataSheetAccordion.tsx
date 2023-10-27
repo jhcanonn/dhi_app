@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { CreatedAttention, DataSheet } from '@models'
 import { Accordion, AccordionTab } from 'primereact/accordion'
@@ -17,8 +17,8 @@ import { Toast } from 'primereact/toast'
 
 const DataSheetAccordion = () => {
   const toast = useRef<Toast>(null)
-  const [accordionIndex, setAccordionIndex] = useState<number[]>([0])
-  const { clientInfo, setDataSheets } = useClientContext()
+  const [accordionIndex, setAccordionIndex] = useState<number[]>([])
+  const { clientInfo, dataSheets, setDataSheets } = useClientContext()
   const { user, panels } = useGlobalContext()
 
   const [createAttention] = useMutation(CREATE_ATTENTION)
@@ -83,6 +83,10 @@ const DataSheetAccordion = () => {
     }
   }
 
+  useEffect(() => {
+    setAccordionIndex(dataSheets.length === 0 ? [0] : [])
+  }, [dataSheets])
+
   return (
     <>
       <Toast ref={toast} />
@@ -93,12 +97,7 @@ const DataSheetAccordion = () => {
           onTabChange={(e: any) => setAccordionIndex(e.index)}
         >
           {panels
-            .filter(
-              (p) =>
-                p.view_forms.includes(PanelTags.ATENTIONS) &&
-                user?.profesional &&
-                p.cargo?.includes(user.profesional.cargo),
-            )
+            .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
             .sort((a, b) => a.orden - b.orden)
             .map((panel) => (
               <AccordionTab key={panel.code} header={panel.nombre}>

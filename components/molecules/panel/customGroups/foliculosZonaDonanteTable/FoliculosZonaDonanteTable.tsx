@@ -4,52 +4,25 @@ import { InputNumberValid, InputTextareaValid } from '@components/atoms'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { useEffect } from 'react'
 import { UseFormReturn, useWatch } from 'react-hook-form'
-import { FieldsCodeFZD, fieldsRow } from './dataFZDT'
-import { classNames as cx } from 'primereact/utils'
+import { FieldsCodeFZD, zonaDonanteRows } from './dataFZDT'
 import { regexPatterns } from '@utils'
+import { TdTitle, TrFoliculos } from '../FoliculosCommon'
 
 type Props = {
   handleForm: UseFormReturn<any, any, undefined>
   disabledData?: boolean
 }
 
-const TdTitle = ({
-  children,
-  right,
-  colspan,
-  className,
-}: {
-  children: React.ReactNode
-  right?: boolean
-  colspan?: number
-  className?: string
-}) => (
-  <td colSpan={colspan} className={className}>
-    <div className='flex flex-col justify-center px-2'>
-      <div
-        className={cx('flex items-center font-bold h-[39.19px]', {
-          'justify-end': right,
-        })}
-      >
-        <p className={cx({ 'text-right': right })}>{children}</p>
-      </div>
-      <div className='h-[20px]'> </div>
-    </div>
-  </td>
-)
-
 const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
   const { control, setValue, getValues } = handleForm
   const { _defaultValues } = control
 
-  const totalAreaA = useWatch({ control, name: FieldsCodeFZD.FZD_OAT })
-  const totalAreaB = useWatch({ control, name: FieldsCodeFZD.FZD_TAT })
   const avarageDE = useWatch({ control, name: FieldsCodeFZD.FZD_PDE })
   const cantidadO = useWatch({ control, name: FieldsCodeFZD.FZD_OC })
   const cantidadT = useWatch({ control, name: FieldsCodeFZD.FZD_TC })
 
   useEffect(() => {
-    fieldsRow.forEach((row) =>
+    zonaDonanteRows.forEach((row) =>
       row.fields.forEach((field) => setValue(field.code, field.defaultValue)),
     )
     setValue(FieldsCodeFZD.FZD_PDE, 0)
@@ -60,20 +33,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
       setValue(key, value),
     )
   }, [])
-
-  useEffect(() => {
-    setValue(
-      FieldsCodeFZD.FZD_OC,
-      totalAreaA * getValues(FieldsCodeFZD.FZD_PDE),
-    )
-  }, [totalAreaA])
-
-  useEffect(() => {
-    setValue(
-      FieldsCodeFZD.FZD_TC,
-      totalAreaB * getValues(FieldsCodeFZD.FZD_PDE),
-    )
-  }, [totalAreaB])
 
   useEffect(() => {
     setValue(FieldsCodeFZD.FZD_OC, avarageDE * getValues(FieldsCodeFZD.FZD_OAT))
@@ -89,11 +48,8 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
 
   return (
     <>
-      <div className='border border-brandGrouperColor rounded-[4px] pl-3 pr-4 pt-3 relative overflow-auto'>
-        <table
-          role='table'
-          className='w-full [&_th]:bg-gray-300/40 [&_th]:text-center'
-        >
+      <div className='foliculos-table-wrapper'>
+        <table role='table' className='foliculos-table'>
           <thead>
             <tr>
               <th className='w-[10%] h-[2.5rem] rounded-l-md'></th>
@@ -107,31 +63,11 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {fieldsRow.map(({ title, fields }) => {
-              const className = cx({ 'pt-3': title === 'Occipital' })
-              return (
-                <tr key={title}>
-                  <TdTitle className={className}>{title}</TdTitle>
-                  {fields.map((field) => (
-                    <td key={field.code} className={className}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={field.code}
-                        mode={field.mode ?? InputNumberMode.DECIMAL}
-                        suffix={field.suffix}
-                        min={0}
-                        disabled={field.disabled || disabledData}
-                        required
-                        onCustomChange={(e) =>
-                          field.onCustomChange &&
-                          field.onCustomChange(e, handleForm)
-                        }
-                      />
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
+            <TrFoliculos
+              rows={zonaDonanteRows}
+              handleForm={handleForm}
+              disabledData={disabledData}
+            />
             <tr>
               <TdTitle>Promedio</TdTitle>
               <td>
