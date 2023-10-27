@@ -115,7 +115,11 @@ const PanelForm = ({
 
           const ButtonExtraAndFields = () =>
             customGroup ? (
-              <PanelGroupCustom code={group.code} handleForm={handleForm} />
+              <PanelGroupCustom
+                code={group.code}
+                handleForm={handleForm}
+                disabledData={disabledData}
+              />
             ) : (
               <>
                 {!disabledData && buttonExtraLabel && (
