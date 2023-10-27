@@ -1,7 +1,9 @@
 import { UUID } from 'crypto'
 import { Country, IdType } from './Calendar'
+import { ProfileAvatar } from './Directus'
 
 export type DhiPatient = {
+  avatar?: ProfileAvatar[]
   id?: number
   tipo_documento?: IdType
   documento?: string
