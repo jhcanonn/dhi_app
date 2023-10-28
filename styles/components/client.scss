@@ -9,3 +9,13 @@
 .custom-tab-menu {
   @apply [&_.p-tabmenu-nav]:flex-wrap [&_.p-menuitem-link]:w-max [&_.p-highlight>a]:border-b-4 [&_.p-highlight>a]:border-brand [&_.p-highlight>a]:text-brand [&_.p-tabmenuitem>a]:focus:shadow-none #{!important};
 }
+
+.custom-tab-menu-fixed {
+  position: fixed;
+  width: 100%;
+  z-index: 99;
+}
+
+.custom-section-content {
+  margin-top: 40px;
+}

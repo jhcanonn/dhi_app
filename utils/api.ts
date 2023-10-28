@@ -141,6 +141,18 @@ export const refreshToken = async (cookies: Cookies) => {
   const access_token: string = session ? session.access_token : undefined
   let newToken = null
 
+  // If token is not expired, return it
+  if (
+    access_token &&
+    access_token.split('.').length > 1 &&
+    JSON.parse(Buffer.from(access_token.split('.')[1], 'base64').toString())
+      .exp *
+      1000 >
+      Date.now()
+  ) {
+    return access_token
+  }
+
   try {
     const { status } = await fetchVerifyToken(access_token)
     if (status === errorCodes.ERR_JWT_EXPIRED) {
