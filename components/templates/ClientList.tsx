@@ -14,6 +14,7 @@ import { Button } from 'primereact/button'
 import { useRouter } from 'next/navigation'
 import { Avatar } from 'primereact/avatar'
 import { OverlayPanel } from 'primereact/overlaypanel'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
@@ -55,7 +56,7 @@ const ClientList = () => {
   }
 
   const actionBodyTemplate = (rowData: DhiPatient) => {
-    return  (
+    return (
       <>
         <Button
           className='text-sm mr-2'
@@ -63,7 +64,8 @@ const ClientList = () => {
           type='button'
           outlined
           severity='success'
-          tooltip="Ver Paciente" tooltipOptions={{ position: 'bottom' }}
+          tooltip='Ver Paciente'
+          tooltipOptions={{ position: 'bottom' }}
           onClick={() =>
             goToPage(parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }))
           }
@@ -73,7 +75,8 @@ const ClientList = () => {
           icon={PrimeIcons.BOOK}
           type='button'
           outlined
-          tooltip="Ver Atenciones" tooltipOptions={{ position: 'bottom' }}
+          tooltip='Ver Atenciones'
+          tooltipOptions={{ position: 'bottom' }}
           severity='danger'
           onClick={() =>
             goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }))
@@ -82,26 +85,28 @@ const ClientList = () => {
       </>
     )
   }
- 
-  const imageBodyTemplate = (rowData: DhiPatient) => {
+
+  const imageBodyTemplate = async (rowData: DhiPatient) => {
     const op = useRef<OverlayPanel>(null)
     if (rowData?.avatar && rowData?.avatar?.length > 0) {
-      const imageUrl = `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${rowData?.avatar[0].directus_files_id?.id}?fit=cover`
-      return (
-        <div onMouseEnter={(e) => op?.current?.toggle(e)}
-        onMouseLeave={(e) => op?.current?.toggle(e)}>
-          <Avatar
-            image={imageUrl}
-            size='xlarge'
-            shape='circle'
-            
-          />
+      const imageUrl = generateURLAssetsWithToken(
+        rowData?.avatar[0].directus_files_id?.id,
+        { quality: '15', width: '100', height: '100' },
+      )
 
-          <OverlayPanel ref={op} style={{ width: "350px" }}>
-            <img
-              src={imageUrl}
-              alt={'Foto'+ rowData.documento}
-            ></img>
+      const imageUrlView = generateURLAssetsWithToken(
+        rowData?.avatar[0].directus_files_id?.id,
+        { quality: '15' },
+      )
+      return (
+        <div
+          onMouseEnter={(e) => op?.current?.toggle(e)}
+          onMouseLeave={(e) => op?.current?.toggle(e)}
+        >
+          <Avatar image={imageUrl} size='xlarge' shape='circle' />
+
+          <OverlayPanel ref={op} style={{ width: '350px' }}>
+            <img src={imageUrlView} alt={'Foto' + rowData.documento}></img>
           </OverlayPanel>
         </div>
       )
@@ -203,7 +208,8 @@ const ClientList = () => {
                   style={{ minWidth: '10%' }}
                 />
 
-                <Column style={{ width: '8%' }}
+                <Column
+                  style={{ width: '8%' }}
                   headerStyle={{ width: '5rem', textAlign: 'center' }}
                   bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
                   body={actionBodyTemplate}

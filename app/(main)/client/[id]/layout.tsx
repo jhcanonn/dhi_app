@@ -47,6 +47,12 @@ const ClientLayout = ({ children, params }: Props) => {
       command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id })),
     },
     {
+      label: 'Histórico Citas',
+      icon: PrimeIcons.SERVER,
+      command: () =>
+        goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id })),
+    },
+    {
       label: 'Atenciones',
       icon: PrimeIcons.BOOK,
       command: () => goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id })),

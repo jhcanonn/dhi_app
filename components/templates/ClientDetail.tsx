@@ -12,6 +12,7 @@ import {
   idTypes,
   parseUrl,
 } from '@utils'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
@@ -96,7 +97,13 @@ const ClientDetail = () => {
           <section className='flex flex-col grow items-center gap-4 justify-center'>
             {clientInfo?.avatar[0]?.directus_files_id ? (
               <Image
-                src={`${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${clientInfo.avatar[0].directus_files_id.id}?fit=cover`}
+                src={generateURLAssetsWithToken(
+                  clientInfo.avatar[0].directus_files_id.id,
+                  {
+                    quality: '15',
+                    fit: 'cover',
+                  },
+                )}
                 alt={clientInfo.avatar[0].directus_files_id.title}
                 width='450'
                 preview

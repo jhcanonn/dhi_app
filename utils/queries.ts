@@ -127,9 +127,7 @@ export const GET_INFO_CLIENT = gql`
 
 export const GET_CLIENTS = gql`
   query {
-    pacientes(
-      filter: { estado: { _eq: "published" } }
-    ) {
+    pacientes(filter: { estado: { _eq: "published" } }) {
       avatar {
         id
         directus_files_id {

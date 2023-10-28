@@ -40,6 +40,7 @@ export const PAGE_PATH = {
   clientDetail: '/client/{id}',
   clientEdit: '/client/{id}/edit',
   clientDataSheet: '/client/{id}/dataSheet',
+  clientHistorySchedule: '/client/{id}/historyschedule',
   clientGallery: '/client/{id}/gallery',
   clientBudget: '/client/{id}/budget',
   gallery: '/client/gallery',

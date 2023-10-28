@@ -20,6 +20,7 @@ import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
 import { getPanelsFromDirectus, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -94,7 +95,9 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
           <Avatar
             image={
               !loading && data?.users_me.avatar
-                ? `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${data.users_me.avatar?.id}`
+                ? generateURLAssetsWithToken(data.users_me.avatar?.id, {
+                    quality: '15',
+                  })
                 : undefined
             }
             label={
