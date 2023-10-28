@@ -80,9 +80,9 @@ const ClientLayout = ({ children, params }: Props) => {
         model={items}
         activeIndex={activeIndex}
         onTabChange={(e) => setActiveIndex(e.index)}
-        className={'custom-tab-menu'}
+        className={'custom-tab-menu custom-tab-menu-fixed'}
       />
-      <section className='w-full max-w-[100rem] mx-auto px-4'>
+      <section className='w-full max-w-[100rem] mx-auto px-4 custom-section-content'>
         <div className='py-3 flex flex-col md:flex-row justify-between gap-2'>
           <h2 className='text-2xl font-extrabold text-brand border-b-2 flex-grow'>
             {loading ? (
