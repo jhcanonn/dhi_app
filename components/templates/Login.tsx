@@ -22,6 +22,7 @@ import { Message } from 'primereact/message'
 import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
 import { refreshToken } from '@utils/api'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -80,7 +81,12 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
         >
           <div className='flex flex-col gap-2 justify-center items-center grow mb-6 mt-3'>
             <Avatar
-              image={`${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/e7935d20-6ff6-45e6-98e7-e7380dfcf9c7`}
+              image={generateURLAssetsWithToken(
+                'e7935d20-6ff6-45e6-98e7-e7380dfcf9c7',
+                {
+                  quality: '15',
+                },
+              )}
               label='DHI'
               shape='square'
               size='xlarge'

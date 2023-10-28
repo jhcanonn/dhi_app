@@ -19,6 +19,7 @@ import { Image } from 'primereact/image'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Message } from 'primereact/message'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 
 type Props = {
   clientInfo: ClientDirectus | null
@@ -248,7 +249,10 @@ const UploadProfileImage = ({
                 <ConfirmDialog tagKey={a.directus_files_id.id} />
                 <article className='flex flex-col gap-2 items-center'>
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${a.directus_files_id.id}?fit=cover`}
+                    src={generateURLAssetsWithToken(a.directus_files_id.id, {
+                      quality: '15',
+                      fit: 'cover',
+                    })}
                     alt={a.directus_files_id.title}
                     width='200'
                     preview

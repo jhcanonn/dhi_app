@@ -1,6 +1,7 @@
 'use client'
 
 import { ClientPhoto } from '@models'
+import { generateURLAssetsWithToken } from '@utils/url-img-access'
 import { Button } from 'primereact/button'
 import { Galleria, GalleriaResponsiveOptions } from 'primereact/galleria'
 import { useEffect, useRef, useState } from 'react'
@@ -62,7 +63,10 @@ const GallerySet = ({ photos }: { photos: ClientPhoto[] }) => {
 
   useEffect(() => {
     const images = photos?.map((p) => {
-      const imageUrl = `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/assets/${p.directus_files_id?.id}?fit=cover`
+      const imageUrl = generateURLAssetsWithToken(p.directus_files_id?.id, {
+        quality: '15',
+        fit: 'cover',
+      })
       return {
         itemImageSrc: imageUrl,
         thumbnailImageSrc: imageUrl,
