@@ -137,6 +137,8 @@ const MenuDataSheet = () => {
             icon='pi pi-pencil'
             type='button'
             severity='success'
+            tooltip='Editar atención'
+            tooltipOptions={{ position: 'bottom' }}
             onClick={() => {
               setCurrentRowData(rowData)
               setVisible(true)
@@ -149,6 +151,8 @@ const MenuDataSheet = () => {
             icon='pi pi-trash'
             type='button'
             severity='danger'
+            tooltip='Anular atención'
+            tooltipOptions={{ position: 'bottom' }}
             onClick={() => annulDataSheetHandle(rowData)}
             outlined
           />

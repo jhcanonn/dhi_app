@@ -5,7 +5,6 @@ import { DhiPatient } from '@models'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
-import { ProgressSpinner } from 'primereact/progressspinner'
 import { useQuery } from '@apollo/client'
 import { GET_CLIENTS, PAGE_PATH, parseUrl } from '@utils'
 import { FilterMatchMode, PrimeIcons } from 'primereact/api'
@@ -29,20 +28,11 @@ const ClientList = () => {
 
   const goToPage = (pagePath: string) => router.push(pagePath)
 
-  const {
-    data: dataClients,
-    loading: dataClientsLoading,
-    refetch: dataClientsRefetch,
-  } = useQuery(GET_CLIENTS)
+  const { data: dataClients, loading: dataClientsLoading } =
+    useQuery(GET_CLIENTS)
 
   useEffect(() => {
-    dataClientsRefetch()
-  }, [])
-
-  useEffect(() => {
-    if (!dataClientsLoading) {
-      setClients(dataClients?.pacientes || [])
-    }
+    !dataClientsLoading && setClients(dataClients?.pacientes || [])
   }, [dataClients])
 
   const onGlobalFilterChange = (e: any) => {
@@ -55,36 +45,34 @@ const ClientList = () => {
     setGlobalFilterValue(value)
   }
 
-  const actionBodyTemplate = (rowData: DhiPatient) => {
-    return (
-      <>
-        <Button
-          className='text-sm mr-2'
-          icon={PrimeIcons.USER_EDIT}
-          type='button'
-          outlined
-          severity='success'
-          tooltip='Ver Paciente'
-          tooltipOptions={{ position: 'bottom' }}
-          onClick={() =>
-            goToPage(parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }))
-          }
-        />
-        <Button
-          className='text-sm mr-2'
-          icon={PrimeIcons.BOOK}
-          type='button'
-          outlined
-          tooltip='Ver Atenciones'
-          tooltipOptions={{ position: 'bottom' }}
-          severity='danger'
-          onClick={() =>
-            goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }))
-          }
-        />
-      </>
-    )
-  }
+  const actionBodyTemplate = (rowData: DhiPatient) => (
+    <div className='w-full flex gap-2'>
+      <Button
+        className='text-sm'
+        icon={PrimeIcons.USER_EDIT}
+        type='button'
+        outlined
+        severity='success'
+        tooltip='Ver Paciente'
+        tooltipOptions={{ position: 'bottom' }}
+        onClick={() =>
+          goToPage(parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }))
+        }
+      />
+      <Button
+        className='text-sm'
+        icon={PrimeIcons.BOOK}
+        type='button'
+        outlined
+        tooltip='Ver Atenciones'
+        tooltipOptions={{ position: 'bottom' }}
+        severity='help'
+        onClick={() =>
+          goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }))
+        }
+      />
+    </div>
+  )
 
   const imageBodyTemplate = async (rowData: DhiPatient) => {
     const op = useRef<OverlayPanel>(null)
@@ -93,18 +81,17 @@ const ClientList = () => {
         rowData?.avatar[0].directus_files_id?.id,
         { quality: '15', width: '100', height: '100' },
       )
-
       const imageUrlView = generateURLAssetsWithToken(
         rowData?.avatar[0].directus_files_id?.id,
         { quality: '15' },
       )
+
       return (
         <div
           onMouseEnter={(e) => op?.current?.toggle(e)}
           onMouseLeave={(e) => op?.current?.toggle(e)}
         >
           <Avatar image={imageUrl} size='xlarge' shape='circle' />
-
           <OverlayPanel ref={op} style={{ width: '350px' }}>
             <img src={imageUrlView} alt={'Foto' + rowData.documento}></img>
           </OverlayPanel>
@@ -114,22 +101,21 @@ const ClientList = () => {
     return <Avatar icon='pi pi-user' size='xlarge' shape='circle' />
   }
 
-  const renderHeader = () => {
-    return (
-      <div className='flex justify-content-end'>
-        <span className='p-input-icon-left'>
+  const renderHeader = () => (
+    <div className='flex justify-content-end'>
+      <div className='flex w-full md:!w-[30rem]'>
+        <span className='p-input-icon-left grow'>
           <i className='pi pi-search' />
           <InputText
             value={globalFilterValue}
             onChange={onGlobalFilterChange}
             placeholder='Busqueda General'
+            className='w-full'
           />
         </span>
       </div>
-    )
-  }
-
-  const header = renderHeader()
+    </div>
+  )
 
   return (
     <section className='w-full max-w-[100rem] mx-auto px-4'>
@@ -138,89 +124,71 @@ const ClientList = () => {
           Clientes
         </h2>
       </div>
-      <section className='my-4'>
-        <div className='flex flex-col'>
-          <Card className='custom-table-card'>
-            {!dataClientsLoading ? (
-              <DataTable
-                value={clients}
-                emptyMessage='No se encontraron resultados'
-                size='small'
-                paginator
-                rows={8}
-                rowsPerPageOptions={[8, 10, 50, 80]}
-                tableStyle={{ minWidth: '40rem' }}
-                className='custom-table'
-                dataKey='documento'
-                filters={filters}
-                filterDisplay='row'
-                globalFilterFields={[
-                  'primer_nombre',
-                  'apellido_paterno',
-                  'documento',
-                ]}
-                header={header}
-              >
-                <Column header='' body={imageBodyTemplate} />
-
-                <Column
-                  key='documento'
-                  field='documento'
-                  header='Documento'
-                  filter
-                  filterPlaceholder='Buscar por Documento'
-                  style={{ minWidth: '15%' }}
-                />
-
-                <Column
-                  key='primer_nombre'
-                  field='primer_nombre'
-                  header='Nombre'
-                  filter
-                  filterPlaceholder='Buscar por nombre'
-                  style={{ minWidth: '10%' }}
-                />
-
-                <Column
-                  key='apellido_paterno'
-                  field='apellido_paterno'
-                  header='Apellido'
-                  filter
-                  filterPlaceholder='Buscar por Apellido'
-                  style={{ minWidth: '10%' }}
-                />
-
-                <Column
-                  key='correo'
-                  field='correo'
-                  header='Correo'
-                  filter
-                  filterPlaceholder='Buscar por Correo'
-                  style={{ minWidth: '15%' }}
-                />
-
-                <Column
-                  key='telefono'
-                  field='telefono'
-                  header='Teléfono'
-                  filter
-                  filterPlaceholder='Buscar por Teléfono'
-                  style={{ minWidth: '10%' }}
-                />
-
-                <Column
-                  style={{ width: '8%' }}
-                  headerStyle={{ width: '5rem', textAlign: 'center' }}
-                  bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
-                  body={actionBodyTemplate}
-                />
-              </DataTable>
-            ) : (
-              <ProgressSpinner />
-            )}
-          </Card>
-        </div>
-      </section>
+      <Card className='custom-table-card my-4'>
+        <DataTable
+          value={clients}
+          emptyMessage='No se encontraron resultados'
+          size='small'
+          paginator
+          rows={8}
+          rowsPerPageOptions={[8, 10, 50, 80]}
+          tableStyle={{ minWidth: '40rem' }}
+          className='custom-table'
+          dataKey='documento'
+          filters={filters}
+          filterDisplay='row'
+          globalFilterFields={[
+            'primer_nombre',
+            'apellido_paterno',
+            'documento',
+          ]}
+          header={renderHeader()}
+          loading={dataClientsLoading}
+        >
+          <Column body={imageBodyTemplate} style={{ minWidth: '18%' }} />
+          <Column
+            field='documento'
+            header='Documento'
+            filter
+            filterPlaceholder='Buscar por Documento'
+            style={{ minWidth: '15%' }}
+          />
+          <Column
+            field='primer_nombre'
+            header='Nombre'
+            filter
+            filterPlaceholder='Buscar por nombre'
+            style={{ minWidth: '15%' }}
+          />
+          <Column
+            field='apellido_paterno'
+            header='Apellido'
+            filter
+            filterPlaceholder='Buscar por Apellido'
+            style={{ minWidth: '15%' }}
+          />
+          <Column
+            field='correo'
+            header='Correo'
+            filter
+            filterPlaceholder='Buscar por Correo'
+            style={{ minWidth: '15%' }}
+          />
+          <Column
+            field='telefono'
+            header='Teléfono'
+            filter
+            filterPlaceholder='Buscar por Teléfono'
+            style={{ minWidth: '15%' }}
+          />
+          <Column
+            style={{ width: '7%' }}
+            headerStyle={{ width: '5rem', textAlign: 'center' }}
+            bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
+            body={actionBodyTemplate}
+          />
+        </DataTable>
+      </Card>
     </section>
   )
 }
