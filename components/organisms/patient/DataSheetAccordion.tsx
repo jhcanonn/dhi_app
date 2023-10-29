@@ -14,6 +14,7 @@ import {
 } from '@utils'
 import { useMutation } from '@apollo/client'
 import { Toast } from 'primereact/toast'
+import moment from 'moment'
 
 const DataSheetAccordion = () => {
   const toast = useRef<Toast>(null)
@@ -41,7 +42,11 @@ const DataSheetAccordion = () => {
   const addAttentionOnTable = (attention: CreatedAttention) => {
     const newAttention: DataSheet = {
       id: attention.id,
-      date: getFormatedDateToEs(attention.date_created, 'ddd ll'),
+      date: {
+        date: moment(attention.date_created).toDate(),
+        timestamp: moment(attention.date_created).valueOf(),
+        formated: getFormatedDateToEs(attention.date_created, 'ddd ll'),
+      },
       professional: attention.user_created.profesional.nombre,
       sucursal: attention.sucursal,
       type: {

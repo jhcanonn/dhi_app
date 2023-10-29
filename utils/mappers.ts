@@ -234,7 +234,11 @@ export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
   ({
     id: dataSheet.id,
     status: dataSheet.status,
-    date: getFormatedDateToEs(dataSheet.date_created, 'ddd ll'),
+    date: {
+      date: moment(dataSheet.date_created).toDate(),
+      timestamp: moment(dataSheet.date_created).valueOf(),
+      formated: getFormatedDateToEs(dataSheet.date_created, 'ddd ll'),
+    },
     type: {
       code: dataSheet.panel_id?.code,
       name: dataSheet.panel_id?.nombre,

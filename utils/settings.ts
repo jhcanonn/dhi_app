@@ -2,6 +2,7 @@ import { Translations } from 'react-scheduler-lib/types'
 import { DayProps } from 'react-scheduler-lib/views/Day'
 import { MonthProps } from 'react-scheduler-lib/views/Month'
 import { WeekProps } from 'react-scheduler-lib/views/Week'
+import { HC_IMPLANTE_CODE } from './constants'
 
 export const calendarTranslations: Translations = {
   navigation: {
@@ -113,4 +114,5 @@ export const PanelGroupCustomCodes = {
   FOLICULOS_CAPILAR: 'hc_foliculos_capilar',
   FOLICULOS_BARBA: 'hc_foliculos_barba',
   FOLICULOS_CEJA: 'hc_foliculos_ceja',
+  EXTRACCION_DIAS: `${HC_IMPLANTE_CODE}extraccion_dias`,
 }

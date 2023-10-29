@@ -65,6 +65,12 @@ export type DataSheetType = {
   name: string
 }
 
+export type DataSheetDate = {
+  date: Date
+  timestamp: number
+  formated: string
+}
+
 export enum StatusDataSheet {
   PUBLISHED = 'published',
   DRAFT = 'draft',
@@ -76,7 +82,7 @@ export type DataSheet = {
   id: UUID
   status?: StatusDataSheet
   type: DataSheetType
-  date: string
+  date: DataSheetDate
   professional: string
   sucursal: string
   data: JSON

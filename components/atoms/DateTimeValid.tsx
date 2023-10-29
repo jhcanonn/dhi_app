@@ -15,6 +15,7 @@ export type Props<T> = FieldCommonProps<T> & {
   stepMinute?: number
   showIcon?: boolean
   showTime?: boolean
+  onlyYear?: boolean
   className?: string
 }
 
@@ -26,6 +27,7 @@ const DateTimeValid = <T extends FieldValues>({
   stepMinute = 30,
   showIcon = true,
   showTime = true,
+  onlyYear,
   className,
   required,
   validate,
@@ -57,14 +59,16 @@ const DateTimeValid = <T extends FieldValues>({
             <Calendar
               ref={ref}
               inputId={name}
-              value={value}
+              value={value || null}
               onBlur={onBlur}
               onChange={onChange}
               locale={localeCode}
-              dateFormat='dd/mm/yy'
+              view={onlyYear ? 'year' : 'date'}
+              dateFormat={onlyYear ? 'yy' : 'dd/mm/yy'}
               hourFormat='12'
               showIcon={showIcon}
               showTime={showTime}
+              hideOnDateTimeSelect={showTime}
               disabled={disabled}
               className={cx(
                 { 'p-invalid': error },

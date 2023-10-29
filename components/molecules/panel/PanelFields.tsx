@@ -201,6 +201,7 @@ const PanelFields = ({ panelCode, group, handleForm, disabledData }: Props) => {
                   showIcon={!fieldDisable}
                   disabled={fieldDisable}
                   showTime={false}
+                  onlyYear={field.solo_anio}
                   className={fieldClassName}
                 />
               )

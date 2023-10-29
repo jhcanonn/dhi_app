@@ -180,6 +180,7 @@ export type CamposDirectus = {
   sin_autoresize: boolean
   es_decimal: boolean
   sufijo: string
+  solo_anio: boolean
 } & DefaultFieldsDirectus
 
 export type CamposRelDirectus = {

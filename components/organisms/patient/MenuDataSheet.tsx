@@ -140,7 +140,9 @@ const MenuDataSheet = () => {
             onClick={() => {
               setCurrentRowData(rowData)
               setVisible(true)
+              collapseAll()
             }}
+            outlined
           />
           <Button
             className='text-sm'
@@ -148,6 +150,7 @@ const MenuDataSheet = () => {
             type='button'
             severity='danger'
             onClick={() => annulDataSheetHandle(rowData)}
+            outlined
           />
         </>
       )}
@@ -156,6 +159,10 @@ const MenuDataSheet = () => {
 
   const rowExpansionTemplate = (data: DataSheet) => (
     <RowExpansionDataSheet data={data} />
+  )
+
+  const dateBodyTemplate = (rowData: DataSheet) => (
+    <p>{rowData.date.formated}</p>
   )
 
   const typeBodyTemplate = (rowData: DataSheet) => <p>{rowData.type.name}</p>
@@ -282,11 +289,17 @@ const MenuDataSheet = () => {
         className='custom-table'
         loading={dataSheetsLoading}
         removableSort
-        sortField='date'
+        sortField='date.timestamp'
         sortOrder={-1}
       >
         <Column expander={true} style={{ width: '3%' }} />
-        <Column field='date' header='Fecha' sortable style={{ width: '15%' }} />
+        <Column
+          field='date.timestamp'
+          header='Fecha'
+          style={{ width: '15%' }}
+          sortable
+          body={dateBodyTemplate}
+        />
         <Column
           header='Tipo'
           filterField='type'
