@@ -42,6 +42,8 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             icon='pi pi-plus'
             type='button'
             severity='success'
+            tooltip='Agregar Día'
+            tooltipOptions={{ position: 'bottom' }}
             onClick={() =>
               setDays((prev) => {
                 const lastDay = prev[days.length - 1]
@@ -55,6 +57,8 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             icon='pi pi-minus'
             type='button'
             severity='danger'
+            tooltip='Quitar Día'
+            tooltipOptions={{ position: 'bottom' }}
             onClick={() =>
               setDays((prev) => {
                 const lastDay = prev[days.length - 1]
