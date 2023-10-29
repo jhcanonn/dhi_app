@@ -2,6 +2,7 @@
 
 import { PanelGroupCustomCodes } from '@utils'
 import {
+  ExtractionDays,
   FoliculosBarbaTable,
   FoliculosCapilarTable,
   FoliculosCejaTable,
@@ -45,6 +46,10 @@ const getGroupCustom = ({ code, handleForm, disabledData }: Props) => {
           handleForm={handleForm}
           disabledData={disabledData}
         />
+      )
+    case PanelGroupCustomCodes.EXTRACCION_DIAS:
+      return (
+        <ExtractionDays handleForm={handleForm} disabledData={disabledData} />
       )
     default:
       return (
