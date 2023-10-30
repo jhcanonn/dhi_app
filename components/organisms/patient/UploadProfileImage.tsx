@@ -170,11 +170,12 @@ const UploadProfileImage = ({
   }
 
   const footerContent = (
-    <div className='flex gap-2 justify-end'>
+    <div className='flex flex-col md:flex-row gap-2 justify-end'>
       <Button
         label='Cerrar'
         severity='danger'
         onClick={() => setVisible(false)}
+        className='w-full md:w-fit'
       />
       <FileUpload
         mode='basic'
@@ -187,6 +188,7 @@ const UploadProfileImage = ({
         multiple
         uploadHandler={uploadHandler}
         chooseLabel='Cargar imagen(es)'
+        className='w-full md:w-fit [&_.p-button]:w-full'
       />
     </div>
   )

@@ -4,7 +4,7 @@ import { ErrorText } from '.'
 import { Controller, FieldValues, useWatch } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
 import { CamposOpcionesDirectus, FieldCommonProps } from '@models'
-import { errorMessages } from '@utils'
+import { errorMessages, removeDuplicates } from '@utils'
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox'
 import { useEffect, useState } from 'react'
 
@@ -58,7 +58,7 @@ const CheckboxValid = <T extends FieldValues>({
 
   useEffect(() => {
     checkboxValue?.length > 0 &&
-      setOptions((prev) => [...prev, ...checkboxValue])
+      setOptions((prev) => removeDuplicates([...prev, ...checkboxValue]))
   }, [checkboxValue])
 
   return (
