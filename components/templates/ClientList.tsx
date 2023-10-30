@@ -160,6 +160,7 @@ const ClientList = () => {
                   'documento',
                 ]}
                 header={header}
+                loading={dataClientsLoading}
               >
                 <Column header='' body={imageBodyTemplate} />
 
