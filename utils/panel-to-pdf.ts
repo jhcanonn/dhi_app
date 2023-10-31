@@ -1,6 +1,13 @@
 import { FieldTypeDirectus, PanelsDirectus } from '@models'
-import pdfMake from 'pdfmake/build/pdfmake.min'
 import { Margins, TDocumentDefinitions } from 'pdfmake/interfaces'
+
+export const config = {
+  runtime: 'nodejs', // for Edge API Routes only
+  unstable_allowDynamic: [
+    // use a glob to allow anything in the function-bind 3rd party module
+    '/node_modules/pdfmake/build/**',
+  ],
+}
 
 interface IDataHeader {
   profesionalName: string
@@ -21,17 +28,6 @@ export const PanelToPDF = async (
   dataHeader: IDataHeader,
 ) => {
   if (panel) {
-    pdfMake.fonts = {
-      Roboto: {
-        normal:
-          'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
-        italics:
-          'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
-        bolditalics:
-          'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf',
-      },
-    }
     const marginHeader: Margins = repeaterHeader ? [72, 30] : [0, 0, 0, 10]
     const header: any = {
       stack: [
@@ -281,17 +277,17 @@ export const PanelToPDF = async (
         },
       },
     }
-
+    // const pdfMake = await import('pdfmake/build/pdfmake')
+    const pdfMake = {} as any
     const pdfDocGenerator = pdfMake.createPdf(props)
 
-    const blob = await new Promise<Blob>((resolve) =>
+    /*const blob = await new Promise<Blob>((resolve) =>
       pdfDocGenerator.getBlob((blob) => resolve(blob), {
         progressCallback: (progress) =>
           console.log(Math.floor(Number(progress * 100))),
       }),
-    )
+    )*/
     pdfDocGenerator.open({})
-    return blob
 
     /* panel.agrupadores_id
       .sort((a, b) => a.orden - b.orden)
