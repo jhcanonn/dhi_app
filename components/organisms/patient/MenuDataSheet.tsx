@@ -22,22 +22,25 @@ import { FilterMatchMode } from 'primereact/api'
 import {
   GET_DATASHEETS_BY_ID,
   UPDATE_ATTENTION,
+  clientInfoToHeaderDataPDFMapper,
   dhiDataSheetMapper,
   removeDuplicates,
 } from '@utils'
 import { useMutation, useQuery } from '@apollo/client'
-import { useClientContext } from '@contexts'
+import { useClientContext, useGlobalContext } from '@contexts'
 import { EditDataSheet, RowExpansionDataSheet } from '@components/molecules'
 import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Tag } from 'primereact/tag'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { generatePanelToPDF } from '@utils/panel-to-pdf'
 
 const defaultFilters: DataTableFilterMeta = {
   type: { value: null, matchMode: FilterMatchMode.IN },
 }
 
 const MenuDataSheet = () => {
+  const { panels } = useGlobalContext()
   const toast = useRef<Toast>(null)
   const [visible, setVisible] = useState<boolean>(false)
   const [currentRowData, setCurrentRowData] = useState<DataSheet | null>(null)
@@ -57,6 +60,7 @@ const MenuDataSheet = () => {
   } = useClientContext()
 
   const fichaId = clientInfo?.ficha_id?.id
+
   const {
     data: dataSheetsData,
     loading: dataSheetsLoading,
@@ -163,6 +167,14 @@ const MenuDataSheet = () => {
             severity='info'
             tooltip='Imprimir'
             tooltipOptions={{ position: 'bottom' }}
+            onClick={() =>
+              generatePanelToPDF(
+                panels.find((p) => p.code === rowData.type.code),
+                rowData.data,
+                false,
+                clientInfoToHeaderDataPDFMapper(clientInfo as any, rowData),
+              )
+            }
             outlined
           ></Button>
           {/* onClick={() => PanelToPDF(panel, handleForm, false, dataHeader)}*/}

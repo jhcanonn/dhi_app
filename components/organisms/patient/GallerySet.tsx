@@ -1,7 +1,7 @@
 'use client'
 
 import { ClientPhoto } from '@models'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { Button } from 'primereact/button'
 import { Galleria, GalleriaResponsiveOptions } from 'primereact/galleria'
 import { useEffect, useRef, useState } from 'react'

@@ -84,6 +84,12 @@ export type DataSheet = {
   type: DataSheetType
   date: DataSheetDate
   professional: string
+  professionalDocument: string
+  profesionalFirma: {
+    id: string
+    title: string
+  }
+  profesionalNumReg: string
   sucursal: string
   data: JSON
 }

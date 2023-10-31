@@ -1,19 +1,12 @@
 import { FieldTypeDirectus, PanelsDirectus } from '@models'
 import { Margins, TDocumentDefinitions } from 'pdfmake/interfaces'
+import * as pdfMake from 'pdfmake/build/pdfmake'
+import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+;(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs
 
-export const config = {
-  runtime: 'nodejs', // for Edge API Routes only
-  unstable_allowDynamic: [
-    // use a glob to allow anything in the function-bind 3rd party module
-    '/node_modules/pdfmake/build/**',
-  ],
-}
-
-interface IDataHeader {
+export interface IDataHeader {
   profesionalName: string
-  profesionalTipoDoc: string
   profesionalNumDoc: string
-  profesionalEspecialidad: string
   direccionOficina: string
   clienteName: string
   clienteNumDoc: string
@@ -21,9 +14,9 @@ interface IDataHeader {
   ClienteDireccion: string
 }
 
-export const PanelToPDF = async (
+export const generatePanelToPDF = async (
   panel: PanelsDirectus | undefined,
-  handleForm: any,
+  data: any,
   repeaterHeader: boolean,
   dataHeader: IDataHeader,
 ) => {
@@ -42,7 +35,7 @@ export const PanelToPDF = async (
             {
               stack: [
                 { text: dataHeader.profesionalName, bold: true },
-                `Identificación: ${dataHeader.profesionalTipoDoc} ${dataHeader.profesionalNumDoc}`,
+                `Identificación: ${dataHeader.profesionalNumDoc}`,
                 dataHeader.direccionOficina,
               ],
               alignment: 'right',
@@ -53,7 +46,7 @@ export const PanelToPDF = async (
         ' ',
         {
           table: {
-            widths: ['20%', '50%', '*', '*'],
+            widths: ['20%', '40%', '10%', '*'],
             body: [
               [
                 {
@@ -170,8 +163,7 @@ export const PanelToPDF = async (
           },
         }
 
-        const values = handleForm.getValues()
-        for (const key in values) {
+        for (const key in data) {
           const field = group.campos_id.find((c) => c.campos_id.codigo === key)
           if (field) {
             switch (field.campos_id.tipo) {
@@ -197,7 +189,7 @@ export const PanelToPDF = async (
                     border: [false, false, false, false],
                   },
                   {
-                    text: new Date(values[key]).toLocaleString('es-CO', {
+                    text: new Date(data[key]).toLocaleString('es-CO', {
                       hour12: true,
                     }),
                     border: [false, false, false, false],
@@ -219,10 +211,10 @@ export const PanelToPDF = async (
                 ])
                 dataTable.table.body.push([
                   {
-                    text: values[key]
-                      ? values[key] && Array.isArray(values[key])
-                        ? values[key].map((v: any) => v.value).join('/')
-                        : values[key].toString()
+                    text: data[key]
+                      ? data[key] && Array.isArray(data[key])
+                        ? data[key].map((v: any) => v.value).join('/')
+                        : data[key].toString()
                       : ' ',
                     colSpan: 2,
                     border: [false, false, false, false],
@@ -241,10 +233,10 @@ export const PanelToPDF = async (
                     border: [false, false, false, false],
                   },
                   {
-                    text: values[key]
-                      ? values[key] && Array.isArray(values[key])
-                        ? values[key].map((v: any) => v.value).join('/')
-                        : values[key].toString()
+                    text: data[key]
+                      ? data[key] && Array.isArray(data[key])
+                        ? data[key].map((v: any) => v.value).join('/')
+                        : data[key].toString()
                       : ' ',
                     border: [false, false, false, false],
                   },
@@ -277,55 +269,7 @@ export const PanelToPDF = async (
         },
       },
     }
-    // const pdfMake = await import('pdfmake/build/pdfmake')
-    const pdfMake = {} as any
     const pdfDocGenerator = pdfMake.createPdf(props)
-
-    /*const blob = await new Promise<Blob>((resolve) =>
-      pdfDocGenerator.getBlob((blob) => resolve(blob), {
-        progressCallback: (progress) =>
-          console.log(Math.floor(Number(progress * 100))),
-      }),
-    )*/
     pdfDocGenerator.open({})
-
-    /* panel.agrupadores_id
-      .sort((a, b) => a.orden - b.orden)
-      .forEach((a) => {
-        const group = a.agrupadores_code
-
-        //const buttonExtraLabel = group.etiqueta_boton_extra?.trim()
-        //const customGroup = group.es_personalizado
-
-        group.campos_id
-          .sort((a, b) => a.orden - b.orden)
-          .forEach((c, indexc) => {
-            const field = c.campos_id
-            doc.text(field.etiqueta, 30, 60 + indexc * 20)
-            switch (field.tipo) {
-              case FieldTypeDirectus.TEXT:
-                break
-              case FieldTypeDirectus.TEXTAREA:
-                break
-              case FieldTypeDirectus.NUMBER:
-                break
-              case FieldTypeDirectus.DROPDOWN:
-                break
-              case FieldTypeDirectus.DATETIME:
-                break
-              case FieldTypeDirectus.DATE:
-                break
-              case FieldTypeDirectus.CHECKBOX:
-                break
-              case FieldTypeDirectus.PHONE:
-                break
-              case FieldTypeDirectus.AUTOCOMPLETE:
-                break
-              default:
-                break
-            }
-          })
-        doc.addPage()
-      }) */
   }
 }

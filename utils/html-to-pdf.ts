@@ -1,9 +1,8 @@
-//import { jsPDF } from 'jspdf'
+import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 
 export const HtmlToPDF = (form: HTMLFormElement | null) => {
   if (form) {
-    const jsPDF = {} as any
     const pdf = new jsPDF('p', 'pt', 'letter')
     html2canvas(form, {
       windowWidth: 1200,
