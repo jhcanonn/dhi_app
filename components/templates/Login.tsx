@@ -72,12 +72,12 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
   }, [data])
 
   return (
-    <section className='flex justify-center self-center !min-w-[90%] sm:!min-w-[33rem]'>
+    <section className='flex justify-center self-center !w-[90%] sm:!w-[33rem]'>
       <div className='p-1 bg-gradient-to-b from-brand via-transparent to-transparent rounded-[4rem] w-full'>
         <form
           autoComplete='off'
           onSubmit={handleSubmit(onSubmit)}
-          className='bg-white rounded-[4rem] px-5 sm:!px-20 py-16 w-full flex flex-col justify-evenly items-center min-h-[30rem] gap-2'
+          className='bg-white rounded-[4rem] !px-10 sm:!px-20 py-16 w-full flex flex-col justify-evenly items-center min-h-[30rem] gap-2'
         >
           <div className='flex flex-col gap-2 justify-center items-center grow mb-6 mt-3'>
             <Avatar

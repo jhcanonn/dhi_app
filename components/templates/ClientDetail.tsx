@@ -60,7 +60,7 @@ const getFieldValue = (field: CamposDirectus, dataExtra: any) => {
 }
 
 const WithoutImage = () => (
-  <div className='flex align-items-center flex-column rounded-2xl w-full border-brand border-[1px] min-w-[330px] max-w-full md:!max-w-[450px]'>
+  <div className='flex align-items-center flex-column rounded-2xl w-full border-brand border-[1px] md:min-w-[330px] max-w-full md:!max-w-[450px]'>
     <i
       className='pi pi-image mt-4 p-5 bg-brand/30 text-white rounded-full'
       style={{ fontSize: '5em' }}
@@ -107,7 +107,7 @@ const ClientDetail = () => {
                 alt={clientInfo.avatar[0].directus_files_id.title}
                 width='450'
                 preview
-                className='[&_img]:rounded-lg [&_img]:min-w-[450px]'
+                className='[&_img]:rounded-lg [&_img]:md:min-w-[450px]'
               />
             ) : (
               <WithoutImage />

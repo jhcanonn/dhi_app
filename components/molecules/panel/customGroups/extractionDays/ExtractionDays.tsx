@@ -36,9 +36,9 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
   return (
     <>
       {!disabledData && (
-        <section className='absolute flex gap-2 right-[1rem] top-[-2rem]'>
+        <section className='w-full md:!w-[5rem] flex flex-col md:flex-row gap-2 md:absolute md:right-[1rem] md:top-[-2rem] mb-4 md:mb-0'>
           <Button
-            className='text-sm bg-white'
+            className='text-sm bg-white w-full'
             icon='pi pi-plus'
             type='button'
             severity='success'
@@ -53,7 +53,7 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             outlined
           />
           <Button
-            className='text-sm bg-white'
+            className='text-sm bg-white w-full'
             icon='pi pi-minus'
             type='button'
             severity='danger'

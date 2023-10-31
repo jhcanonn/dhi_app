@@ -16,6 +16,7 @@ import {
 } from './dataED'
 import { useEffect } from 'react'
 import { HC_IMPLANTE_CODE, regexPatterns } from '@utils'
+import { classNames as cx } from 'primereact/utils'
 
 type Props = {
   handleForm: UseFormReturn<any, any, undefined>
@@ -67,7 +68,11 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
   }, [])
 
   return (
-    <article className='w-full min-w-fit mx-1'>
+    <article
+      className={cx('w-full min-w-fit mx-1', {
+        '!min-w-max md:!min-w-fit': !disabledData,
+      })}
+    >
       <Divider
         align='center'
         className='[&_.p-divider-content]:bg-transparent mt-0'

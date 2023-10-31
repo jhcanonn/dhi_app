@@ -220,17 +220,19 @@ const MenuDataSheet = () => {
   const headerDialog = <h2>Edición {currentRowData?.type.name}</h2>
 
   const footerDialog = (
-    <div className='flex gap-2 justify-end'>
+    <div className='flex flex-col md:flex-row gap-2 justify-end'>
       <Button
         label='Cerrar'
         severity='danger'
         onClick={() => setVisible(false)}
+        className='w-full md:w-fit'
       />
       <Button
         label='Guardar'
         severity='success'
         form={`form_${currentRowData?.type.code}_edit_${currentRowData?.id}`}
         loading={savingDataSheet}
+        className='w-full md:w-fit'
       />
     </div>
   )
