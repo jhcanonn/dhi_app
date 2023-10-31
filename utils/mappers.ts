@@ -22,7 +22,8 @@ import {
 import moment from 'moment'
 import { idTypes } from './settings'
 import { BLOCK_SERVICE } from './constants'
-import { getFormatedDateToEs } from './helpers'
+import { calcularEdadConMeses, getFormatedDateToEs } from './helpers'
+import { IDataHeader } from './panel-to-pdf'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals
@@ -244,6 +245,33 @@ export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
       name: dataSheet.panel_id?.nombre,
     },
     professional: dataSheet.user_created.profesional?.nombre,
+    professionalDocument: dataSheet.user_created.profesional?.identificacion,
+    profesionalFirma: dataSheet.user_created.profesional?.firma,
+    profesionalNumReg: dataSheet.user_created.profesional?.no_registro_medico,
     sucursal: dataSheet.sucursal,
     data: dataSheet.valores,
   }) as DataSheet
+
+export const clientInfoToHeaderDataPDFMapper = (
+  client: ClientDirectus,
+  rowData: DataSheet,
+): IDataHeader => {
+  const birthDate = client?.fecha_nacimiento
+    ? moment(client?.fecha_nacimiento).toDate()
+    : null
+  const age = birthDate ? calcularEdadConMeses(birthDate) : null
+
+  const direccion = client?.datos_extra
+    ? (client?.datos_extra as any)?.direccion ?? ''
+    : ''
+
+  return {
+    clienteName: client.full_name,
+    clienteEdad: age ? `${age?.anios} años, ${age?.meses} meses` : '',
+    clienteNumDoc: `${client.tipo_documento} ${client.documento}`,
+    ClienteDireccion: direccion,
+    profesionalName: rowData.professional,
+    profesionalNumDoc: rowData.professionalDocument,
+    direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
+  }
+}

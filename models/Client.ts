@@ -46,6 +46,12 @@ export type CreatedAttention = {
   user_created: {
     profesional: {
       nombre: string
+      identificacion: string
+      no_registro_medico: string
+      firma: {
+        id: string
+        title: string
+      }
     }
   }
   panel_id: {
@@ -84,6 +90,12 @@ export type DataSheet = {
   type: DataSheetType
   date: DataSheetDate
   professional: string
+  professionalDocument: string
+  profesionalFirma: {
+    id: string
+    title: string
+  }
+  profesionalNumReg: string
   sucursal: string
   data: JSON
 }

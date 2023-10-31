@@ -12,7 +12,7 @@ import {
   idTypes,
   parseUrl,
 } from '@utils'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'

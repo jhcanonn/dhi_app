@@ -22,7 +22,7 @@ import { Message } from 'primereact/message'
 import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
 import { refreshToken } from '@utils/api'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()

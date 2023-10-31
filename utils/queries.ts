@@ -166,6 +166,12 @@ export const GET_DATASHEETS_BY_ID = gql`
       user_created {
         profesional {
           nombre
+          identificacion
+          no_registro_medico
+          firma {
+            id
+            title
+          }
         }
       }
     }

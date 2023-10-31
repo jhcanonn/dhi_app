@@ -13,7 +13,7 @@ import { Button } from 'primereact/button'
 import { useRouter } from 'next/navigation'
 import { Avatar } from 'primereact/avatar'
 import { OverlayPanel } from 'primereact/overlaypanel'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])

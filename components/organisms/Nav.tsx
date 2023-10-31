@@ -20,7 +20,7 @@ import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
 import { getPanelsFromDirectus, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()

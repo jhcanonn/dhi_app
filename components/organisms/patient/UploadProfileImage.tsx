@@ -19,7 +19,7 @@ import { Image } from 'primereact/image'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Message } from 'primereact/message'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
-import { generateURLAssetsWithToken } from '@utils/url-img-access'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
 
 type Props = {
   clientInfo: ClientDirectus | null
