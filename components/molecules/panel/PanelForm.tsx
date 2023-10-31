@@ -192,7 +192,7 @@ const PanelForm = ({
         </Fieldset>
       )}
       {!hideSubmitButton && (
-        <Button label='Guardar atención' className='text-sm w-fit' />
+        <Button label='Guardar atención' className='text-sm w-full md:w-fit' />
       )}
     </form>
   )

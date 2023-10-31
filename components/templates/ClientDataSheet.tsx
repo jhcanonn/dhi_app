@@ -64,7 +64,7 @@ const ClientDataSheet = () => {
             model={items}
             activeIndex={activeIndex}
             onTabChange={(e) => setActiveIndex(e.index)}
-            className={'custom-tab-menu text-sm'}
+            className={'custom-tab-menu [&_.p-tabmenu-nav]:flex-wrap text-sm'}
           />
           <div className='w-fit'>
             <UploadProfileImage clientInfo={clientInfo} />

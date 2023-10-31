@@ -17,13 +17,16 @@ import { generateURLAssetsWithToken } from '@utils/url-img-access'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
-  const [filters, setFilters] = useState({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    primer_nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    apellido_paterno: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    documento: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  })
   const [globalFilterValue, setGlobalFilterValue] = useState('')
+  const initConfigFilter = { value: null, matchMode: FilterMatchMode.CONTAINS }
+  const [filters, setFilters] = useState({
+    global: initConfigFilter,
+    documento: initConfigFilter,
+    primer_nombre: initConfigFilter,
+    apellido_paterno: initConfigFilter,
+    correo: initConfigFilter,
+    telefono: initConfigFilter,
+  })
   const router = useRouter()
 
   const goToPage = (pagePath: string) => router.push(pagePath)
@@ -74,7 +77,7 @@ const ClientList = () => {
     </div>
   )
 
-  const imageBodyTemplate = async (rowData: DhiPatient) => {
+  const imageBodyTemplate = (rowData: DhiPatient) => {
     const op = useRef<OverlayPanel>(null)
     if (rowData?.avatar && rowData?.avatar?.length > 0) {
       const imageUrl = generateURLAssetsWithToken(
@@ -90,6 +93,7 @@ const ClientList = () => {
         <div
           onMouseEnter={(e) => op?.current?.toggle(e)}
           onMouseLeave={(e) => op?.current?.toggle(e)}
+          className='px-2'
         >
           <Avatar image={imageUrl} size='xlarge' shape='circle' />
           <OverlayPanel ref={op} style={{ width: '350px' }}>
@@ -98,7 +102,11 @@ const ClientList = () => {
         </div>
       )
     }
-    return <Avatar icon='pi pi-user' size='xlarge' shape='circle' />
+    return (
+      <div className='px-2'>
+        <Avatar icon='pi pi-user' size='xlarge' shape='circle' />
+      </div>
+    )
   }
 
   const renderHeader = () => (
@@ -109,7 +117,7 @@ const ClientList = () => {
           <InputText
             value={globalFilterValue}
             onChange={onGlobalFilterChange}
-            placeholder='Busqueda General'
+            placeholder='Busqueda general'
             className='w-full'
           />
         </span>
@@ -150,7 +158,7 @@ const ClientList = () => {
             field='documento'
             header='Documento'
             filter
-            filterPlaceholder='Buscar por Documento'
+            filterPlaceholder='Buscar por documento'
             style={{ minWidth: '15%' }}
           />
           <Column
@@ -164,21 +172,21 @@ const ClientList = () => {
             field='apellido_paterno'
             header='Apellido'
             filter
-            filterPlaceholder='Buscar por Apellido'
+            filterPlaceholder='Buscar por apellido'
             style={{ minWidth: '15%' }}
           />
           <Column
             field='correo'
             header='Correo'
             filter
-            filterPlaceholder='Buscar por Correo'
+            filterPlaceholder='Buscar por correo'
             style={{ minWidth: '15%' }}
           />
           <Column
             field='telefono'
             header='Teléfono'
             filter
-            filterPlaceholder='Buscar por Teléfono'
+            filterPlaceholder='Buscar por teléfono'
             style={{ minWidth: '15%' }}
           />
           <Column
