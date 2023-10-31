@@ -7,7 +7,7 @@ export const generateURLAssetsWithToken = (
 ) => {
   const cookies = new Cookies()
   const session = cookies.get(DHI_SESSION)
-  if (session && session.access_token) {
+  if (session?.access_token) {
     queryParams = { ...queryParams, access_token: session.access_token }
   }
   const searchParams = new URLSearchParams(queryParams)
