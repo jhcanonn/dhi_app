@@ -261,13 +261,17 @@ export const clientInfoToHeaderDataPDFMapper = (
     : null
   const age = birthDate ? calcularEdadConMeses(birthDate) : null
 
+  const direccion = client?.datos_extra
+    ? (client?.datos_extra as any)?.direccion ?? ''
+    : ''
+
   return {
     clienteName: client.full_name,
     clienteEdad: age ? `${age?.anios} años, ${age?.meses} meses` : '',
     clienteNumDoc: `${client.tipo_documento} ${client.documento}`,
-    ClienteDireccion: 'Calle 123 # 123 - 123',
+    ClienteDireccion: direccion,
     profesionalName: rowData.professional,
     profesionalNumDoc: rowData.professionalDocument,
-    direccionOficina: 'Calle 123 # 123 - 123',
+    direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
 }
