@@ -156,6 +156,17 @@ const MenuDataSheet = () => {
             onClick={() => annulDataSheetHandle(rowData)}
             outlined
           />
+          <Button
+            className='text-sm'
+            icon='pi pi-print'
+            type='button'
+            severity='info'
+            tooltip='Imprimir'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+          ></Button>
+          {/* onClick={() => PanelToPDF(panel, handleForm, false, dataHeader)}*/}
+          {/* <Button onClick={() => HtmlToPDF(refForm.current)} >Imprimir</Button> */}
         </>
       )}
     </div>
