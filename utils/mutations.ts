@@ -51,6 +51,12 @@ export const CREATE_ATTENTION = gql`
       user_created {
         profesional {
           nombre
+          identificacion
+          no_registro_medico
+          firma {
+            id
+            title
+          }
         }
       }
       panel_id {

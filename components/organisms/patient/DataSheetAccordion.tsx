@@ -48,6 +48,9 @@ const DataSheetAccordion = () => {
         formated: getFormatedDateToEs(attention.date_created, 'ddd ll'),
       },
       professional: attention.user_created.profesional.nombre,
+      professionalDocument: attention.user_created.profesional?.identificacion,
+      profesionalFirma: attention.user_created.profesional?.firma,
+      profesionalNumReg: attention.user_created.profesional?.no_registro_medico,
       sucursal: attention.sucursal,
       type: {
         code: attention.panel_id.code,

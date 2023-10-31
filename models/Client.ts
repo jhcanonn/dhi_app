@@ -46,6 +46,12 @@ export type CreatedAttention = {
   user_created: {
     profesional: {
       nombre: string
+      identificacion: string
+      no_registro_medico: string
+      firma: {
+        id: string
+        title: string
+      }
     }
   }
   panel_id: {
