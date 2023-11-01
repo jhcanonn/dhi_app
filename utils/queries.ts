@@ -366,6 +366,8 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
           cantidad
           categoria
         }
+        cantidad
+        descripcion
       }
       recetas {
         id
