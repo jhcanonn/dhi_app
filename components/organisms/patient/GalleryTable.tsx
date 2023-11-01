@@ -53,6 +53,7 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
   useEffect(() => {
     const gallery = clientInfo?.galeria.map((g) => {
       const gallery = g.galeria_id
+      const tags = gallery?.tags ? [...gallery.tags] : []
       return {
         id: gallery?.id,
         patientGalleryRelId: g.id,
@@ -60,8 +61,8 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         description: gallery?.descripcion,
         photos: gallery?.fotos,
         patient: clientInfo.full_name,
-        tags: gallery?.tags
-          .toSorted((a, b) => a.order - b.order)
+        tags: tags
+          .sort((a, b) => a.order - b.order)
           .filter((g) => g.tags_id.estado === StatusDirectus.PUBLISHED)
           .map((g) => g.tags_id.nombre)
           .join(', '),
