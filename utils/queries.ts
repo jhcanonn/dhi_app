@@ -295,3 +295,96 @@ export const GET_APPOINTMENTS = gql`
     }
   }
 `
+export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
+  query ($fichaId: GraphQLStringOrFloat) {
+    plantillas(filter: { estado: { _eq: "published" } }) {
+      id
+      estado
+      orden
+      tipo
+      nombre
+      cantidad
+      descripcion
+      examenes {
+        id
+        examenes_id {
+          orden
+          nombre
+          codigo
+          cantidad
+          categoria
+        }
+      }
+      recetas {
+        id
+        Recetas_id {
+          id
+          date_created
+          date_updated
+          nombre
+          diagnostico
+          receta
+          recepta
+          seleccion_receta
+          html_receta
+        }
+      }
+      diagnostico
+    }
+    complementos_medicos(filter: { ficha_id: { id: { _eq: $fichaId } } }) {
+      id
+      estado
+      orden
+      date_updated
+      tipo
+      user_created {
+        id
+        first_name
+        last_name
+        profesional {
+          nombre
+          identificacion
+          especialidad
+          cargo
+          no_registro_medico
+          firma {
+            id
+            filename_disk
+          }
+        }
+      }
+      date_created
+      cantidad
+      descripcion
+      ficha_id {
+        id
+      }
+      examenes {
+        id
+        examenes_id {
+          id
+          estado
+          orden
+          nombre
+          codigo
+          cantidad
+          categoria
+        }
+      }
+      recetas {
+        id
+        Recetas_id {
+          id
+          estado
+          orden
+          nombre
+          diagnostico
+          receta
+          recepta
+          seleccion_receta
+          html_receta
+        }
+      }
+    }
+  }
+`

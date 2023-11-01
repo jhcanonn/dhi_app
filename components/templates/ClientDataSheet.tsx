@@ -14,6 +14,7 @@ import {
 import { useClientContext } from '@contexts'
 import { Divider } from 'primereact/divider'
 import ComingSoon from './ComingSoon'
+import MenuExamsPrescription from '@components/organisms/patient/MenuExamsPrescription'
 
 const ClientDataSheet = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
@@ -49,7 +50,7 @@ const ClientDataSheet = () => {
       case 1:
         return <ComingSoon />
       case 2:
-        return <ComingSoon />
+        return <MenuExamsPrescription />
       case 3:
         return <MenuImages />
       case 4:
