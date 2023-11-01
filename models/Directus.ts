@@ -85,10 +85,21 @@ export type ProfileAvatar = {
 }
 
 export type ClientPhoto = {
+  id: number
   directus_files_id: {
     id: string
     title: string
     description: string
+  } | null
+}
+
+export type ClientPhotoTag = {
+  id: number
+  order: number
+  tags_id: {
+    nombre: string
+    tipo: string
+    estado: string
   }
 }
 
@@ -114,10 +125,13 @@ export type ClientDirectus = {
   }
   avatar: ProfileAvatar[]
   galeria: {
+    id: number
     galeria_id: {
+      id: number
       descripcion: string
       date_created: string
       fotos: ClientPhoto[]
+      tags: ClientPhotoTag[]
     }
   }[]
 }

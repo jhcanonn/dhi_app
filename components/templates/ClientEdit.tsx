@@ -204,7 +204,7 @@ const ClientEdit = () => {
               />
               <InputTextValid
                 name='apellido_paterno'
-                label='Apellido paterno'
+                label='Primer apellido'
                 handleForm={handleForm}
                 icon='user'
                 required
@@ -212,7 +212,7 @@ const ClientEdit = () => {
               />
               <InputTextValid
                 name='apellido_materno'
-                label='Apellido materno'
+                label='Segundo apellido'
                 handleForm={handleForm}
                 icon='user'
                 pattern={regexPatterns.onlyEmpty}

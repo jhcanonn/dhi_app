@@ -114,7 +114,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
     client_id: event?.client_id,
     state: event?.state || eventStates.find((es) => es.state_id === 3),
     pay: event?.pay || pays.find((p) => p.pay_id === 3),
-    data_sheet: event?.data_sheet || 'Sin ficha',
+    data_sheet: event?.data_sheet || 'Sin historia clínica',
     id_type: event?.id_type! || idTypes[0],
     identification: event?.identification,
     first_name: event?.first_name,
@@ -406,7 +406,7 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
                 {event && (
                   <InputTextValid
                     name='data_sheet'
-                    label='Ficha'
+                    label='Historia clínica'
                     handleForm={handleForm}
                     icon='book'
                     disabled

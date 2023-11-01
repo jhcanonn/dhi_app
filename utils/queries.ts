@@ -208,14 +208,26 @@ export const GET_CLIENT_BY_ID = gql`
         }
       }
       galeria {
+        id
         galeria_id {
+          id
           descripcion
           date_created
           fotos {
+            id
             directus_files_id {
               id
               title
               description
+            }
+          }
+          tags {
+            id
+            order
+            tags_id {
+              nombre
+              tipo
+              estado
             }
           }
         }

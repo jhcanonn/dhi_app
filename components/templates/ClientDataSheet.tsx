@@ -8,6 +8,7 @@ import { PrimeIcons } from 'primereact/api'
 import {
   DataSheetAccordion,
   MenuDataSheet,
+  MenuImages,
   UploadProfileImage,
 } from '@components/organisms'
 import { useClientContext } from '@contexts'
@@ -50,7 +51,7 @@ const ClientDataSheet = () => {
       case 2:
         return <ComingSoon />
       case 3:
-        return <ComingSoon />
+        return <MenuImages />
       case 4:
         return <ComingSoon />
     }

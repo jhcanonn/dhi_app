@@ -124,8 +124,8 @@ const ClientDetail = () => {
           </section>
           <section className='grow'>
             <div className='!grid grid-cols-2 md:grid-cols-4 gap-y-1 h-fit'>
-              <Th>Número de ficha:</Th>
-              <Tr>{clientInfo?.ficha_id?.id ?? 'Sin ficha'}</Tr>
+              <Th>Historia Clínica:</Th>
+              <Tr>{clientInfo?.ficha_id?.id ?? 'Sin historia clínica'}</Tr>
               <Th>Tipo de identificación:</Th>
               <Tr>
                 {clientInfo?.tipo_documento
@@ -139,9 +139,9 @@ const ClientDetail = () => {
               <Tr>{clientInfo?.primer_nombre}</Tr>
               <Th>Segundo nombre:</Th>
               <Tr>{clientInfo?.segundo_nombre}</Tr>
-              <Th>Apellido paterno:</Th>
+              <Th>Primer apellido:</Th>
               <Tr>{clientInfo?.apellido_paterno}</Tr>
-              <Th>Apellido materno:</Th>
+              <Th>Segundo apellido:</Th>
               <Tr>{clientInfo?.apellido_materno}</Tr>
               <Th>Fecha de nacimiento:</Th>
               <Tr>{birthDate && getOnlyDate(birthDate)}</Tr>
@@ -204,7 +204,7 @@ const ClientDetail = () => {
         <div className='flex gap-2 flex-wrap justify-end'>
           <Button
             className='text-sm w-full md:w-auto'
-            label={'Asociar'}
+            label='Asociar'
             type='button'
             severity='success'
             rounded
@@ -212,7 +212,7 @@ const ClientDetail = () => {
           />
           <Button
             className='text-sm w-full md:w-auto'
-            label={'Editar'}
+            label='Editar'
             type='button'
             severity='warning'
             rounded
@@ -225,7 +225,7 @@ const ClientDetail = () => {
           />
           <Button
             className='text-sm w-full md:w-auto'
-            label={'Eliminar'}
+            label='Eliminar'
             type='button'
             severity='danger'
             rounded
