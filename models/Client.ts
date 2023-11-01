@@ -38,6 +38,24 @@ export type PatientAvatar = {
   }
 }
 
+export type PatientGallery = {
+  galeria: {
+    create: []
+    update: {
+      id: number
+      galeria_id: {
+        id: number
+        fotos: {
+          create: []
+          update: []
+          delete: number[]
+        }
+      }
+    }[]
+    delete: number[]
+  }
+}
+
 export type CreatedAttention = {
   id: UUID
   date_created: string

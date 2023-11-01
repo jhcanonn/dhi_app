@@ -59,28 +59,33 @@ const calcAverageDensidadExistente = (
 const occipitalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_ODE,
+    required: true,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'T', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_ODR, suffix: ' cm²' },
+  { code: FieldsCodeFZD.FZD_ODR, required: true, suffix: ' cm²' },
   {
     code: FieldsCodeFZD.FZD_OAA,
+    required: true,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAB,
+    required: true,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAT,
+    required: true,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFZD.FZD_OC,
+    required: true,
     defaultValue: 0,
     disabled: true,
   },
@@ -89,27 +94,36 @@ const occipitalFields: FoliculosField[] = [
 const temporalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_TDE,
+    required: true,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'O', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_TDR, suffix: ' cm²' },
+  { code: FieldsCodeFZD.FZD_TDR, required: true, suffix: ' cm²' },
   {
     code: FieldsCodeFZD.FZD_TAA,
+    required: true,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAB,
+    required: true,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAT,
+    required: true,
     defaultValue: 0,
     disabled: true,
   },
-  { code: FieldsCodeFZD.FZD_TC, defaultValue: 0, disabled: true },
+  {
+    code: FieldsCodeFZD.FZD_TC,
+    required: true,
+    defaultValue: 0,
+    disabled: true,
+  },
 ]
 
 export const zonaDonanteRows: FoliculosRow[] = [

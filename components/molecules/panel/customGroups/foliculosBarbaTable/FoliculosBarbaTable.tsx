@@ -3,7 +3,6 @@
 import { InputNumberValid, InputTextareaValid } from '@components/atoms'
 import { UseFormReturn, useWatch } from 'react-hook-form'
 import { FieldsCodeFB, RowsCodeFB, barbaRows } from './dataFBT'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import {
   FoliculosType,
   TdTitle,
@@ -58,11 +57,9 @@ const FoliculosBarbaTable = ({ handleForm, disabledData }: Props) => {
         handleForm={handleForm}
         name={FieldsCodeFB.FB_ODP}
         label='Objetivo de densidad promedio'
-        mode={InputNumberMode.DECIMAL}
         min={0}
         suffix=' cm²'
         disabled={disabledData}
-        required
         onCustomChange={(e) => {
           const currentValue = e.value || 0
           Object.values(RowsCodeFB).forEach((code) => {
@@ -107,10 +104,8 @@ const FoliculosBarbaTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFB.FB_PT}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   disabled
-                  required
                 />
               </td>
             </tr>

@@ -1,6 +1,6 @@
 import { Cookies } from 'react-cookie'
 import { DHI_SESSION, REQUEST_ATTEMPT_NUMBER, errorCodes } from './constants'
-import { AuthLogin, PatientAvatar } from '@models'
+import { AuthLogin } from '@models'
 import { expiresCookie } from './helpers'
 import { AppointmentDirectus, Country, Holiday } from '@models'
 import axios from 'axios'
@@ -219,9 +219,9 @@ export const deleteFileToDirectus = async (
   }
 }
 
-export const patchAvatarWithPatient = async (
+export const patchPatient = async (
   id: string,
-  payload: PatientAvatar,
+  payload: any,
   token: string | null,
 ) => {
   try {

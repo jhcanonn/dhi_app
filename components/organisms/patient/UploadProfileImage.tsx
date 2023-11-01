@@ -3,7 +3,7 @@
 import { MAX_MB_GALLERY, PATIENTS_GALLERY } from '@utils'
 import {
   deleteFileToDirectus,
-  patchAvatarWithPatient,
+  patchPatient,
   refreshToken,
   uploadFileToDirectus,
 } from '@utils/api'
@@ -83,11 +83,7 @@ const UploadProfileImage = ({
             delete: [],
           },
         }
-        const resAvatar = await patchAvatarWithPatient(
-          patientId,
-          avatar,
-          access_token,
-        )
+        const resAvatar = await patchPatient(patientId, avatar, access_token)
         const newAvatar: ProfileAvatar = {
           id: resAvatar.avatar[resAvatar.avatar.length - 1],
           directus_files_id: {
@@ -136,13 +132,13 @@ const UploadProfileImage = ({
         },
       }
       const access_token = await refreshToken(cookies)
-      await deleteFileToDirectus(fileId, access_token)
-      const resDeleteAvatar = await patchAvatarWithPatient(
+      const resDeleteAvatar = await patchPatient(
         patientId,
         avatar,
         access_token,
       )
       if (resDeleteAvatar) {
+        await deleteFileToDirectus(fileId, access_token)
         setAvatars((prevAvatars) => {
           const refreshedAvatars = prevAvatars.filter((a) => +a.id !== avatarId)
           onUploadAvatars && onUploadAvatars(refreshedAvatars)
