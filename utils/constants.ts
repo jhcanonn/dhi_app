@@ -27,7 +27,12 @@ export const errorCodes = {
   ERR_JWT_EXPIRED: 'ERR_JWT_EXPIRED',
 }
 
-export const CLIENT_PAGE_TAB = ['dataSheet', 'gallery', 'budget']
+export const CLIENT_PAGE_TAB = [
+  'historyschedule',
+  'dataSheet',
+  'gallery',
+  'budget',
+]
 
 export const PAGE_PATH = {
   home: '/',
