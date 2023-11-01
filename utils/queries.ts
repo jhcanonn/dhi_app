@@ -320,13 +320,9 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
         Recetas_id {
           id
           date_created
-          date_updated
-          nombre
           diagnostico
+          nombre
           receta
-          recepta
-          seleccion_receta
-          html_receta
         }
       }
       diagnostico
@@ -376,13 +372,10 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
         Recetas_id {
           id
           estado
-          orden
           nombre
           diagnostico
           receta
-          recepta
-          seleccion_receta
-          html_receta
+          orden
         }
       }
     }
