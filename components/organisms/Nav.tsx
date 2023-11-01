@@ -21,6 +21,7 @@ import { useEffect } from 'react'
 import { getPanelsFromDirectus, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
+import { goToPage } from '@utils/go-to'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -35,7 +36,7 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
 
   const handleLogout = () => {
     cookies.remove(DHI_SESSION)
-    router.push(PAGE_PATH.login)
+    goToPage(PAGE_PATH.login, router)
   }
 
   const getPanels = async () => {

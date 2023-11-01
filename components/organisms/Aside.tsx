@@ -7,6 +7,7 @@ import { useAsideContext } from '@contexts'
 import { useWindowHeight } from '@react-hook/window-size'
 import { useRouter } from 'next/navigation'
 import { PAGE_PATH } from '@utils'
+import { goToPage } from '@utils/go-to'
 
 const Aside = () => {
   const { visible, toggleVisible } = useAsideContext()
@@ -16,11 +17,6 @@ const Aside = () => {
   const sideBarWidth = 320
   const slideMenuWidth = sideBarWidth - 43
 
-  const goToPage = (pagePath: string) => {
-    router.push(pagePath)
-    toggleVisible()
-  }
-
   const asideItems = [
     {
       label: 'Agenda',
@@ -29,7 +25,10 @@ const Aside = () => {
         {
           label: 'Agenda Individual/Multiple',
           icon: PrimeIcons.CALENDAR,
-          command: () => goToPage(PAGE_PATH.calendar),
+          command: () => {
+            toggleVisible()
+            goToPage(PAGE_PATH.calendar, router)
+          },
         },
         {
           separator: true,
@@ -37,12 +36,18 @@ const Aside = () => {
         {
           label: 'Agenda del día',
           icon: PrimeIcons.PLUS,
-          command: () => goToPage(PAGE_PATH.dayCalendar),
+          command: () => {
+            toggleVisible()
+            goToPage(PAGE_PATH.dayCalendar, router)
+          },
         },
         {
           label: 'Listado de citas',
           icon: PrimeIcons.LIST,
-          command: () => goToPage(PAGE_PATH.dateListCalendar),
+          command: () => {
+            toggleVisible()
+            goToPage(PAGE_PATH.dateListCalendar, router)
+          },
         },
       ],
     },
@@ -53,24 +58,36 @@ const Aside = () => {
         {
           label: 'Lista de Pacientes',
           icon: PrimeIcons.USERS,
-          command: () => goToPage(PAGE_PATH.clientList),
+          command: () => {
+            toggleVisible()
+            goToPage(PAGE_PATH.clientList, router)
+          },
         },
         {
           label: 'Galería',
           icon: PrimeIcons.IMAGES,
-          command: () => goToPage(PAGE_PATH.gallery),
+          command: () => {
+            toggleVisible()
+            goToPage(PAGE_PATH.gallery, router)
+          },
         },
       ],
     },
     {
       label: 'CRM',
       icon: PrimeIcons.HEART,
-      command: () => goToPage(PAGE_PATH.crm),
+      command: () => {
+        toggleVisible()
+        goToPage(PAGE_PATH.crm, router)
+      },
     },
     {
       label: 'Finanzas',
       icon: PrimeIcons.DOLLAR,
-      command: () => goToPage(PAGE_PATH.finance),
+      command: () => {
+        toggleVisible()
+        goToPage(PAGE_PATH.finance, router)
+      },
     },
     {
       separator: true,
@@ -78,7 +95,10 @@ const Aside = () => {
     {
       label: 'Configuración',
       icon: PrimeIcons.COG,
-      command: () => goToPage(PAGE_PATH.settings),
+      command: () => {
+        toggleVisible()
+        goToPage(PAGE_PATH.settings, router)
+      },
     },
   ]
 

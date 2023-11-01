@@ -5,13 +5,16 @@ export const generateURLAssetsWithToken = (
   id: string,
   queryParams: Record<string, string>,
 ) => {
-  const cookies = new Cookies()
-  const session = cookies.get(DHI_SESSION)
-  if (session?.access_token) {
-    queryParams = { ...queryParams, access_token: session.access_token }
+  if (id) {
+    const cookies = new Cookies()
+    const session = cookies.get(DHI_SESSION)
+    if (session?.access_token) {
+      queryParams = { ...queryParams, access_token: session.access_token }
+    }
+    const searchParams = new URLSearchParams(queryParams)
+    return `${
+      process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL
+    }/assets/${id}?${searchParams.toString()}`
   }
-  const searchParams = new URLSearchParams(queryParams)
-  return `${
-    process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL
-  }/assets/${id}?${searchParams.toString()}`
+  return 'NOT_FOUND'
 }

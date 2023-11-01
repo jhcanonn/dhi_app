@@ -12,6 +12,7 @@ import {
   idTypes,
   parseUrl,
 } from '@utils'
+import { goToPage } from '@utils/go-to'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
@@ -218,8 +219,9 @@ const ClientDetail = () => {
             rounded
             onClick={() => {
               clientInfo &&
-                router.push(
+                goToPage(
                   parseUrl(PAGE_PATH.clientEdit, { id: clientInfo.id }),
+                  router,
                 )
             }}
           />

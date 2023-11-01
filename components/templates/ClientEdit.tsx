@@ -23,6 +23,7 @@ import {
   regexPatterns,
 } from '@utils'
 import { getCountries } from '@utils/api'
+import { goToPage } from '@utils/go-to'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
@@ -98,7 +99,7 @@ const ClientEdit = () => {
     setClientInfo({ ...clientInfo, ...client })
     setLoading(false)
     clientInfo &&
-      router.push(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }))
+      goToPage(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }), router)
   }
 
   const onSubmit = async () => {
@@ -265,8 +266,9 @@ const ClientEdit = () => {
             rounded
             onClick={() => {
               clientInfo &&
-                router.push(
+                goToPage(
                   parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
+                  router,
                 )
             }}
             className='text-sm w-full md:w-auto'
