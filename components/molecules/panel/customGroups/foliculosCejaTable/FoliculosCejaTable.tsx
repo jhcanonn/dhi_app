@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { UseFormReturn, useWatch } from 'react-hook-form'
 import { FieldsCodeFCJ, RowsCodeFCJ, cejaRows } from './dataFCT'
 import { InputNumberValid, InputTextareaValid } from '@components/atoms'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import {
   FoliculosType,
   TdTitle,
@@ -51,11 +50,9 @@ const FoliculosCejaTable = ({ handleForm, disabledData }: Props) => {
         handleForm={handleForm}
         name={FieldsCodeFCJ.FCJ_ODP}
         label='Objetivo de densidad promedio'
-        mode={InputNumberMode.DECIMAL}
         min={0}
         suffix=' cm²'
         disabled={disabledData}
-        required
         onCustomChange={(e) => {
           const currentValue = e.value || 0
           Object.values(RowsCodeFCJ).forEach((code) => {
@@ -100,10 +97,8 @@ const FoliculosCejaTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFCJ.FCJ_PT}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   disabled
-                  required
                 />
               </td>
             </tr>

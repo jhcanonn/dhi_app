@@ -18,6 +18,7 @@ export type FoliculosField = {
   defaultValue?: number
   mode?: InputNumberMode
   disabled?: boolean
+  required?: boolean
   suffix?: string
   colspan?: number
   onCustomChange?: (
@@ -72,11 +73,11 @@ export const TrFoliculos = ({
             <InputNumberValid
               handleForm={handleForm}
               name={field.code}
-              mode={field.mode ?? InputNumberMode.DECIMAL}
+              mode={field.mode}
               suffix={field.suffix}
               min={0}
               disabled={field.disabled || disabledData}
-              required
+              required={field.required}
               onCustomChange={(e) =>
                 field.onCustomChange && field.onCustomChange(e, handleForm)
               }

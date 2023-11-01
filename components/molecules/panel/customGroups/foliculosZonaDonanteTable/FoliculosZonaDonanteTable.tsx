@@ -1,7 +1,6 @@
 'use client'
 
 import { InputNumberValid, InputTextareaValid } from '@components/atoms'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { useEffect } from 'react'
 import { UseFormReturn, useWatch } from 'react-hook-form'
 import { FieldsCodeFZD, zonaDonanteRows } from './dataFZDT'
@@ -74,7 +73,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFZD.FZD_PDE}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   suffix=' cm²'
                   disabled
@@ -88,7 +86,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFZD.FZD_TF}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   disabled
                   required
@@ -103,7 +100,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFZD.FZD_FD}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   disabled
                   required

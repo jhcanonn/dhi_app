@@ -10,7 +10,6 @@ import {
   TrFoliculos,
   calcNoFoliculos,
 } from '../FoliculosCommon'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { useEffect } from 'react'
 
 type Props = {
@@ -57,7 +56,6 @@ const FoliculosCapilarTable = ({ handleForm, disabledData }: Props) => {
         handleForm={handleForm}
         name={FieldsCodeFC.FC_ODP}
         label='Objetivo de densidad promedio'
-        mode={InputNumberMode.DECIMAL}
         min={0}
         suffix=' cm²'
         disabled={disabledData}
@@ -106,7 +104,6 @@ const FoliculosCapilarTable = ({ handleForm, disabledData }: Props) => {
                 <InputNumberValid
                   handleForm={handleForm}
                   name={FieldsCodeFC.FC_PT}
-                  mode={InputNumberMode.DECIMAL}
                   min={0}
                   disabled
                   required
