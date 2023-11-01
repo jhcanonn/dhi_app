@@ -150,6 +150,7 @@ const GallerySet = ({
   }
 
   const confirmDelete = async (tagKey: string, item: Image) => {
+    document.body.style.overflow = 'hidden'
     confirmDialog({
       tagKey,
       acceptLabel: 'Si',
@@ -239,6 +240,7 @@ const GallerySet = ({
         caption={captionTemplate}
         thumbnail={thumbnailTemplate}
         className='[&_.p-galleria-close]:z-10 [&_.p-galleria-thumbnail-item]:cursor-default [&_.p-galleria-thumbnail-item_img]:cursor-pointer'
+        onHide={() => document.body.style.removeProperty('overflow')}
       />
       <Button
         icon='pi pi-camera'
