@@ -23,6 +23,7 @@ import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
 import { refreshToken } from '@utils/api'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
+import { goToPage } from '@utils/go-to'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
   const router = useRouter()
@@ -54,7 +55,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
 
   const verifyCookie = async () => {
     const access_token = await refreshToken(cookies)
-    access_token && router.push(PAGE_PATH.calendar)
+    access_token && goToPage(PAGE_PATH.calendar, router)
   }
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
           path: '/',
           expires: expiresCookie(),
         })
-        router.push(PAGE_PATH.calendar)
+        goToPage(PAGE_PATH.calendar, router)
       }
     }
   }, [data])

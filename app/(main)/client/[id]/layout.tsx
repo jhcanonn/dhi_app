@@ -19,6 +19,7 @@ import { TabMenu } from 'primereact/tabmenu'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ScrollTop } from 'primereact/scrolltop'
+import { goToPage } from '@utils/go-to'
 
 type Props = {
   children: React.ReactNode
@@ -38,34 +39,34 @@ const ClientLayout = ({ children, params }: Props) => {
 
   const { data, loading } = useQuery(GET_CLIENT_BY_ID, { variables: { id } })
 
-  const goToPage = (pagePath: string) => router.push(pagePath)
-
   const items: MenuItem[] = [
     {
       label: 'Perfil',
       icon: PrimeIcons.USER,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id })),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id }), router),
     },
     {
       label: 'Histórico Citas',
       icon: PrimeIcons.SERVER,
       command: () =>
-        goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id })),
+        goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id }), router),
     },
     {
       label: 'Atenciones',
       icon: PrimeIcons.BOOK,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id })),
+      command: () =>
+        goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id }), router),
     },
     {
       label: 'Galería',
       icon: PrimeIcons.IMAGES,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientGallery, { id })),
+      command: () =>
+        goToPage(parseUrl(PAGE_PATH.clientGallery, { id }), router),
     },
     {
       label: 'Presupuesto',
       icon: PrimeIcons.DOLLAR,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientBudget, { id })),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientBudget, { id }), router),
     },
   ]
 
@@ -96,7 +97,7 @@ const ClientLayout = ({ children, params }: Props) => {
             type='button'
             severity='success'
             rounded
-            onClick={() => goToPage(PAGE_PATH.finance)}
+            onClick={() => goToPage(PAGE_PATH.finance, router)}
             className='px-4 py-1 font-bold text-md'
           />
         </div>

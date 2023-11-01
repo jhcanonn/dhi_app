@@ -66,6 +66,7 @@ import { UploadProfileImage } from '../patient'
 import { Skeleton } from 'primereact/skeleton'
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { classNames as cx } from 'primereact/utils'
+import { goToPage } from '@utils/go-to'
 
 type Props = {
   cookies: Cookies
@@ -618,10 +619,11 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
               severity='info'
               rounded
               onClick={() => {
-                router.push(
+                goToPage(
                   parseUrl(PAGE_PATH.clientDetail, {
                     id: getValues('client_id')!,
                   }),
+                  router,
                 )
               }}
             />
