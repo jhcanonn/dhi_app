@@ -10,6 +10,7 @@ import {
 } from '@components/atoms'
 import { PatientDataExtra } from '@components/molecules'
 import { useClientContext, useGlobalContext } from '@contexts'
+import { withToast } from '@hooks'
 import { DhiPatient } from '@models'
 import {
   LocalStorageTags,
@@ -27,12 +28,14 @@ import { goToPage } from '@utils/go-to'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
-import { Toast } from 'primereact/toast'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-const ClientEdit = () => {
-  const toast = useRef<Toast>(null)
+type Props = {
+  showError: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const ClientEdit = ({ showError }: Props) => {
   const [loading, setLoading] = useState(false)
   const { clientInfo, setClientInfo } = useClientContext()
   const { countries, setCountries } = useGlobalContext()
@@ -74,15 +77,6 @@ const ClientEdit = () => {
     setValue: setValueExtra,
     getValues: getValuesExtra,
   } = handleFormExtra
-
-  const showError = (status: string, message: string) => {
-    toast.current?.show({
-      severity: 'error',
-      summary: status,
-      detail: message,
-      sticky: true,
-    })
-  }
 
   const editPatient = async () => {
     const client = directusClientMapper(getValuesMain())
@@ -167,126 +161,123 @@ const ClientEdit = () => {
   }, [])
 
   return (
-    <>
-      <Toast ref={toast} />
-      <section className='flex flex-col gap-4 text-sm'>
-        <section className='flex flex-col gap-y-1 bg-white rounded-md px-3 pb-3 pt-4'>
-          <form id='form_patient_main' autoComplete='off'>
-            <div className='!grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-1'>
-              <DropdownValid
-                name='tipo_documento'
-                label='Tipo de identificación'
-                handleForm={handleForm}
-                list={idTypes}
-                required
-              />
-              <InputNumberValid
-                name='documento'
-                label='Identificación'
-                handleForm={handleForm}
-                icon='id-card'
-                required
-                min={0}
-              />
-              <InputTextValid
-                name='primer_nombre'
-                label='Primer nombre'
-                handleForm={handleForm}
-                icon='user'
-                required
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='segundo_nombre'
-                label='Segundo nombre'
-                handleForm={handleForm}
-                icon='user'
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='apellido_paterno'
-                label='Primer apellido'
-                handleForm={handleForm}
-                icon='user'
-                required
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='apellido_materno'
-                label='Segundo apellido'
-                handleForm={handleForm}
-                icon='user'
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <DateTimeValid
-                name='fecha_nacimiento'
-                label='Fecha de nacimiento'
-                handleForm={handleForm}
-                showTime={false}
-              />
-              <InputTextValid
-                name='correo'
-                label='Correo electrónico'
-                handleForm={handleForm}
-                icon='envelope'
-                pattern={regexPatterns.email}
-              />
-              <PhoneNumberValid
-                name='telefono'
-                diallingName='indicativo'
-                label='Teléfono'
-                handleForm={handleForm}
-                icon='phone'
-                minLength={6}
-                required
-              />
-              <PhoneNumberValid
-                name='telefono_2'
-                diallingName='indicativo_2'
-                label='Teléfono 2'
-                handleForm={handleForm}
-                icon='phone'
-                minLength={6}
-              />
-              <DropdownValid
-                name='estado_civil'
-                label='Estado civil'
-                handleForm={handleForm}
-                list={civilStatus}
-              />
-            </div>
-          </form>
-          <PatientDataExtra id='extra' handleForm={handleFormExtra} />
-        </section>
-        <div className='flex gap-2 flex-wrap mb-4 justify-end'>
-          <Button
-            label={'Cancelar'}
-            type='button'
-            severity='danger'
-            rounded
-            onClick={() => {
-              clientInfo &&
-                goToPage(
-                  parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
-                  router,
-                )
-            }}
-            className='text-sm w-full md:w-auto'
-          />
-          <Button
-            label={'Guardar'}
-            type='submit'
-            severity='success'
-            rounded
-            className='text-sm w-full md:w-auto'
-            loading={loading}
-            onClick={onSubmit}
-            form='form_patient_extra'
-          />
-        </div>
+    <section className='flex flex-col gap-4 text-sm'>
+      <section className='flex flex-col gap-y-1 bg-white rounded-md px-3 pb-3 pt-4'>
+        <form id='form_patient_main' autoComplete='off'>
+          <div className='!grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-1'>
+            <DropdownValid
+              name='tipo_documento'
+              label='Tipo de identificación'
+              handleForm={handleForm}
+              list={idTypes}
+              required
+            />
+            <InputNumberValid
+              name='documento'
+              label='Identificación'
+              handleForm={handleForm}
+              icon='id-card'
+              required
+              min={0}
+            />
+            <InputTextValid
+              name='primer_nombre'
+              label='Primer nombre'
+              handleForm={handleForm}
+              icon='user'
+              required
+              pattern={regexPatterns.onlyEmpty}
+            />
+            <InputTextValid
+              name='segundo_nombre'
+              label='Segundo nombre'
+              handleForm={handleForm}
+              icon='user'
+              pattern={regexPatterns.onlyEmpty}
+            />
+            <InputTextValid
+              name='apellido_paterno'
+              label='Primer apellido'
+              handleForm={handleForm}
+              icon='user'
+              required
+              pattern={regexPatterns.onlyEmpty}
+            />
+            <InputTextValid
+              name='apellido_materno'
+              label='Segundo apellido'
+              handleForm={handleForm}
+              icon='user'
+              pattern={regexPatterns.onlyEmpty}
+            />
+            <DateTimeValid
+              name='fecha_nacimiento'
+              label='Fecha de nacimiento'
+              handleForm={handleForm}
+              showTime={false}
+            />
+            <InputTextValid
+              name='correo'
+              label='Correo electrónico'
+              handleForm={handleForm}
+              icon='envelope'
+              pattern={regexPatterns.email}
+            />
+            <PhoneNumberValid
+              name='telefono'
+              diallingName='indicativo'
+              label='Teléfono'
+              handleForm={handleForm}
+              icon='phone'
+              minLength={6}
+              required
+            />
+            <PhoneNumberValid
+              name='telefono_2'
+              diallingName='indicativo_2'
+              label='Teléfono 2'
+              handleForm={handleForm}
+              icon='phone'
+              minLength={6}
+            />
+            <DropdownValid
+              name='estado_civil'
+              label='Estado civil'
+              handleForm={handleForm}
+              list={civilStatus}
+            />
+          </div>
+        </form>
+        <PatientDataExtra id='extra' handleForm={handleFormExtra} />
       </section>
-    </>
+      <div className='flex gap-2 flex-wrap mb-4 justify-end'>
+        <Button
+          label={'Cancelar'}
+          type='button'
+          severity='danger'
+          rounded
+          onClick={() => {
+            clientInfo &&
+              goToPage(
+                parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
+                router,
+              )
+          }}
+          className='text-sm w-full md:w-auto'
+        />
+        <Button
+          label={'Guardar'}
+          type='submit'
+          severity='success'
+          rounded
+          className='text-sm w-full md:w-auto'
+          loading={loading}
+          onClick={onSubmit}
+          form='form_patient_extra'
+        />
+      </div>
+    </section>
   )
 }
 
-export default ClientEdit
+export default withToast(ClientEdit)

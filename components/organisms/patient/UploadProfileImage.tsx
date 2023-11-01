@@ -10,8 +10,7 @@ import {
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { Toast } from 'primereact/toast'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Cookies, withCookies } from 'react-cookie'
 import { classNames as cx } from 'primereact/utils'
 import { ClientDirectus, PatientAvatar, ProfileAvatar } from '@models'
@@ -20,12 +19,15 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { Message } from 'primereact/message'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
+import { withToast } from '@hooks'
 
 type Props = {
   clientInfo: ClientDirectus | null
   buttonLabel?: string
   onUploadAvatars?: (avatars: ProfileAvatar[]) => void
   cookies: Cookies
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+  showError: (summary: ReactNode, detail: ReactNode) => void
 }
 
 const UploadProfileImage = ({
@@ -33,31 +35,14 @@ const UploadProfileImage = ({
   clientInfo,
   buttonLabel,
   onUploadAvatars,
+  showSuccess,
+  showError,
 }: Props) => {
   const [uploadLoading, setUploadLoading] = useState<boolean>(false)
   const [avatars, setAvatars] = useState<ProfileAvatar[]>(
     clientInfo ? clientInfo.avatar : [],
   )
   const [visible, setVisible] = useState<boolean>(false)
-  const toast = useRef<Toast>(null)
-
-  const showError = (status: string, message: string) => {
-    toast.current?.show({
-      severity: 'error',
-      summary: status,
-      detail: message,
-      sticky: true,
-    })
-  }
-
-  const showSuccess = (summary: string, detail: string) => {
-    toast.current?.show({
-      severity: 'success',
-      summary,
-      detail,
-      life: 3000,
-    })
-  }
 
   const uploadFile = async (file: File) => {
     try {
@@ -212,12 +197,12 @@ const UploadProfileImage = ({
   )
 
   useEffect(() => {
+    console.log({ clientInfo, avatars })
     setAvatars(clientInfo ? clientInfo.avatar : [])
   }, [clientInfo])
 
   return (
     <>
-      <Toast ref={toast} />
       <Button
         label={buttonLabel}
         icon='pi pi-camera'
@@ -241,35 +226,41 @@ const UploadProfileImage = ({
         className='w-[90vw] lg:w-[45rem]'
       >
         <div className='flex gap-2 justify-center items-center flex-wrap'>
-          {avatars.length > 0 && avatars[0].directus_files_id ? (
-            avatars.map((a) => (
-              <div key={a.directus_files_id.id}>
-                <ConfirmDialog tagKey={a.directus_files_id.id} />
-                <article className='flex flex-col gap-2 items-center'>
-                  <Image
-                    src={generateURLAssetsWithToken(a.directus_files_id.id, {
-                      quality: '15',
-                      fit: 'cover',
-                    })}
-                    alt={a.directus_files_id.title}
-                    width='200'
-                    preview
-                    className='[&_img]:rounded-lg'
-                  />
-                  <Button
-                    className='w-fit'
-                    type='button'
-                    severity='danger'
-                    text
-                    onClick={() =>
-                      deleteImageHandler(a.id, a.directus_files_id.id)
-                    }
-                  >
-                    <i className='pi pi-trash' style={{ fontSize: '1rem' }}></i>
-                  </Button>
-                </article>
-              </div>
-            ))
+          {avatars.length > 0 ? (
+            avatars
+              .filter((a) => a.directus_files_id)
+              .map((a) => {
+                const avatarFile = a.directus_files_id
+                return (
+                  <div key={avatarFile.id}>
+                    <ConfirmDialog tagKey={avatarFile.id} />
+                    <article className='flex flex-col gap-2 items-center'>
+                      <Image
+                        src={generateURLAssetsWithToken(avatarFile.id, {
+                          quality: '15',
+                          fit: 'cover',
+                        })}
+                        alt={avatarFile.title}
+                        width='200'
+                        preview
+                        className='[&_img]:rounded-lg'
+                      />
+                      <Button
+                        className='w-fit'
+                        type='button'
+                        severity='danger'
+                        text
+                        onClick={() => deleteImageHandler(a.id, avatarFile.id)}
+                      >
+                        <i
+                          className='pi pi-trash'
+                          style={{ fontSize: '1rem' }}
+                        ></i>
+                      </Button>
+                    </article>
+                  </div>
+                )
+              })
           ) : (
             <p>No tiene imagen(es) de perfil</p>
           )}
@@ -279,4 +270,4 @@ const UploadProfileImage = ({
   )
 }
 
-export default withCookies(UploadProfileImage)
+export default withCookies(withToast(UploadProfileImage))

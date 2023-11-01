@@ -51,7 +51,6 @@
     [&_.p-inputtext]:py-[0.35rem]
     [&_.p-button.p-button-icon-only]:py-[0.35rem]
     [&_.p-dropdown-panel]:text-[0.8rem]
-    [&_.pi]:text-[0.8rem]
     [&_.p-inputtext]:text-[0.8rem]
     [&_.p-inputtextarea]:text-[0.8rem]
     [&_.p-dropdown-filter-container_input]:text-[0.8rem]
@@ -117,7 +116,8 @@
     [&_.p-checkbox-box]:h-[17px]
     [&_.p-checkbox]:items-center
     [&_.p-disabled]:opacity-80
-    [&_.p-component]:disabled:opacity-80 #{!important};
+    [&_.p-component]:disabled:opacity-80
+    [&_.pi]:text-[0.8rem] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,

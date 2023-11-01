@@ -38,10 +38,10 @@ import {
   parseUrl,
   GET_CLIENT_BY_ID,
   regexPatterns,
+  COMING_SOON,
 } from '@utils'
 import { useRouter } from 'next/navigation'
-import { Toast } from 'primereact/toast'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { useQuery } from '@apollo/client'
 import {
@@ -67,20 +67,29 @@ import { Skeleton } from 'primereact/skeleton'
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { classNames as cx } from 'primereact/utils'
 import { goToPage } from '@utils/go-to'
+import { withToast } from '@hooks'
 
 type Props = {
+  showError: (summary: ReactNode, detail: ReactNode) => void
+  showWarning: (summary: ReactNode, detail: ReactNode) => void
+  showInfo: (summary: ReactNode, detail: ReactNode) => void
   cookies: Cookies
   scheduler: SchedulerHelpers
 }
 
-const CalendarEditor = ({ scheduler, cookies }: Props) => {
+const CalendarEditor = ({
+  showError,
+  showWarning,
+  showInfo,
+  cookies,
+  scheduler,
+}: Props) => {
   const [desabledFields, setDesabledFields] = useState<boolean>(false)
   const [blocked, setBlocked] = useState<boolean>(false)
   const [patients, setPatients] = useState<Patient[]>([])
   const [showDataExtra, setShowDataExtra] = useState(false)
   const { refetch } = useQuery(GET_INFO_CLIENT)
 
-  const toast = useRef<Toast>(null)
   const router = useRouter()
   const { professionals, boxes, countries, setEvents } = useGlobalContext()
   const { resourceType, eventStates, pays } = useCalendarContext()
@@ -221,33 +230,6 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
       if (blocked) await blockAppointment(data)
       else await createEditAppointment(data)
     }
-  }
-
-  const showWarning = (status: string, message: string) => {
-    toast.current?.show({
-      severity: 'warn',
-      summary: status,
-      detail: message,
-      life: 3000,
-    })
-  }
-
-  const showError = (status: string, message: string) => {
-    toast.current?.show({
-      severity: 'error',
-      summary: status,
-      detail: message,
-      sticky: true,
-    })
-  }
-
-  const showNotification = (text: string) => {
-    toast.current?.show({
-      severity: 'info',
-      summary: text,
-      detail: 'Esta funcionalidad estará disponible proximamente.',
-      life: 3000,
-    })
   }
 
   const handleBoxChange = (e: DropdownChangeEvent) => {
@@ -392,301 +374,295 @@ const CalendarEditor = ({ scheduler, cookies }: Props) => {
   }, [])
 
   return (
-    <>
-      <Toast ref={toast} />
-      <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
-        <form
-          id='form_calendar_appointment'
-          autoComplete='off'
-          onSubmit={handleSubmit(onSubmit)}
-          className='flex flex-col gap-2'
-        >
-          <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-72'>
-            {!blocked && (
-              <div className='flex flex-col gap-2 w-full'>
-                {event && (
-                  <InputTextValid
-                    name='data_sheet'
-                    label='Historia clínica'
-                    handleForm={handleForm}
-                    icon='book'
-                    disabled
-                  />
-                )}
-                <DropdownValid
-                  name='id_type'
-                  label='Tipo de identificación'
-                  handleForm={handleForm}
-                  list={idTypes}
-                  disabled={desabledFields || isEvent}
-                  required={!blocked}
-                />
-                <AutoCompleteValid
-                  name='identification'
-                  label='Identificación'
-                  handleForm={handleForm}
-                  icon='id-card'
-                  field='documento'
-                  suggestions={patients}
-                  itemTemplate={idItemTemplate}
-                  completeMethod={idSearcher}
-                  onCustomChange={handleSetFieldsForm}
-                  disabled={desabledFields || isEvent}
-                  required={!blocked}
-                />
-                <InputTextValid
-                  name='first_name'
-                  label='1° Nombre'
-                  handleForm={handleForm}
-                  icon='user'
-                  disabled={desabledFields || isEvent}
-                  required={!blocked}
-                  pattern={regexPatterns.onlyEmpty}
-                />
-                <InputTextValid
-                  name='middle_name'
-                  label='2° Nombre'
-                  handleForm={handleForm}
-                  disabled={desabledFields || isEvent}
-                  icon='user'
-                  pattern={regexPatterns.onlyEmpty}
-                />
-                <InputTextValid
-                  name='last_name'
-                  label='1° Apellido'
-                  handleForm={handleForm}
-                  icon='user'
-                  disabled={desabledFields || isEvent}
-                  required={!blocked}
-                  pattern={regexPatterns.onlyEmpty}
-                />
-                <InputTextValid
-                  name='last_name_2'
-                  label='2° Apellido'
-                  handleForm={handleForm}
-                  disabled={desabledFields || isEvent}
-                  icon='user'
-                  pattern={regexPatterns.onlyEmpty}
-                />
-              </div>
-            )}
+    <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
+      <form
+        id='form_calendar_appointment'
+        autoComplete='off'
+        onSubmit={handleSubmit(onSubmit)}
+        className='flex flex-col gap-2'
+      >
+        <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-72'>
+          {!blocked && (
             <div className='flex flex-col gap-2 w-full'>
-              {blocked && (
+              {event && (
                 <InputTextValid
-                  name='title'
-                  label='Nombre de bloqueo'
+                  name='data_sheet'
+                  label='Historia clínica'
                   handleForm={handleForm}
-                  icon='comment'
+                  icon='book'
+                  disabled
                 />
               )}
-              <DateTimeValid
-                name='start'
-                label='Fecha inicio'
+              <DropdownValid
+                name='id_type'
+                label='Tipo de identificación'
                 handleForm={handleForm}
+                list={idTypes}
+                disabled={desabledFields || isEvent}
                 required={!blocked}
-                disabled={isOldDate}
               />
-              <DateTimeValid
-                name='end'
-                label='Fecha fin'
+              <AutoCompleteValid
+                name='identification'
+                label='Identificación'
                 handleForm={handleForm}
+                icon='id-card'
+                field='documento'
+                suggestions={patients}
+                itemTemplate={idItemTemplate}
+                completeMethod={idSearcher}
+                onCustomChange={handleSetFieldsForm}
+                disabled={desabledFields || isEvent}
                 required={!blocked}
-                disabled={isOldDate}
               />
-              {!blocked && (
-                <>
-                  <DropdownValid
-                    name='professional'
-                    label='Profesional'
-                    handleForm={handleForm}
-                    list={professionals}
-                    required={!blocked}
-                    disabled={isOldDate}
-                  />
-                  <DropdownValid
-                    name='box'
-                    label='Box'
-                    handleForm={handleForm}
-                    list={boxes.filter((b) => b.name !== BLOCK_BOX)}
-                    required={!blocked}
-                    disabled={isOldDate}
-                    onCustomChange={handleBoxChange}
-                  />
-                  <MultiSelectValid
-                    name='services'
-                    label='Servicios'
-                    handleForm={handleForm}
-                    list={servicesMapper(services)}
-                    selectedItemsLabel='{0} servicios'
-                    placeholder='Seleccione servicios'
-                    onCustomChange={handleMultiselectService}
-                    required={!blocked}
-                    disabled={isOldDate}
-                  />
-                  {event && (
-                    <DropdownValid
-                      name='pay'
-                      label='Pago'
-                      handleForm={handleForm}
-                      list={pays}
-                      required={!blocked}
-                      disabled={isOldDate}
-                    />
-                  )}
-                </>
-              )}
+              <InputTextValid
+                name='first_name'
+                label='1° Nombre'
+                handleForm={handleForm}
+                icon='user'
+                disabled={desabledFields || isEvent}
+                required={!blocked}
+                pattern={regexPatterns.onlyEmpty}
+              />
+              <InputTextValid
+                name='middle_name'
+                label='2° Nombre'
+                handleForm={handleForm}
+                disabled={desabledFields || isEvent}
+                icon='user'
+                pattern={regexPatterns.onlyEmpty}
+              />
+              <InputTextValid
+                name='last_name'
+                label='1° Apellido'
+                handleForm={handleForm}
+                icon='user'
+                disabled={desabledFields || isEvent}
+                required={!blocked}
+                pattern={regexPatterns.onlyEmpty}
+              />
+              <InputTextValid
+                name='last_name_2'
+                label='2° Apellido'
+                handleForm={handleForm}
+                disabled={desabledFields || isEvent}
+                icon='user'
+                pattern={regexPatterns.onlyEmpty}
+              />
             </div>
+          )}
+          <div className='flex flex-col gap-2 w-full'>
+            {blocked && (
+              <InputTextValid
+                name='title'
+                label='Nombre de bloqueo'
+                handleForm={handleForm}
+                icon='comment'
+              />
+            )}
+            <DateTimeValid
+              name='start'
+              label='Fecha inicio'
+              handleForm={handleForm}
+              required={!blocked}
+              disabled={isOldDate}
+            />
+            <DateTimeValid
+              name='end'
+              label='Fecha fin'
+              handleForm={handleForm}
+              required={!blocked}
+              disabled={isOldDate}
+            />
             {!blocked && (
-              <div className='flex flex-col gap-2 w-full'>
+              <>
+                <DropdownValid
+                  name='professional'
+                  label='Profesional'
+                  handleForm={handleForm}
+                  list={professionals}
+                  required={!blocked}
+                  disabled={isOldDate}
+                />
+                <DropdownValid
+                  name='box'
+                  label='Box'
+                  handleForm={handleForm}
+                  list={boxes.filter((b) => b.name !== BLOCK_BOX)}
+                  required={!blocked}
+                  disabled={isOldDate}
+                  onCustomChange={handleBoxChange}
+                />
+                <MultiSelectValid
+                  name='services'
+                  label='Servicios'
+                  handleForm={handleForm}
+                  list={servicesMapper(services)}
+                  selectedItemsLabel='{0} servicios'
+                  placeholder='Seleccione servicios'
+                  onCustomChange={handleMultiselectService}
+                  required={!blocked}
+                  disabled={isOldDate}
+                />
                 {event && (
                   <DropdownValid
-                    name='state'
-                    label='Estado'
+                    name='pay'
+                    label='Pago'
                     handleForm={handleForm}
-                    list={eventStates.filter((es) => es.name !== BLOCK_BOX)}
+                    list={pays}
                     required={!blocked}
-                    itemTemplate={stateItemTemplate}
-                    valueTemplate={stateValueTemplate}
                     disabled={isOldDate}
                   />
                 )}
+              </>
+            )}
+          </div>
+          {!blocked && (
+            <div className='flex flex-col gap-2 w-full'>
+              {event && (
+                <DropdownValid
+                  name='state'
+                  label='Estado'
+                  handleForm={handleForm}
+                  list={eventStates.filter((es) => es.name !== BLOCK_BOX)}
+                  required={!blocked}
+                  itemTemplate={stateItemTemplate}
+                  valueTemplate={stateValueTemplate}
+                  disabled={isOldDate}
+                />
+              )}
+              <PhoneNumberValid
+                name='phone'
+                diallingName='dialling'
+                label='Teléfono'
+                handleForm={handleForm}
+                icon='phone'
+                minLength={6}
+                required={!blocked}
+                disabled={isOldDate}
+              />
+              {(event || showDataExtra) && (
                 <PhoneNumberValid
-                  name='phone'
-                  diallingName='dialling'
-                  label='Teléfono'
+                  name='phone_2'
+                  diallingName='dialling_2'
+                  label='Teléfono 2'
                   handleForm={handleForm}
                   icon='phone'
                   minLength={6}
-                  required={!blocked}
                   disabled={isOldDate}
-                />
-                {(event || showDataExtra) && (
-                  <PhoneNumberValid
-                    name='phone_2'
-                    diallingName='dialling_2'
-                    label='Teléfono 2'
-                    handleForm={handleForm}
-                    icon='phone'
-                    minLength={6}
-                    disabled={isOldDate}
-                  />
-                )}
-                <InputTextValid
-                  name='email'
-                  label='Correo electrónico'
-                  handleForm={handleForm}
-                  icon='envelope'
-                  required={!blocked}
-                  pattern={regexPatterns.email}
-                  disabled={isOldDate}
-                />
-                <InputSwitchValid
-                  name='sent_email'
-                  handleForm={handleForm}
-                  acceptMessage='Enviar correo.'
-                  disabled={isOldDate}
-                />
-                <InputTextareaValid
-                  name='description'
-                  label='Comentario'
-                  handleForm={handleForm}
-                  rows={4}
-                  disabled={isOldDate}
-                  pattern={regexPatterns.onlyEmpty}
-                />
-              </div>
-            )}
-          </div>
-        </form>
-        {showDataExtra && (
-          <div className='mt-2'>
-            <PatientDataExtra
-              id='calendar_extra'
-              handleForm={handleFormExtra}
-            />
-          </div>
-        )}
-        <section
-          className={cx(
-            'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
-            { 'mt-3': showDataExtra },
-          )}
-        >
-          {(isEvent || (!isEvent && desabledFields)) && (
-            <Button
-              label={'Perfil'}
-              type='button'
-              severity='info'
-              rounded
-              onClick={() => {
-                goToPage(
-                  parseUrl(PAGE_PATH.clientDetail, {
-                    id: getValues('client_id')!,
-                  }),
-                  router,
-                )
-              }}
-            />
-          )}
-          {event && (
-            <>
-              <Button
-                label={'Insumos'}
-                type='button'
-                severity='secondary'
-                rounded
-                onClick={(e: any) => showNotification(e.target.textContent)}
-              />
-              <Button
-                label={'Historico'}
-                type='button'
-                severity='warning'
-                rounded
-                onClick={(e: any) => showNotification(e.target.textContent)}
-              />
-              <Button
-                label={'Comentarios'}
-                type='button'
-                severity='help'
-                rounded
-                onClick={(e: any) => showNotification(e.target.textContent)}
-              />
-              <Button
-                label={'Pagar'}
-                type='button'
-                severity='danger'
-                rounded
-                onClick={(e: any) => showNotification(e.target.textContent)}
-              />
-            </>
-          )}
-          {!isOldDate && (
-            <>
-              {!event && !desabledFields && (
-                <ToggleButton
-                  checked={showDataExtra}
-                  onLabel='Eliminar datos extra'
-                  offLabel='Incluir datos extra'
-                  onChange={(e: ToggleButtonChangeEvent) => {
-                    setShowDataExtra(e.value)
-                    !showDataExtra && resetExtra()
-                  }}
-                  className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
                 />
               )}
-              <Button
-                label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
-                type='submit'
-                severity='success'
-                rounded
-                form='form_calendar_appointment'
+              <InputTextValid
+                name='email'
+                label='Correo electrónico'
+                handleForm={handleForm}
+                icon='envelope'
+                required={!blocked}
+                pattern={regexPatterns.email}
+                disabled={isOldDate}
               />
-            </>
+              <InputSwitchValid
+                name='sent_email'
+                handleForm={handleForm}
+                acceptMessage='Enviar correo.'
+                disabled={isOldDate}
+              />
+              <InputTextareaValid
+                name='description'
+                label='Comentario'
+                handleForm={handleForm}
+                rows={4}
+                disabled={isOldDate}
+                pattern={regexPatterns.onlyEmpty}
+              />
+            </div>
           )}
-        </section>
-      </Card>
-    </>
+        </div>
+      </form>
+      {showDataExtra && (
+        <div className='mt-2'>
+          <PatientDataExtra id='calendar_extra' handleForm={handleFormExtra} />
+        </div>
+      )}
+      <section
+        className={cx(
+          'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
+          { 'mt-3': showDataExtra },
+        )}
+      >
+        {(isEvent || (!isEvent && desabledFields)) && (
+          <Button
+            label={'Perfil'}
+            type='button'
+            severity='info'
+            rounded
+            onClick={() => {
+              goToPage(
+                parseUrl(PAGE_PATH.clientDetail, {
+                  id: getValues('client_id')!,
+                }),
+                router,
+              )
+            }}
+          />
+        )}
+        {event && (
+          <>
+            <Button
+              label={'Insumos'}
+              type='button'
+              severity='secondary'
+              rounded
+              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
+            />
+            <Button
+              label={'Historico'}
+              type='button'
+              severity='warning'
+              rounded
+              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
+            />
+            <Button
+              label={'Comentarios'}
+              type='button'
+              severity='help'
+              rounded
+              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
+            />
+            <Button
+              label={'Pagar'}
+              type='button'
+              severity='danger'
+              rounded
+              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
+            />
+          </>
+        )}
+        {!isOldDate && (
+          <>
+            {!event && !desabledFields && (
+              <ToggleButton
+                checked={showDataExtra}
+                onLabel='Eliminar datos extra'
+                offLabel='Incluir datos extra'
+                onChange={(e: ToggleButtonChangeEvent) => {
+                  setShowDataExtra(e.value)
+                  !showDataExtra && resetExtra()
+                }}
+                className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
+              />
+            )}
+            <Button
+              label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
+              type='submit'
+              severity='success'
+              rounded
+              form='form_calendar_appointment'
+            />
+          </>
+        )}
+      </section>
+    </Card>
   )
 }
 
-export default withCookies(CalendarEditor)
+export default withCookies(withToast(CalendarEditor))

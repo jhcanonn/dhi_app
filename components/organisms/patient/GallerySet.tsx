@@ -243,12 +243,15 @@ const GallerySet = ({
         onHide={() => document.body.style.removeProperty('overflow')}
       />
       <Button
+        label='Ver set'
         icon='pi pi-camera'
+        size='small'
+        outlined
         onClick={() => {
           galleryRef.current.show()
           setImages(photosMap(photos))
         }}
-        className='text-sm [&_.pi-camera:before]:text-lg'
+        className='[&_.pi-camera:before]:text-lg !py-[0.3rem]'
       />
     </>
   )
