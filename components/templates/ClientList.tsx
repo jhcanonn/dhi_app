@@ -18,14 +18,13 @@ import { generateURLAssetsWithToken } from '@utils/url-access-token'
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
   const [globalFilterValue, setGlobalFilterValue] = useState('')
-  const initConfigFilter = { value: null, matchMode: FilterMatchMode.CONTAINS }
   const [filters, setFilters] = useState({
-    global: initConfigFilter,
-    documento: initConfigFilter,
-    primer_nombre: initConfigFilter,
-    apellido_paterno: initConfigFilter,
-    correo: initConfigFilter,
-    telefono: initConfigFilter,
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    documento: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    primer_nombre: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    apellido_paterno: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    correo: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    telefono: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
   const router = useRouter()
 

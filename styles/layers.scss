@@ -115,7 +115,9 @@
     [&_.p-fieldset_.p-fieldset-content]:pb-[0.3rem]
     [&_.p-checkbox-box]:w-[17px]
     [&_.p-checkbox-box]:h-[17px]
-    [&_.p-checkbox]:items-center #{!important};
+    [&_.p-checkbox]:items-center
+    [&_.p-disabled]:opacity-80
+    [&_.p-component]:disabled:opacity-80 #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,

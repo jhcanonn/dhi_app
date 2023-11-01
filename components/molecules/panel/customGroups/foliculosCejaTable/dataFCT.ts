@@ -32,6 +32,7 @@ export enum FieldsCodeFCJ {
 const cejaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CD_DE,
+    required: false,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
@@ -43,12 +44,14 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_DR,
+    required: false,
     suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AA,
+    required: false,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -60,6 +63,7 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AB,
+    required: false,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -71,11 +75,13 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AT,
+    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_C,
+    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -84,6 +90,7 @@ const cejaDerechaFields: FoliculosField[] = [
 const cejaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CI_DE,
+    required: false,
     suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
@@ -95,12 +102,14 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_DR,
+    required: false,
     suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AA,
+    required: false,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -112,6 +121,7 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AB,
+    required: false,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -123,11 +133,13 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AT,
+    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_C,
+    required: false,
     defaultValue: 0,
     disabled: true,
   },
