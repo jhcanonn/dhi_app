@@ -89,7 +89,13 @@
     [&_.p-inputswitch_.p-inputswitch-slider:before]:h-[0.9rem]
     [&_.p-inputswitch_.p-inputswitch-slider:before]:mt-[-0.45rem]
     [&_.css-12rl710-MuiPaper-root-MuiDialog-paper]:bg-transparent
-    [&_.css-m9glnp-MuiPaper-root-MuiDialog-paper]:bg-transparent;
+    [&_.css-m9glnp-MuiPaper-root-MuiDialog-paper]:bg-transparent
+    [&_.p-confirm-dialog]:md:w-fit
+    [&_.p-confirm-dialog]:w-[90%]
+    [&_.p-confirm-dialog_.p-dialog-footer_button]:md:w-auto
+    [&_.p-confirm-dialog_.p-dialog-footer_button]:w-full
+    [&_.p-toast]:max-w-[90%]
+    [&_.p-toast]:sm:max-w-[25rem];
 
     @apply [&_.p-dropdown-panel]:z-[1300] 
     [&_.p-datepicker]:z-[1300] 

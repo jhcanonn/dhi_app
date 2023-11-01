@@ -2,7 +2,7 @@ import { ClientDataSheet } from '@components/templates'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'DHI | Ficha del Paciente',
+  title: 'DHI | Historia clínica del Paciente',
 }
 
 const DataSheetPage = () => <ClientDataSheet />
