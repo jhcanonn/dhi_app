@@ -2,7 +2,7 @@
 
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
   TypesExamsPrescription,
@@ -18,6 +18,13 @@ import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import EditClientExams from '@components/molecules/patient/EditClientExams'
 import { withToast } from '@hooks'
+
+export interface IDHIDataExams {
+  complementos_medicos: IClientExamsPrescriptionType[]
+  plantillas: ITemplatesExamsPrescriptionType[]
+  examenes: IExams[]
+  Recetas: IPrescription[]
+}
 
 export interface IExams {
   id: number
@@ -104,18 +111,10 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
   const { clientInfo } = useClientContext()
   const fichaId = clientInfo?.ficha_id?.id
 
-  const { data: dateRecipesExams, loading: dateRecipesExamsLoading } = useQuery(
-    GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
-    { variables: { fichaId } },
-  )
-  const [clientExamsPrescription, setClientExamsPrescription] = useState<
-    IClientExamsPrescriptionType[]
-  >([])
-  const [dataTemplatesExamsPrescript, setDataTemplatesExamsPrescript] =
-    useState<ITemplatesExamsPrescriptionType[]>([])
-
-  const [dataExams, setDataExams] = useState<IExams[]>([])
-  const [dataPrescription, setDataPrescription] = useState<IPrescription[]>([])
+  const { data: dateRecipesExams, loading: dateRecipesExamsLoading } =
+    useQuery<IDHIDataExams>(GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID, {
+      variables: { fichaId },
+    })
 
   const [selectedTemplateExamns, setSelectedTemplateExamns] =
     useState<ITemplatesExamsPrescriptionType>()
@@ -128,16 +127,6 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
     useState<ITemplatesExamsPrescriptionType | null>(null)
 
   const [isView, setIsView] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (dateRecipesExams) {
-      setClientExamsPrescription(dateRecipesExams.complementos_medicos || [])
-      setDataTemplatesExamsPrescript(dateRecipesExams.plantillas || [])
-      setDataExams(dateRecipesExams.examenes || [])
-      if (dataPrescription.length === 0)
-        setDataPrescription(dateRecipesExams.Recetas || [])
-    }
-  }, [dateRecipesExams])
 
   const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
@@ -202,7 +191,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             <EditClientExams
               data={currentRowData}
               isView={isView}
-              examns={dataExams}
+              examns={dateRecipesExams?.examenes ?? []}
               onHide={() => {
                 setVisible(false)
                 showSuccess(
@@ -224,7 +213,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             value={selectedTemplateExamns}
             onChange={(e) => setSelectedTemplateExamns(e.value)}
             options={
-              dataTemplatesExamsPrescript.filter(
+              dateRecipesExams?.plantillas?.filter(
                 (item) => item.tipo === TypesExamsPrescription.EXAMEN,
               ) ?? []
             }
@@ -254,7 +243,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             value={selectedTemplatePrescription}
             onChange={(e) => setTelectedTemplatePrescription(e.value)}
             options={
-              dataTemplatesExamsPrescript.filter(
+              dateRecipesExams?.plantillas?.filter(
                 (item) => item.tipo === TypesExamsPrescription.RECETA,
               ) ?? []
             }
@@ -275,7 +264,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
       </div>
 
       <DataTable
-        value={clientExamsPrescription}
+        value={dateRecipesExams?.complementos_medicos}
         emptyMessage='No se encontraron resultados'
         size='small'
         paginator
@@ -283,7 +272,10 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
         rowsPerPageOptions={[5, 10, 25, 50]}
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
-        loading={clientInfo === null || dateRecipesExamsLoading}
+        loading={
+          dateRecipesExams?.complementos_medicos === null ||
+          dateRecipesExamsLoading
+        }
       >
         <Column
           key='tipo'
