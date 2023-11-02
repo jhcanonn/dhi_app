@@ -87,14 +87,15 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         key='tags'
         field='tags'
         header='Etiquetas'
-        style={{ width: '60%' }}
+        style={{ width: '50%' }}
       />
       <Column key='date' field='date' header='Fecha' style={{ width: '30%' }} />
       <Column
         key='actions'
         header='Acción'
+        align={'center'}
         body={actionsBodyTemplate}
-        style={{ width: '10%' }}
+        style={{ width: '20%' }}
       />
     </DataTable>
   )

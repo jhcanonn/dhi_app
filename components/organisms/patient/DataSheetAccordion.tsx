@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { CreatedAttention, DataSheet } from '@models'
 import { Accordion, AccordionTab } from 'primereact/accordion'
@@ -13,11 +13,15 @@ import {
   getFormatedDateToEs,
 } from '@utils'
 import { useMutation } from '@apollo/client'
-import { Toast } from 'primereact/toast'
 import moment from 'moment'
+import { withToast } from '@hooks'
 
-const DataSheetAccordion = () => {
-  const toast = useRef<Toast>(null)
+type Props = {
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+  showError: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
   const [accordionIndex, setAccordionIndex] = useState<number[]>([])
   const { clientInfo, dataSheets, setDataSheets } = useClientContext()
   const { user, panels } = useGlobalContext()
@@ -59,12 +63,7 @@ const DataSheetAccordion = () => {
       data: attention.valores,
     }
     setDataSheets((prevDS) => [...prevDS, newAttention])
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Atención guardada',
-      detail: 'La atención fue guardada correctamente',
-      life: 3000,
-    })
+    showSuccess('Atención guardada', 'La atención fue guardada correctamente')
   }
 
   const onSaveAttention = async (formData: any, code: string) => {
@@ -82,12 +81,7 @@ const DataSheetAccordion = () => {
         result.data.create_historico_atenciones_item
       if (attention) addAttentionOnTable(attention)
     } catch (error: any) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        sticky: true,
-      })
+      showError('Error', error.message)
     }
   }
 
@@ -95,38 +89,33 @@ const DataSheetAccordion = () => {
     setAccordionIndex(dataSheets.length === 0 ? [0] : [])
   }, [dataSheets])
 
-  return (
-    <>
-      <Toast ref={toast} />
-      {panels.length ? (
-        <Accordion
-          multiple
-          activeIndex={accordionIndex}
-          onTabChange={(e: any) => setAccordionIndex(e.index)}
-        >
-          {panels
-            .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
-            .sort((a, b) => a.orden - b.orden)
-            .map((panel) => (
-              <AccordionTab key={panel.code} header={panel.nombre}>
-                <PanelForm
-                  formId='accordion'
-                  panel={panel}
-                  onFormData={(formData: any) => {
-                    closeAccordionTab(panel.orden - 1)
-                    onSaveAttention(formData, panel.code)
-                  }}
-                />
-              </AccordionTab>
-            ))}
-        </Accordion>
-      ) : (
-        <div className='flex justify-center'>
-          <ProgressSpinner />
-        </div>
-      )}
-    </>
+  return panels.length ? (
+    <Accordion
+      multiple
+      activeIndex={accordionIndex}
+      onTabChange={(e: any) => setAccordionIndex(e.index)}
+    >
+      {panels
+        .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
+        .sort((a, b) => a.orden - b.orden)
+        .map((panel) => (
+          <AccordionTab key={panel.code} header={panel.nombre}>
+            <PanelForm
+              formId='accordion'
+              panel={panel}
+              onFormData={(formData: any) => {
+                closeAccordionTab(panel.orden - 1)
+                onSaveAttention(formData, panel.code)
+              }}
+            />
+          </AccordionTab>
+        ))}
+    </Accordion>
+  ) : (
+    <div className='flex justify-center'>
+      <ProgressSpinner />
+    </div>
   )
 }
 
-export default DataSheetAccordion
+export default withToast(DataSheetAccordion)

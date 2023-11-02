@@ -151,6 +151,16 @@ export const GET_CLIENTS = gql`
   }
 `
 
+export const GET_TAGS = gql`
+  query {
+    tags(filter: { estado: { _eq: "published" } }) {
+      id
+      nombre
+      tipo
+    }
+  }
+`
+
 export const GET_DATASHEETS_BY_ID = gql`
   query ($fichaId: GraphQLStringOrFloat) {
     historico_atenciones(filter: { ficha_id: { id: { _eq: $fichaId } } }) {

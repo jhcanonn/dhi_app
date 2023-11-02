@@ -46,7 +46,7 @@ const ClientLayout = ({ children, params }: Props) => {
       command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id }), router),
     },
     {
-      label: 'Histórico Citas',
+      label: 'Histórico citas',
       icon: PrimeIcons.SERVER,
       command: () =>
         goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id }), router),
