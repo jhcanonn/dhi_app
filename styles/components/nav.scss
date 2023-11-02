@@ -15,4 +15,6 @@
   [&_span]:text-base
   [&_span]:hidden
   focus:focused;
+
+  @apply [&_.pi]:text-2xl #{!important};
 }

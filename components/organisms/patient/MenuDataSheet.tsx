@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column'
 import {
@@ -9,7 +9,6 @@ import {
   DataTableFilterMeta,
   DataTableValueArray,
 } from 'primereact/datatable'
-import { Toast } from 'primereact/toast'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import {
   DataSheet,
@@ -34,14 +33,19 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { Tag } from 'primereact/tag'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { generatePanelToPDF } from '@utils/panel-to-pdf'
+import { withToast } from '@hooks'
 
 const defaultFilters: DataTableFilterMeta = {
   type: { value: null, matchMode: FilterMatchMode.IN },
 }
 
-const MenuDataSheet = () => {
+type Props = {
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+  showError: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const MenuDataSheet = ({ showSuccess, showError }: Props) => {
   const { panels } = useGlobalContext()
-  const toast = useRef<Toast>(null)
   const [visible, setVisible] = useState<boolean>(false)
   const [currentRowData, setCurrentRowData] = useState<DataSheet | null>(null)
   const [expandedRows, setExpandedRows] = useState<
@@ -98,12 +102,7 @@ const MenuDataSheet = () => {
         result.data.update_historico_atenciones_item
       if (attention) updateAttentionOnTable(attention)
     } catch (error: any) {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message,
-        sticky: true,
-      })
+      showError('Error', error.message)
     }
   }
 
@@ -272,7 +271,6 @@ const MenuDataSheet = () => {
 
   return (
     <>
-      <Toast ref={toast} />
       <Dialog
         header={headerDialog}
         draggable={false}
@@ -287,12 +285,10 @@ const MenuDataSheet = () => {
             onHide={() => {
               setVisible(false)
               setSavingDataSheet(false)
-              toast.current?.show({
-                severity: 'success',
-                summary: 'Atención actualizada',
-                detail: 'La atención fue actualizada correctamente',
-                life: 3000,
-              })
+              showSuccess(
+                'Atención actualizada',
+                'La atención fue actualizada correctamente',
+              )
             }}
           />
         ) : (
@@ -361,4 +357,4 @@ const MenuDataSheet = () => {
   )
 }
 
-export default MenuDataSheet
+export default withToast(MenuDataSheet)

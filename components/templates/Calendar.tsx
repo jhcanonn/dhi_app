@@ -1,7 +1,7 @@
 'use client'
 
 import es from 'date-fns/locale/es'
-import { useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import { Scheduler } from 'react-scheduler-lib'
 import {
   CellRenderedProps,
@@ -48,7 +48,7 @@ import {
   ViewMode,
 } from '@models'
 import { useCalendarContext, useGlobalContext } from '@contexts'
-import { useGetResources } from '@hooks'
+import { useGetResources, withToast } from '@hooks'
 import { useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { GET_APPOINTMENTS, PAYS } from '@utils/queries'
@@ -61,14 +61,13 @@ import {
 import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns'
 import moment from 'moment'
 import { Cookies, withCookies } from 'react-cookie'
-import { Toast } from 'primereact/toast'
 
 type Props = {
   cookies: Cookies
+  showError: (summary: ReactNode, detail: ReactNode) => void
 }
 
-const Calendar = ({ cookies }: Props) => {
-  const toast = useRef<Toast>(null)
+const Calendar = ({ cookies, showError }: Props) => {
   const calendarRef = useRef<SchedulerRef>(null)
   const {
     events,
@@ -205,15 +204,6 @@ const Calendar = ({ cookies }: Props) => {
     calendarRef.current?.scheduler.handleState(false, 'loading')
   }
 
-  const showError = (status: string, message: string) => {
-    toast.current?.show({
-      severity: 'error',
-      summary: status,
-      detail: message,
-      sticky: true,
-    })
-  }
-
   const updateAppointment = async (
     eventId: number,
     resourceId: number,
@@ -348,7 +338,6 @@ const Calendar = ({ cookies }: Props) => {
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
-      <Toast ref={toast} />
       {fetchingFromDirectus ? (
         <ProgressSpinner />
       ) : (
@@ -377,4 +366,4 @@ const Calendar = ({ cookies }: Props) => {
   )
 }
 
-export default withCookies(Calendar)
+export default withCookies(withToast(Calendar))
