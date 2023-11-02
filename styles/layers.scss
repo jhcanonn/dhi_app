@@ -94,7 +94,8 @@
     [&_.p-confirm-dialog_.p-dialog-footer_button]:md:w-auto
     [&_.p-confirm-dialog_.p-dialog-footer_button]:w-full
     [&_.p-toast]:max-w-[90%]
-    [&_.p-toast]:sm:max-w-[25rem];
+    [&_.p-toast]:sm:max-w-[25rem]
+    [&_.pi]:text-[0.8rem];
 
     @apply [&_.p-dropdown-panel]:z-[1300] 
     [&_.p-datepicker]:z-[1300] 
@@ -116,8 +117,7 @@
     [&_.p-checkbox-box]:h-[17px]
     [&_.p-checkbox]:items-center
     [&_.p-disabled]:opacity-80
-    [&_.p-component]:disabled:opacity-80
-    [&_.pi]:text-[0.8rem] #{!important};
+    [&_.p-component]:disabled:opacity-80 #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,

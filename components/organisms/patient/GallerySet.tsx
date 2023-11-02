@@ -58,18 +58,11 @@ const thumbnailTemplate = (item: Image) => (
 type Props = {
   set: GalleryType
   hideDelete?: boolean
-  onUpdateGalleryRel: (galleryRelId: number) => void
-  onUpdateGalleryPhotos: (fileId: string, galleryId: number) => void
+  onUpdatePhotos: (fileId: string, accessToken: string | null) => void
   cookies: Cookies
 }
 
-const GallerySet = ({
-  set,
-  hideDelete,
-  onUpdateGalleryRel,
-  onUpdateGalleryPhotos,
-  cookies,
-}: Props) => {
+const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
   const { id, patientGalleryRelId, photos, patient, tags } = set
   const tagKey = `gallery_set_${id}`
 
@@ -81,7 +74,7 @@ const GallerySet = ({
   const updatePhotos = async (
     patientId: string,
     access_token: string | null,
-    item: Image,
+    imageId: number,
   ) => {
     const gallery: PatientGallery = {
       galeria: {
@@ -94,7 +87,7 @@ const GallerySet = ({
               fotos: {
                 create: [],
                 update: [],
-                delete: [item.id],
+                delete: [imageId],
               },
             },
           },
@@ -102,35 +95,7 @@ const GallerySet = ({
         delete: [],
       },
     }
-    const resDeletePhoto = await patchPatient(patientId, gallery, access_token)
-    if (resDeletePhoto) {
-      onUpdateGalleryPhotos(item.fileId, id)
-      return true
-    }
-    return false
-  }
-
-  const deletePhotoGroup = async (
-    patientId: string,
-    access_token: string | null,
-  ) => {
-    const gallery: PatientGallery = {
-      galeria: {
-        create: [],
-        update: [],
-        delete: [patientGalleryRelId],
-      },
-    }
-    const resDeletePhotoGroup = await patchPatient(
-      patientId,
-      gallery,
-      access_token,
-    )
-    if (resDeletePhotoGroup) {
-      onUpdateGalleryRel(patientGalleryRelId)
-      return true
-    }
-    return false
+    return await patchPatient(patientId, gallery, access_token)
   }
 
   const deleteImage = async (item: Image) => {
@@ -138,13 +103,11 @@ const GallerySet = ({
       setImageLoading(true)
       const patientId = clientInfo.id.toString()
       const access_token = await refreshToken(cookies)
-      const deleteFile =
-        images.length > 1
-          ? await updatePhotos(patientId, access_token, item)
-          : await deletePhotoGroup(patientId, access_token)
-      if (deleteFile) {
+      const updatedPhotos = await updatePhotos(patientId, access_token, item.id)
+      if (updatedPhotos) {
         item.fileId && (await deleteFileToDirectus(item.fileId, access_token))
         setImages((prevImage) => prevImage.filter((i) => i.id !== item.id))
+        onUpdatePhotos(item.fileId, access_token)
       }
       setImageLoading(false)
     }
