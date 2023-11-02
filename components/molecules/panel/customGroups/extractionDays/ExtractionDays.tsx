@@ -36,13 +36,13 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
   return (
     <>
       {!disabledData && (
-        <section className='w-full md:!w-[5rem] flex flex-col md:flex-row gap-2 md:absolute md:right-[1rem] md:top-[-2rem] mb-4 md:mb-0'>
+        <section className='w-full md:!w-fit flex flex-col md:flex-row gap-2 md:absolute md:right-[1rem] md:top-[-2rem] mb-4 md:mb-0'>
           <Button
-            className='text-sm bg-white w-full'
+            className='text-sm bg-white w-full min-w-fit'
             icon='pi pi-plus'
+            label='Agregar Día'
             type='button'
             severity='success'
-            tooltip='Agregar Día'
             tooltipOptions={{ position: 'bottom' }}
             onClick={() =>
               setDays((prev) => {
@@ -53,11 +53,11 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             outlined
           />
           <Button
-            className='text-sm bg-white w-full'
+            className='text-sm bg-white w-full min-w-fit'
             icon='pi pi-minus'
+            label='Eliminar Día'
             type='button'
             severity='danger'
-            tooltip='Quitar Día'
             tooltipOptions={{ position: 'bottom' }}
             onClick={() =>
               setDays((prev) => {

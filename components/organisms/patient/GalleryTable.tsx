@@ -3,8 +3,8 @@
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useState } from 'react'
-import { getFormatedDateToEs } from '@utils'
-import { ClientPhoto, StatusDirectus } from '@models'
+import { getFormatedDateToEs, patchPatient } from '@utils'
+import { ClientPhoto, PatientGallery, StatusDirectus } from '@models'
 import { Column } from 'primereact/column'
 import GallerySet from './GallerySet'
 
@@ -20,33 +20,57 @@ export interface GalleryType {
 
 const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
   const [gallery, setGallery] = useState<GalleryType[]>([])
-  const { clientInfo } = useClientContext()
+  const { clientInfo, setClientInfo } = useClientContext()
 
-  const handleUpdateGalleryRel = (galleryRelId: number) =>
-    setGallery(gallery.filter((g) => g.patientGalleryRelId !== galleryRelId))
+  const handleUpdatePhotos = (fileId: string, accessToken: string | null) => {
+    if (clientInfo) {
+      const patientId = clientInfo.id.toString()
 
-  const handleUpdateGalleryPhotos = (fileId: string, galleryId: number) => {
-    setGallery(
-      gallery.map((g) => ({
+      const updatedGallery = gallery.map((g) => ({
         ...g,
-        photos:
-          g.id === galleryId
-            ? g.photos?.filter((p) => p?.directus_files_id?.id !== fileId)
-            : g.photos?.map((p) =>
-                p?.directus_files_id?.id === fileId
-                  ? { ...p, directus_files_id: null }
-                  : p,
-              ),
-      })),
-    )
+        photos: g.photos?.filter((p) => p?.directus_files_id?.id !== fileId),
+      }))
+      updatedGallery.forEach(async (g) => {
+        if (g.photos.length === 0) {
+          updatedGallery.splice(updatedGallery.indexOf(g), 1)
+          const gallery: PatientGallery = {
+            galeria: {
+              create: [],
+              update: [],
+              delete: [g.patientGalleryRelId],
+            },
+          }
+          await patchPatient(patientId, gallery, accessToken)
+        }
+      })
+      setGallery(updatedGallery)
+
+      const updatedClient = {
+        ...clientInfo,
+        galeria: clientInfo.galeria.map((g) => ({
+          ...g,
+          galeria_id: {
+            ...g.galeria_id,
+            fotos: g.galeria_id.fotos?.filter(
+              (p) => p?.directus_files_id?.id !== fileId,
+            ),
+          },
+        })),
+      }
+      updatedClient.galeria.forEach((g) => {
+        g.galeria_id.fotos.length === 0 &&
+          updatedClient.galeria.splice(updatedClient.galeria.indexOf(g), 1)
+      })
+
+      setClientInfo(updatedClient)
+    }
   }
 
   const actionsBodyTemplate = (gallery: GalleryType) => (
     <GallerySet
       set={gallery}
       hideDelete={hideImageDelete}
-      onUpdateGalleryRel={handleUpdateGalleryRel}
-      onUpdateGalleryPhotos={handleUpdateGalleryPhotos}
+      onUpdatePhotos={handleUpdatePhotos}
     />
   )
 
@@ -70,6 +94,10 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
     })
     gallery && setGallery(gallery)
   }, [clientInfo])
+
+  useEffect(() => {
+    console.log({ gallery })
+  }, [gallery])
 
   return (
     <DataTable
