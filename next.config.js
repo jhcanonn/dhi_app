@@ -25,6 +25,9 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    webpackBuildWorker: true,
+  },
 }
 
 module.exports = withBundleAnalyzer(nextConfig)

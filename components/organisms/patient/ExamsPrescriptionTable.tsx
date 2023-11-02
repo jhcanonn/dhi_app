@@ -2,9 +2,10 @@
 
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import {
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
+  TypesExamsPrescription,
   getFormatedDateToEs,
 } from '@utils'
 import { Column } from 'primereact/column'
@@ -13,6 +14,10 @@ import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { PrimeIcons } from 'primereact/api'
 import { Dropdown } from 'primereact/dropdown'
+import { Dialog } from 'primereact/dialog'
+import { ProgressSpinner } from 'primereact/progressspinner'
+import EditClientExams from '@components/molecules/patient/EditClientExams'
+import { withToast } from '@hooks'
 
 export interface IExams {
   id: number
@@ -20,6 +25,7 @@ export interface IExams {
   nombre: string
   codigo: string
   cantidad: number
+  descripcion: string
   categoria: string[]
 }
 
@@ -42,11 +48,11 @@ export interface ITemplatesExamsPrescriptionType {
   examenes: {
     id: number
     examenes_id: IExams
-  }
+  }[]
   recetas: {
     id: number
     Recetas_id: IPrescription
-  }
+  }[]
   diagnostico: string
 }
 
@@ -55,6 +61,7 @@ export interface IClientExamsPrescriptionType {
   estado: string
   orden: number
   tipo: string
+  nombre: string
   user_created: {
     id: number
     first_name: string
@@ -88,7 +95,12 @@ export interface IClientExamsPrescriptionType {
   professional: string
 }
 
-const ExamsPrescriptionTable = () => {
+type Props = {
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+  showError: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
   const { clientInfo } = useClientContext()
   const fichaId = clientInfo?.ficha_id?.id
 
@@ -99,20 +111,31 @@ const ExamsPrescriptionTable = () => {
   const [clientExamsPrescription, setClientExamsPrescription] = useState<
     IClientExamsPrescriptionType[]
   >([])
-
   const [dataTemplatesExamsPrescript, setDataTemplatesExamsPrescript] =
     useState<ITemplatesExamsPrescriptionType[]>([])
 
-  const [selectedTemplateExamns, setTelectedTemplateExamns] =
+  const [dataExams, setDataExams] = useState<IExams[]>([])
+  const [dataPrescription, setDataPrescription] = useState<IPrescription[]>([])
+
+  const [selectedTemplateExamns, setSelectedTemplateExamns] =
     useState<ITemplatesExamsPrescriptionType>()
 
   const [selectedTemplatePrescription, setTelectedTemplatePrescription] =
     useState<ITemplatesExamsPrescriptionType>()
 
+  const [visible, setVisible] = useState<boolean>(false)
+  const [currentRowData, setCurrentRowData] =
+    useState<ITemplatesExamsPrescriptionType | null>(null)
+
+  const [isView, setIsView] = useState<boolean>(false)
+
   useEffect(() => {
     if (dateRecipesExams) {
-      setClientExamsPrescription(dateRecipesExams?.complementos_medicos || [])
-      setDataTemplatesExamsPrescript(dateRecipesExams?.plantillas || [])
+      setClientExamsPrescription(dateRecipesExams.complementos_medicos || [])
+      setDataTemplatesExamsPrescript(dateRecipesExams.plantillas || [])
+      setDataExams(dateRecipesExams.examenes || [])
+      if (dataPrescription.length === 0)
+        setDataPrescription(dateRecipesExams.Recetas || [])
     }
   }, [dateRecipesExams])
 
@@ -121,7 +144,7 @@ const ExamsPrescriptionTable = () => {
   }
 
   //rowData: ExamsPrescriptionType
-  const actionsBodyTemplate = () => (
+  const actionsBodyTemplate = (rowData: ITemplatesExamsPrescriptionType) => (
     <div className='w-full flex gap-2'>
       <Button
         className='text-sm'
@@ -131,6 +154,11 @@ const ExamsPrescriptionTable = () => {
         tooltip='Ver'
         tooltipOptions={{ position: 'bottom' }}
         severity='info'
+        onClick={() => {
+          setCurrentRowData(rowData)
+          setIsView(true)
+          setVisible(true)
+        }}
       />
       <Button
         className='text-sm'
@@ -139,6 +167,11 @@ const ExamsPrescriptionTable = () => {
         outlined
         severity='success'
         tooltip='Editar'
+        onClick={() => {
+          setCurrentRowData(rowData)
+          setIsView(false)
+          setVisible(true)
+        }}
         tooltipOptions={{ position: 'bottom' }}
       />
       <Button
@@ -153,17 +186,46 @@ const ExamsPrescriptionTable = () => {
     </div>
   )
 
+  const headerDialog = <h2>Solicitud de exámenes</h2>
+
   return (
     <div className='w-full max-w-[100rem] mx-auto px-4'>
       <div className='py-3 flex flex-col md:flex-row gap-2'>
-        <span className='p-float-label'>
+        <Dialog
+          header={headerDialog}
+          draggable={false}
+          visible={visible}
+          onHide={() => setVisible(false)}
+          className='w-[90vw] max-w-[100rem]'
+        >
+          {currentRowData ? (
+            <EditClientExams
+              data={currentRowData}
+              isView={isView}
+              examns={dataExams}
+              onHide={() => {
+                setVisible(false)
+                showSuccess(
+                  'Examen actualizado',
+                  'El examen fue actualizado correctamente',
+                )
+              }}
+            />
+          ) : (
+            <div className='flex justify-center py-4'>
+              <ProgressSpinner />
+            </div>
+          )}
+        </Dialog>
+
+        <span className='p-float-label lg:w-5 md:w-5 w-full'>
           <Dropdown
             inputId='examsInput'
             value={selectedTemplateExamns}
-            onChange={(e) => setTelectedTemplateExamns(e.value)}
+            onChange={(e) => setSelectedTemplateExamns(e.value)}
             options={
               dataTemplatesExamsPrescript.filter(
-                (item) => item.tipo === 'examen',
+                (item) => item.tipo === TypesExamsPrescription.EXAMEN,
               ) ?? []
             }
             optionLabel='nombre'
@@ -176,21 +238,24 @@ const ExamsPrescriptionTable = () => {
 
         <Button
           label={'Agregar'}
-          type='button'
-          severity='success'
-          outlined
           className='px-4 py-0'
           icon={PrimeIcons.PLUS}
+          disabled={!selectedTemplateExamns}
+          onClick={() => {
+            setCurrentRowData(selectedTemplateExamns ?? null)
+            setIsView(false)
+            setVisible(true)
+          }}
         />
 
-        <span className='p-float-label'>
+        <span className='p-float-label lg:w-5 md:w-5 w-full'>
           <Dropdown
-            inputId='examsInput'
+            inputId='prescripInput'
             value={selectedTemplatePrescription}
             onChange={(e) => setTelectedTemplatePrescription(e.value)}
             options={
               dataTemplatesExamsPrescript.filter(
-                (item) => item.tipo === 'receta',
+                (item) => item.tipo === TypesExamsPrescription.RECETA,
               ) ?? []
             }
             optionLabel='nombre'
@@ -198,16 +263,14 @@ const ExamsPrescriptionTable = () => {
             className='lg:!min-w-[24rem] md:!min-w-[10rem] w-full'
             showClear
           />
-          <label htmlFor='examsInput'>Receta</label>
+          <label htmlFor='prescripInput'>Receta</label>
         </span>
 
         <Button
           label={'Agregar'}
-          type='button'
-          severity='success'
-          outlined
           className='px-4 py-0'
           icon={PrimeIcons.PLUS}
+          disabled={!selectedTemplatePrescription}
         />
       </div>
 
@@ -253,4 +316,4 @@ const ExamsPrescriptionTable = () => {
   )
 }
 
-export default ExamsPrescriptionTable
+export default withToast(ExamsPrescriptionTable)

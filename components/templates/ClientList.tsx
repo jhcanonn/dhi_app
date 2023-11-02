@@ -15,6 +15,7 @@ import { Avatar } from 'primereact/avatar'
 import { OverlayPanel } from 'primereact/overlaypanel'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { goToPage } from '@utils/go-to'
+import Image from 'next/image'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
@@ -84,10 +85,19 @@ const ClientList = () => {
   const imageBodyTemplate = (rowData: DhiPatient) => {
     const op = useRef<OverlayPanel>(null)
     if (rowData?.avatar && rowData?.avatar?.length > 0) {
-      const imageUrl = generateURLAssetsWithToken(
-        rowData?.avatar[0].directus_files_id?.id,
-        { quality: '15', width: '100', height: '100' },
-      )
+      const id = rowData?.avatar.find((ava) => ava?.directus_files_id?.id)
+      if (!id) {
+        return (
+          <div className='px-2'>
+            <Avatar icon='pi pi-user' size='xlarge' shape='circle' />
+          </div>
+        )
+      }
+      const imageUrl = generateURLAssetsWithToken(id?.directus_files_id?.id, {
+        quality: '15',
+        width: '100',
+        height: '100',
+      })
       const imageUrlView = generateURLAssetsWithToken(
         rowData?.avatar[0].directus_files_id?.id,
         { quality: '15' },
@@ -101,7 +111,7 @@ const ClientList = () => {
         >
           <Avatar image={imageUrl} size='xlarge' shape='circle' />
           <OverlayPanel ref={op} style={{ width: '350px' }}>
-            <img src={imageUrlView} alt={'Foto' + rowData.documento}></img>
+            <Image src={imageUrlView} alt={'Foto' + rowData.documento}></Image>
           </OverlayPanel>
         </div>
       )
@@ -142,8 +152,8 @@ const ClientList = () => {
           emptyMessage='No se encontraron resultados'
           size='small'
           paginator
-          rows={8}
-          rowsPerPageOptions={[8, 10, 50, 80]}
+          rows={5}
+          rowsPerPageOptions={[5, 10, 50, 80]}
           tableStyle={{ minWidth: '40rem' }}
           className='custom-table'
           dataKey='documento'

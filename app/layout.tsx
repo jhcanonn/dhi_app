@@ -4,16 +4,15 @@ import { Providers } from '@components/templates'
 import 'primereact/resources/themes/bootstrap4-light-blue/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
-import 'primeflex/primeflex.css'
+import 'primeflex/primeflex.scss'
 import '@styles/globals.scss'
 import NProgress from 'nprogress'
 import { useEffect, useState } from 'react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { BlockUI } from 'primereact/blockui'
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [blocked, setBlocked] = useState<boolean>(false)
 
   useEffect(() => {
@@ -36,7 +35,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     return () => {
       NProgress.start()
     }
-  }, [pathname, searchParams])
+  }, [pathname])
 
   return (
     <html lang='en'>
