@@ -74,6 +74,11 @@ export enum PanelTags {
   PATIENT = 'Paciente',
 }
 
+export enum TypesExamsPrescription {
+  EXAMEN = 'Examen',
+  RECETA = 'Receta',
+}
+
 export const DHI_SESSION = 'dhi_session'
 export const BLOCK_BOX = 'Bloqueo'
 export const BLOCK_SERVICE = 'Bloqueo Otra Razón'

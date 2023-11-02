@@ -11,6 +11,7 @@ import { useClientContext } from '@contexts'
 import { ClientPhoto, PatientGallery } from '@models'
 import { deleteFileToDirectus, patchPatient, refreshToken } from '@utils'
 import { Cookies, withCookies } from 'react-cookie'
+import Image from 'next/image'
 
 type Image = {
   id: number
@@ -47,7 +48,7 @@ const responsiveOptions: GalleriaResponsiveOptions[] = [
 ]
 
 const thumbnailTemplate = (item: Image) => (
-  <img
+  <Image
     src={item.thumbnailImageSrc}
     alt={item.alt}
     style={{ display: 'block', height: '6vh', objectFit: 'contain' }}
@@ -169,7 +170,7 @@ const GallerySet = ({
   const itemTemplate = (item: Image) => {
     if (!item) item = images[0]
     return (
-      <img
+      <Image
         src={item.itemImageSrc}
         alt={item.alt}
         style={{ display: 'block', height: '90vh', objectFit: 'contain' }}
