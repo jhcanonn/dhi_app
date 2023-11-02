@@ -3,8 +3,10 @@
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useState } from 'react'
-import { GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID } from '@utils'
-//  getFormatedDateToEs,
+import {
+  GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
+  getFormatedDateToEs,
+} from '@utils'
 import { Column } from 'primereact/column'
 import { useQuery } from '@apollo/client'
 import { UUID } from 'crypto'
@@ -69,7 +71,7 @@ export interface IClientExamsPrescriptionType {
       }
     }
   }
-  date_created: Date
+  date_created: string
   cantidad: number
   descripcion: string
   ficha_id: {
@@ -113,6 +115,10 @@ const ExamsPrescriptionTable = () => {
       setDataTemplatesExamsPrescript(dateRecipesExams?.plantillas || [])
     }
   }, [dateRecipesExams])
+
+  const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
+    return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
+  }
 
   //rowData: ExamsPrescriptionType
   const actionsBodyTemplate = () => (
@@ -226,6 +232,7 @@ const ExamsPrescriptionTable = () => {
           key='date_created'
           field='date_created'
           header='Fecha de emisión'
+          body={dateBodyTemplate}
           style={{ width: '30%' }}
         />
 
