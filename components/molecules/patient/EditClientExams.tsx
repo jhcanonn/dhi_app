@@ -126,12 +126,14 @@ const EditClientExams = ({ data, examns, isView, onHide }: Props) => {
       <Button
         label='Cerrar'
         severity='danger'
+        type='button'
         onClick={() => onHide()}
         className='w-full md:w-fit'
       />
       <Button
         label='Guardar'
         severity='success'
+        type='button'
         onClick={() => onHide()}
         className='w-full md:w-fit'
       />
