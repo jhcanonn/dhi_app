@@ -4,52 +4,41 @@ import GalleryTable from './GalleryTable'
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { ReactNode, useEffect, useState } from 'react'
 import {
+  GET_CLIENT_BY_ID,
   GET_TAGS,
   MAX_MB_GALLERY,
   PATIENTS_GALLERY,
-  refreshToken,
-  uploadFileToDirectus,
 } from '@utils'
 import { useQuery } from '@apollo/client'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { withToast } from '@hooks'
-import { Cookies, withCookies } from 'react-cookie'
+import { useDirectusFiles, usePatchPatient, withToast } from '@hooks'
+import { ClientDirectus, DirectusTag } from '@models'
+import { UUID } from 'crypto'
 import { useClientContext } from '@contexts'
-
-type Tag = {
-  id: number
-  nombre: string
-  tipo: string
-}
+import { UpdatingFilesProgress } from '@components/molecules'
+import { classNames as cx } from 'primereact/utils'
 
 type Props = {
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
   showError: (summary: ReactNode, detail: ReactNode) => void
-  cookies: Cookies
 }
 
-const MenuImages = ({ showSuccess, showError, cookies }: Props) => {
-  const [tags, setTags] = useState<Tag[]>([])
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+const MenuImages = ({ showSuccess, showError }: Props) => {
+  const [fileIds, setFileIds] = useState<UUID[]>([])
+  const [tags, setTags] = useState<DirectusTag[]>([])
+  const [selectedTags, setSelectedTags] = useState<DirectusTag[]>([])
   const [uploadLoading, setUploadLoading] = useState(false)
-  const { clientInfo } = useClientContext()
+  const { createGalleryPhotos } = usePatchPatient()
+  const { uploadFile } = useDirectusFiles()
   const { data: dataTags, loading: loadingTags } = useQuery(GET_TAGS)
 
-  const uploadFile = async (file: File) => {
+  const { clientInfo, setClientInfo } = useClientContext()
+  const { refetch: refetchClientInfo } = useQuery(GET_CLIENT_BY_ID)
+
+  const uploadFileToDirectus = async (file: File) => {
     try {
-      const formData = new FormData()
-      formData.append('folder', PATIENTS_GALLERY)
-      formData.append('file', file)
-
-      const access_token = await refreshToken(cookies)
-      const res = await uploadFileToDirectus(formData, access_token)
-
-      if (res?.id && clientInfo) {
-        const patientId = clientInfo.id.toString()
-        console.log({ res, patientId })
-        // setGallery()
-      }
-
+      const res = await uploadFile(file, PATIENTS_GALLERY)
+      if (res?.id) setFileIds((prevFile) => [...prevFile, res.id as UUID])
       showSuccess(
         'Carga exitosa!',
         `Archivo ${res.filename_download} cargado exitosamente.`,
@@ -64,8 +53,9 @@ const MenuImages = ({ showSuccess, showError, cookies }: Props) => {
 
   const uploadHandler = async (event: FileUploadHandlerEvent) => {
     setUploadLoading(true)
+    setFileIds([])
     const uploadFiles = event.files.map(async (file: File) => {
-      await uploadFile(file)
+      await uploadFileToDirectus(file)
     })
     Promise.all(uploadFiles).then(() => {
       event.options.clear()
@@ -73,16 +63,25 @@ const MenuImages = ({ showSuccess, showError, cookies }: Props) => {
     })
   }
 
+  const createGallery = async (tags: DirectusTag[], fileIds: UUID[]) => {
+    const createdGallery = await createGalleryPhotos(tags, fileIds)
+    if (createdGallery) {
+      const data: any = await refetchClientInfo({ id: clientInfo?.id })
+      setClientInfo(data.pacientes_by_id as ClientDirectus)
+    }
+  }
+
   useEffect(() => {
     !loadingTags && setTags(dataTags?.tags || [])
   }, [dataTags])
 
   useEffect(() => {
-    console.log({ uploadLoading })
+    if (!uploadLoading && fileIds.length > 0)
+      createGallery(selectedTags, fileIds)
   }, [uploadLoading])
 
   return (
-    <section className='flex flex-col gap-4'>
+    <section className='flex flex-col gap-[0.3rem]'>
       <div className='!grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center min-h-[78px] md:min-h-[38px]'>
         <MultiSelect
           value={selectedTags}
@@ -106,12 +105,20 @@ const MenuImages = ({ showSuccess, showError, cookies }: Props) => {
           uploadHandler={uploadHandler}
           disabled={selectedTags.length === 0}
           chooseLabel='Cargar set de imagenes'
-          className='[&_.p-fileupload-choose]:w-full text-sm [&_.p-fileupload-choose]:py-[5.5px]'
+          className={cx(
+            '[&_.p-fileupload-choose]:w-full text-sm [&_.p-fileupload-choose]:py-[5.5px]',
+            { 'cursor-not-allowed': selectedTags.length === 0 },
+          )}
         />
+      </div>
+      <div className='h-[25px]'>
+        {uploadLoading && (
+          <UpdatingFilesProgress message='Cargando imagen(es)...' />
+        )}
       </div>
       <GalleryTable />
     </section>
   )
 }
 
-export default withCookies(withToast(MenuImages))
+export default withToast(MenuImages)

@@ -76,6 +76,12 @@ export type BoxDirectus = {
   }[]
 }
 
+export type DirectusTag = {
+  id: number
+  nombre: string
+  tipo: string
+}
+
 export type ProfileAvatar = {
   id: string
   directus_files_id: {
