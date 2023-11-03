@@ -79,3 +79,159 @@ export const UPDATE_ATTENTION = gql`
     }
   }
 `
+
+export const CREATE_MEDICAL_COMPLEMENT = gql`
+  mutation CreateMedicalComplement(
+    $fichaId: ID!
+    $tipo: String
+    $cantidad: Int
+    $descripcion: String
+    $examenes: [create_complementos_medicos_examenes_input!]
+    $diagnostico: create_cie_10_input
+  ) {
+    create_complementos_medicos_item(
+      data: {
+        ficha_id: { id: $fichaId }
+        tipo: $tipo
+        cantidad: $cantidad
+        descripcion: $descripcion
+        examenes: $examenes
+        diagnostico: $diagnostico
+      }
+    ) {
+      id
+      estado
+      orden
+      date_updated
+      tipo
+      user_created {
+        id
+        first_name
+        last_name
+        profesional {
+          nombre
+          identificacion
+          especialidad
+          cargo
+          no_registro_medico
+          firma {
+            id
+            filename_disk
+          }
+        }
+      }
+      date_created
+      cantidad
+      descripcion
+      diagnostico {
+        code
+        descripcion
+      }
+      ficha_id {
+        id
+      }
+      examenes {
+        id
+        examenes_id {
+          id
+          estado
+          orden
+          nombre
+          codigo
+          cantidad
+          categoria
+        }
+        cantidad
+        descripcion
+      }
+      recetas {
+        id
+        Recetas_id {
+          id
+          estado
+          nombre
+          diagnostico
+          receta
+          orden
+        }
+      }
+    }
+  }
+`
+
+export const UPDATE_MEDICAL_COMPLEMENT = gql`
+  mutation UpdateMedicalComplement(
+    $id: ID!
+    $cantidad: Int
+    $descripcion: String
+    $examenes: [update_complementos_medicos_examenes_input!]
+    $diagnostico: update_cie_10_input
+  ) {
+    update_complementos_medicos_item(
+      id: $id
+      data: {
+        cantidad: $cantidad
+        descripcion: $descripcion
+        examenes: $examenes
+        diagnostico: $diagnostico
+      }
+    ) {
+      id
+      estado
+      orden
+      date_updated
+      tipo
+      user_created {
+        id
+        first_name
+        last_name
+        profesional {
+          nombre
+          identificacion
+          especialidad
+          cargo
+          no_registro_medico
+          firma {
+            id
+            filename_disk
+          }
+        }
+      }
+      date_created
+      cantidad
+      descripcion
+      diagnostico {
+        code
+        descripcion
+      }
+      ficha_id {
+        id
+      }
+      examenes {
+        id
+        examenes_id {
+          id
+          estado
+          orden
+          nombre
+          codigo
+          cantidad
+          categoria
+        }
+        cantidad
+        descripcion
+      }
+      recetas {
+        id
+        Recetas_id {
+          id
+          estado
+          nombre
+          diagnostico
+          receta
+          orden
+        }
+      }
+    }
+  }
+`

@@ -363,6 +363,10 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
       date_created
       cantidad
       descripcion
+      diagnostico {
+        code
+        descripcion
+      }
       ficha_id {
         id
       }
