@@ -242,7 +242,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
 
         <Button
           label={'Agregar'}
-          className='px-4 py-0'
+          className='px-4 py-0 disabled:!cursor-not-allowed disabled:!pointer-events-auto'
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplateExamns}
           onClick={() => {
@@ -272,7 +272,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
 
         <Button
           label={'Agregar'}
-          className='px-4 py-0'
+          className='px-4 py-0 disabled:!cursor-not-allowed disabled:!pointer-events-auto'
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplatePrescription}
         />

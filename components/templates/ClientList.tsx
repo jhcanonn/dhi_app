@@ -15,7 +15,7 @@ import { Avatar } from 'primereact/avatar'
 import { OverlayPanel } from 'primereact/overlaypanel'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { goToPage } from '@utils/go-to'
-import Image from 'next/image'
+import { Image } from 'primereact/image'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
@@ -111,7 +111,7 @@ const ClientList = () => {
         >
           <Avatar image={imageUrl} size='xlarge' shape='circle' />
           <OverlayPanel ref={op} style={{ width: '350px' }}>
-            <Image src={imageUrlView} alt={'Foto' + rowData.documento}></Image>
+            <Image src={imageUrlView} alt={'Foto' + rowData.documento} />
           </OverlayPanel>
         </div>
       )
