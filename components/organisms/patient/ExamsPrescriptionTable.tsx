@@ -32,7 +32,7 @@ export interface IExams {
   nombre: string
   codigo: string
   cantidad: number
-  descripcion: string
+  descripcion: string | undefined
   categoria: string[]
 }
 
@@ -55,6 +55,8 @@ export interface ITemplatesExamsPrescriptionType {
   examenes: {
     id: number
     examenes_id: IExams
+    cantidad?: number
+    descripcion?: string
   }[]
   recetas: {
     id: number
@@ -69,6 +71,10 @@ export interface IClientExamsPrescriptionType {
   orden: number
   tipo: string
   nombre: string
+  diagnostico: {
+    code: string
+    descripcion: string
+  }
   user_created: {
     id: number
     first_name: string
@@ -94,12 +100,13 @@ export interface IClientExamsPrescriptionType {
   examenes: {
     id: number
     examenes_id: IExams
+    cantidad: number
+    descripcion: string
   }[]
   recetas: {
     id: number
     Recetas_id: IPrescription
   }[]
-  professional: string
 }
 
 type Props = {
@@ -107,17 +114,17 @@ type Props = {
   showError: (summary: ReactNode, detail: ReactNode) => void
 }
 
-const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
+const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
   const { clientInfo } = useClientContext()
   const fichaId = clientInfo?.ficha_id?.id
 
-  const { data: dateRecipesExams, loading: dateRecipesExamsLoading } =
+  const { data: dataRecipesExams, loading: dataRecipesExamsLoading } =
     useQuery<IDHIDataExams>(GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID, {
       variables: { fichaId },
     })
 
   const [selectedTemplateExamns, setSelectedTemplateExamns] =
-    useState<ITemplatesExamsPrescriptionType>()
+    useState<ITemplatesExamsPrescriptionType | null>()
 
   const [selectedTemplatePrescription, setTelectedTemplatePrescription] =
     useState<ITemplatesExamsPrescriptionType>()
@@ -127,6 +134,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
     useState<ITemplatesExamsPrescriptionType | null>(null)
 
   const [isView, setIsView] = useState<boolean>(false)
+  const [isEdit, setIsEdit] = useState<boolean>(false)
 
   const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
@@ -146,6 +154,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
         onClick={() => {
           setCurrentRowData(rowData)
           setIsView(true)
+          setIsEdit(false)
           setVisible(true)
         }}
       />
@@ -159,6 +168,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
         onClick={() => {
           setCurrentRowData(rowData)
           setIsView(false)
+          setIsEdit(true)
           setVisible(true)
         }}
         tooltipOptions={{ position: 'bottom' }}
@@ -191,13 +201,18 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             <EditClientExams
               data={currentRowData}
               isView={isView}
-              examns={dateRecipesExams?.examenes ?? []}
-              onHide={() => {
+              isEdit={isEdit}
+              exams={dataRecipesExams?.examenes ?? []}
+              fichaId={fichaId!}
+              onHide={(message: string, isError: boolean | null) => {
                 setVisible(false)
-                showSuccess(
-                  'Examen actualizado',
-                  'El examen fue actualizado correctamente',
-                )
+                if (isError === null) return
+                selectedTemplateExamns && setSelectedTemplateExamns(null)
+                if (isError) {
+                  showError('Error', message)
+                  return
+                }
+                showSuccess('Exitoso', message)
               }}
             />
           ) : (
@@ -213,7 +228,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             value={selectedTemplateExamns}
             onChange={(e) => setSelectedTemplateExamns(e.value)}
             options={
-              dateRecipesExams?.plantillas?.filter(
+              dataRecipesExams?.plantillas?.filter(
                 (item) => item.tipo === TypesExamsPrescription.EXAMEN,
               ) ?? []
             }
@@ -243,7 +258,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
             value={selectedTemplatePrescription}
             onChange={(e) => setTelectedTemplatePrescription(e.value)}
             options={
-              dateRecipesExams?.plantillas?.filter(
+              dataRecipesExams?.plantillas?.filter(
                 (item) => item.tipo === TypesExamsPrescription.RECETA,
               ) ?? []
             }
@@ -264,7 +279,7 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
       </div>
 
       <DataTable
-        value={dateRecipesExams?.complementos_medicos}
+        value={dataRecipesExams?.complementos_medicos}
         emptyMessage='No se encontraron resultados'
         size='small'
         paginator
@@ -273,29 +288,37 @@ const ExamsPrescriptionTable = ({ showSuccess }: Props) => {
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
         loading={
-          dateRecipesExams?.complementos_medicos === null ||
-          dateRecipesExamsLoading
+          dataRecipesExams?.complementos_medicos === null ||
+          dataRecipesExamsLoading
         }
       >
+        <Column
+          key='descripcion'
+          field='descripcion'
+          header='Descripcion'
+          style={{ width: '25%' }}
+        />
+
+        <Column
+          key='date_created'
+          field='date_created'
+          header='Fecha de emisión'
+          body={dateBodyTemplate}
+          style={{ width: '20%' }}
+        />
+
         <Column
           key='tipo'
           field='tipo'
           header='Tipo'
           style={{ width: '20%' }}
         />
-        <Column
-          key='date_created'
-          field='date_created'
-          header='Fecha de emisión'
-          body={dateBodyTemplate}
-          style={{ width: '30%' }}
-        />
 
         <Column
           key='user_created.profesional.nombre'
           field='user_created.profesional.nombre'
           header='Profesional'
-          style={{ width: '40%' }}
+          style={{ width: '25%' }}
         />
         <Column
           key='actions'
