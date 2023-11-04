@@ -3,10 +3,11 @@
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useState } from 'react'
-import { getFormatedDateToEs, patchPatient } from '@utils'
-import { ClientPhoto, PatientGallery, StatusDirectus } from '@models'
+import { getFormatedDateToEs } from '@utils'
+import { ClientPhoto, StatusDirectus } from '@models'
 import { Column } from 'primereact/column'
 import GallerySet from './GallerySet'
+import { usePatchPatient } from '@hooks'
 
 export interface GalleryType {
   id: number
@@ -21,30 +22,22 @@ export interface GalleryType {
 const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
   const [gallery, setGallery] = useState<GalleryType[]>([])
   const { clientInfo, setClientInfo } = useClientContext()
+  const { deleteGalleryPhotos } = usePatchPatient()
 
-  const handleUpdatePhotos = (fileId: string, accessToken: string | null) => {
+  const handleUpdatePhotos = (fileId: string) => {
+    const updatedGallery = gallery.map((g) => ({
+      ...g,
+      photos: g.photos?.filter((p) => p?.directus_files_id?.id !== fileId),
+    }))
+    updatedGallery.forEach(async (g) => {
+      if (g.photos.length === 0) {
+        updatedGallery.splice(updatedGallery.indexOf(g), 1)
+        await deleteGalleryPhotos(g.patientGalleryRelId)
+      }
+    })
+    setGallery(updatedGallery)
+
     if (clientInfo) {
-      const patientId = clientInfo.id.toString()
-
-      const updatedGallery = gallery.map((g) => ({
-        ...g,
-        photos: g.photos?.filter((p) => p?.directus_files_id?.id !== fileId),
-      }))
-      updatedGallery.forEach(async (g) => {
-        if (g.photos.length === 0) {
-          updatedGallery.splice(updatedGallery.indexOf(g), 1)
-          const gallery: PatientGallery = {
-            galeria: {
-              create: [],
-              update: [],
-              delete: [g.patientGalleryRelId],
-            },
-          }
-          await patchPatient(patientId, gallery, accessToken)
-        }
-      })
-      setGallery(updatedGallery)
-
       const updatedClient = {
         ...clientInfo,
         galeria: clientInfo.galeria.map((g) => ({
@@ -61,7 +54,6 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         g.galeria_id.fotos.length === 0 &&
           updatedClient.galeria.splice(updatedClient.galeria.indexOf(g), 1)
       })
-
       setClientInfo(updatedClient)
     }
   }
@@ -94,10 +86,6 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
     })
     gallery && setGallery(gallery)
   }, [clientInfo])
-
-  useEffect(() => {
-    console.log({ gallery })
-  }, [gallery])
 
   return (
     <DataTable

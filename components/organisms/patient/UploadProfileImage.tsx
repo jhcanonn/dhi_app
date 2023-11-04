@@ -1,37 +1,28 @@
 'use client'
 
 import { MAX_MB_GALLERY, PATIENTS_GALLERY } from '@utils'
-import {
-  deleteFileToDirectus,
-  patchPatient,
-  refreshToken,
-  uploadFileToDirectus,
-} from '@utils/api'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
 import { ReactNode, useEffect, useState } from 'react'
-import { Cookies, withCookies } from 'react-cookie'
 import { classNames as cx } from 'primereact/utils'
-import { ClientDirectus, PatientAvatar, ProfileAvatar } from '@models'
+import { ClientDirectus, ProfileAvatar } from '@models'
 import { Image } from 'primereact/image'
-import { ProgressSpinner } from 'primereact/progressspinner'
-import { Message } from 'primereact/message'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
-import { withToast } from '@hooks'
+import { useDirectusFiles, usePatchPatient, withToast } from '@hooks'
+import { UUID } from 'crypto'
+import { UpdatingFilesProgress } from '@components/molecules'
 
 type Props = {
   clientInfo: ClientDirectus | null
   buttonLabel?: string
   onUploadAvatars?: (avatars: ProfileAvatar[]) => void
-  cookies: Cookies
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
   showError: (summary: ReactNode, detail: ReactNode) => void
 }
 
 const UploadProfileImage = ({
-  cookies,
   clientInfo,
   buttonLabel,
   onUploadAvatars,
@@ -39,36 +30,18 @@ const UploadProfileImage = ({
   showError,
 }: Props) => {
   const [uploadLoading, setUploadLoading] = useState<boolean>(false)
+  const [visible, setVisible] = useState<boolean>(false)
   const [avatars, setAvatars] = useState<ProfileAvatar[]>(
     clientInfo ? clientInfo.avatar : [],
   )
-  const [visible, setVisible] = useState<boolean>(false)
+  const { createAvatar, deleteAvatar } = usePatchPatient()
+  const { uploadFile, deleteFile } = useDirectusFiles()
 
-  const uploadFile = async (file: File) => {
+  const uploadFileToDirectus = async (file: File) => {
     try {
-      const formData = new FormData()
-      formData.append('folder', PATIENTS_GALLERY)
-      formData.append('file', file)
-
-      const access_token = await refreshToken(cookies)
-      const res = await uploadFileToDirectus(formData, access_token)
-
-      if (res?.id && clientInfo) {
-        const patientId = clientInfo.id.toString()
-        const avatar: PatientAvatar = {
-          avatar: {
-            create: [
-              {
-                pacientes_id: patientId,
-                directus_files_id: {
-                  id: res.id,
-                },
-              },
-            ],
-            delete: [],
-          },
-        }
-        const resAvatar = await patchPatient(patientId, avatar, access_token)
+      const res = await uploadFile(file, PATIENTS_GALLERY)
+      if (res?.id) {
+        const resAvatar = await createAvatar(res.id as UUID)
         const newAvatar: ProfileAvatar = {
           id: resAvatar.avatar[resAvatar.avatar.length - 1],
           directus_files_id: {
@@ -82,7 +55,6 @@ const UploadProfileImage = ({
           return refreshedAvatars
         })
       }
-
       showSuccess(
         'Carga exitosa!',
         `Archivo ${res.filename_download} cargado exitosamente.`,
@@ -98,7 +70,7 @@ const UploadProfileImage = ({
   const uploadHandler = async (event: FileUploadHandlerEvent) => {
     setUploadLoading(true)
     const uploadFiles = event.files.map(async (file: File) => {
-      await uploadFile(file)
+      await uploadFileToDirectus(file)
     })
     Promise.all(uploadFiles).then(() => {
       event.options.clear()
@@ -107,31 +79,17 @@ const UploadProfileImage = ({
   }
 
   const deleteImage = async (avatarId: number, fileId: string) => {
-    if (clientInfo) {
-      setUploadLoading(true)
-      const patientId = clientInfo.id.toString()
-      const avatar: PatientAvatar = {
-        avatar: {
-          create: [],
-          delete: [avatarId],
-        },
-      }
-      const access_token = await refreshToken(cookies)
-      const resDeleteAvatar = await patchPatient(
-        patientId,
-        avatar,
-        access_token,
-      )
-      if (resDeleteAvatar) {
-        await deleteFileToDirectus(fileId, access_token)
-        setAvatars((prevAvatars) => {
-          const refreshedAvatars = prevAvatars.filter((a) => +a.id !== avatarId)
-          onUploadAvatars && onUploadAvatars(refreshedAvatars)
-          return refreshedAvatars
-        })
-      }
-      setUploadLoading(false)
+    setUploadLoading(true)
+    const resDeleteAvatar = await deleteAvatar(avatarId)
+    if (resDeleteAvatar) {
+      await deleteFile(fileId)
+      setAvatars((prevAvatars) => {
+        const refreshedAvatars = prevAvatars.filter((a) => +a.id !== avatarId)
+        onUploadAvatars && onUploadAvatars(refreshedAvatars)
+        return refreshedAvatars
+      })
     }
+    setUploadLoading(false)
   }
 
   const deleteImageHandler = async (avatarId: string, fileId: string) => {
@@ -176,28 +134,14 @@ const UploadProfileImage = ({
 
   const headerContent = (
     <div className='flex gap-2'>
-      <h2>Subir fotos de perfil</h2>
+      <h2 className='mr-3'>Subir fotos de perfil</h2>
       {uploadLoading && (
-        <>
-          <Message
-            text='Actualizando imagen(es)...'
-            className='[&_.p-inline-message-text]:text-xs ml-3'
-          />
-          <div className='flex items-center'>
-            <ProgressSpinner
-              style={{ width: '25px', height: '25px' }}
-              strokeWidth='8'
-              fill='var(--surface-ground)'
-              animationDuration='.5s'
-            />
-          </div>
-        </>
+        <UpdatingFilesProgress message='Actualizando imagen(es)...' />
       )}
     </div>
   )
 
   useEffect(() => {
-    console.log({ clientInfo, avatars })
     setAvatars(clientInfo ? clientInfo.avatar : [])
   }, [clientInfo])
 
@@ -270,4 +214,4 @@ const UploadProfileImage = ({
   )
 }
 
-export default withCookies(withToast(UploadProfileImage))
+export default withToast(UploadProfileImage)

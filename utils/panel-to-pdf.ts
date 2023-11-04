@@ -248,8 +248,6 @@ export const generatePanelToPDF = async (
         if (dataTable.table.body.length > 0) content.push(dataTable)
       })
 
-    console.log(content)
-
     const pageMargins: Margins = !repeaterHeader
       ? [72, 30, 72, 30]
       : [72, 240, 72, 30]

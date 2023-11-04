@@ -40,7 +40,30 @@ export type PatientAvatar = {
 
 export type PatientGallery = {
   galeria: {
-    create: []
+    create: {
+      galeria_id: {
+        tags: {
+          create: {
+            galeria_id: '+'
+            tags_id: {
+              id: number
+            }
+          }[]
+          update: []
+          delete: []
+        }
+        fotos: {
+          create: {
+            galeria_id: '+'
+            directus_files_id: {
+              id: UUID
+            }
+          }[]
+          update: []
+          delete: []
+        }
+      }
+    }[]
     update: {
       id: number
       galeria_id: {

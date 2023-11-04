@@ -8,12 +8,13 @@ import { useEffect, useRef, useState } from 'react'
 import { GalleryType } from './GalleryTable'
 import { UUID } from 'crypto'
 import { useClientContext } from '@contexts'
-import { ClientPhoto, PatientGallery } from '@models'
-import { deleteFileToDirectus, patchPatient, refreshToken } from '@utils'
+import { ClientPhoto } from '@models'
+import { deleteFileToDirectus, refreshToken } from '@utils'
 import { Cookies, withCookies } from 'react-cookie'
-import Image from 'next/image'
+import { usePatchPatient } from '@hooks'
+import { Image } from 'primereact/image'
 
-type Image = {
+type ImageType = {
   id: number
   fileId: UUID
   itemImageSrc: string
@@ -47,18 +48,21 @@ const responsiveOptions: GalleriaResponsiveOptions[] = [
   },
 ]
 
-const thumbnailTemplate = (item: Image) => (
-  <Image
-    src={item.thumbnailImageSrc}
-    alt={item.alt}
-    style={{ display: 'block', height: '6vh', objectFit: 'contain' }}
-  />
+const thumbnailTemplate = (item: ImageType) => (
+  <div className='flex items-center h-[6vh]'>
+    <Image
+      src={item.thumbnailImageSrc}
+      alt={item.alt}
+      style={{ objectFit: 'contain' }}
+      className='[&_img]:max-h-[6vh]'
+    />
+  </div>
 )
 
 type Props = {
   set: GalleryType
   hideDelete?: boolean
-  onUpdatePhotos: (fileId: string, accessToken: string | null) => void
+  onUpdatePhotos: (fileId: string) => void
   cookies: Cookies
 }
 
@@ -68,52 +72,29 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
 
   const galleryRef = useRef<any>(null)
   const [imageLoading, setImageLoading] = useState<boolean>(false)
-  const [images, setImages] = useState<Image[]>([])
+  const [images, setImages] = useState<ImageType[]>([])
   const { clientInfo } = useClientContext()
+  const { updateGalleryPhotos } = usePatchPatient()
 
-  const updatePhotos = async (
-    patientId: string,
-    access_token: string | null,
-    imageId: number,
-  ) => {
-    const gallery: PatientGallery = {
-      galeria: {
-        create: [],
-        update: [
-          {
-            id: patientGalleryRelId,
-            galeria_id: {
-              id: id,
-              fotos: {
-                create: [],
-                update: [],
-                delete: [imageId],
-              },
-            },
-          },
-        ],
-        delete: [],
-      },
-    }
-    return await patchPatient(patientId, gallery, access_token)
-  }
-
-  const deleteImage = async (item: Image) => {
+  const deleteImage = async (item: ImageType) => {
     if (clientInfo) {
       setImageLoading(true)
-      const patientId = clientInfo.id.toString()
       const access_token = await refreshToken(cookies)
-      const updatedPhotos = await updatePhotos(patientId, access_token, item.id)
+      const updatedPhotos = await updateGalleryPhotos(
+        patientGalleryRelId,
+        id,
+        item.id,
+      )
       if (updatedPhotos) {
         item.fileId && (await deleteFileToDirectus(item.fileId, access_token))
         setImages((prevImage) => prevImage.filter((i) => i.id !== item.id))
-        onUpdatePhotos(item.fileId, access_token)
+        onUpdatePhotos(item.fileId)
       }
       setImageLoading(false)
     }
   }
 
-  const confirmDelete = async (tagKey: string, item: Image) => {
+  const confirmDelete = async (tagKey: string, item: ImageType) => {
     document.body.style.overflow = 'hidden'
     confirmDialog({
       tagKey,
@@ -130,18 +111,21 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
     })
   }
 
-  const itemTemplate = (item: Image) => {
+  const itemTemplate = (item: ImageType) => {
     if (!item) item = images[0]
     return (
-      <Image
-        src={item.itemImageSrc}
-        alt={item.alt}
-        style={{ display: 'block', height: '90vh', objectFit: 'contain' }}
-      />
+      <div className='flex items-center h-[90vh]'>
+        <Image
+          src={item.itemImageSrc}
+          alt={item.alt}
+          style={{ objectFit: 'contain' }}
+          className='[&_img]:max-h-[90vh]'
+        />
+      </div>
     )
   }
 
-  const captionTemplate = (item: Image) => {
+  const captionTemplate = (item: ImageType) => {
     if (!item) item = images[0]
     return (
       <>
@@ -181,7 +165,7 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
         alt: file?.description ?? file?.title,
         title: patient,
         tags: tags,
-      } as Image
+      } as ImageType
     })
 
   useEffect(() => {
