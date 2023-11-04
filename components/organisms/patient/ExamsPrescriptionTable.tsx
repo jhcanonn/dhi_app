@@ -16,7 +16,7 @@ import { PrimeIcons } from 'primereact/api'
 import { Dropdown } from 'primereact/dropdown'
 import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import EditClientExams from '@components/molecules/patient/EditClientExams'
+import EditClientExams from '@components/molecules/patient/EditClientExamsPrescriptItem'
 import { withToast } from '@hooks'
 
 export interface IDHIDataExams {
@@ -62,7 +62,10 @@ export interface ITemplatesExamsPrescriptionType {
     id: number
     Recetas_id: IPrescription
   }[]
-  diagnostico: string
+  diagnostico: {
+    code: string
+    descripcion: string
+  }
 }
 
 export interface IClientExamsPrescriptionType {
@@ -127,7 +130,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
     useState<ITemplatesExamsPrescriptionType | null>()
 
   const [selectedTemplatePrescription, setTelectedTemplatePrescription] =
-    useState<ITemplatesExamsPrescriptionType>()
+    useState<ITemplatesExamsPrescriptionType | null>()
 
   const [visible, setVisible] = useState<boolean>(false)
   const [currentRowData, setCurrentRowData] =
@@ -135,6 +138,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
 
   const [isView, setIsView] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
+  const [tipo, setTipo] = useState<string>('')
 
   const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
@@ -185,7 +189,12 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
     </div>
   )
 
-  const headerDialog = <h2>Solicitud de exámenes</h2>
+  const headerDialog = (
+    <h2>
+      Solicitud de{' '}
+      {tipo === TypesExamsPrescription.EXAMEN ? 'examenes' : 'receta'}
+    </h2>
+  )
 
   return (
     <div className='w-full max-w-[100rem] mx-auto px-4'>
@@ -194,23 +203,37 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           header={headerDialog}
           draggable={false}
           visible={visible}
-          onHide={() => setVisible(false)}
+          onHide={() => {
+            setVisible(false)
+            setSelectedTemplateExamns(null)
+            setTelectedTemplatePrescription(null)
+          }}
           className='w-[90vw] max-w-[100rem]'
         >
           {currentRowData ? (
             <EditClientExams
               data={currentRowData}
-              isView={isView}
-              isEdit={isEdit}
+              config={{ isView, isEdit, tipo }}
               exams={dataRecipesExams?.examenes ?? []}
               fichaId={fichaId!}
-              onHide={(message: string, isError: boolean | null) => {
+              onHide={(
+                data: IClientExamsPrescriptionType | undefined,
+                message: string,
+                isError: boolean | null,
+              ) => {
                 setVisible(false)
+                setSelectedTemplateExamns(null)
+                setTelectedTemplatePrescription(null)
                 if (isError === null) return
-                selectedTemplateExamns && setSelectedTemplateExamns(null)
                 if (isError) {
                   showError('Error', message)
                   return
+                }
+                if (data) {
+                  dataRecipesExams?.complementos_medicos?.push(data)
+                  setCurrentRowData(null)
+                  setIsView(true)
+                  setIsEdit(false)
                 }
                 showSuccess('Exitoso', message)
               }}
@@ -246,6 +269,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplateExamns}
           onClick={() => {
+            setTipo(TypesExamsPrescription.EXAMEN)
             setCurrentRowData(selectedTemplateExamns ?? null)
             setIsView(false)
             setVisible(true)
@@ -275,6 +299,12 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           className='px-4 py-0'
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplatePrescription}
+          onClick={() => {
+            setTipo(TypesExamsPrescription.RECETA)
+            setCurrentRowData(selectedTemplatePrescription ?? null)
+            setIsView(false)
+            setVisible(true)
+          }}
         />
       </div>
 

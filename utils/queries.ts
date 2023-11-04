@@ -336,7 +336,10 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
           receta
         }
       }
-      diagnostico
+      diagnostico {
+        code
+        descripcion
+      }
     }
     complementos_medicos(filter: { ficha_id: { id: { _eq: $fichaId } } }) {
       id

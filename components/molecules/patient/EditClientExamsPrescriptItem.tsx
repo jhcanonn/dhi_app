@@ -19,6 +19,7 @@ import { AutoComplete } from 'primereact/autocomplete'
 import {
   CREATE_MEDICAL_COMPLEMENT,
   LocalStorageTags,
+  TypesExamsPrescription,
   UPDATE_MEDICAL_COMPLEMENT,
 } from '@utils'
 import { useMutation } from '@apollo/client'
@@ -27,24 +28,23 @@ type Props = {
   data: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType
   exams: IExams[]
   fichaId: number
-  isView: boolean
-  isEdit: boolean
-  onHide: (message: string, isError: boolean | null) => void
+  config: { tipo: string; isView: boolean; isEdit: boolean }
+  onHide: (
+    data: IClientExamsPrescriptionType | undefined,
+    message: string,
+    isError: boolean | null,
+  ) => void
 }
 
-const EditClientExams = ({
-  data,
-  exams,
-  fichaId,
-  isView,
-  isEdit,
-  onHide,
-}: Props) => {
+const EditClientExams = ({ data, exams, fichaId, config, onHide }: Props) => {
   const [createMedicalComplement] = useMutation(CREATE_MEDICAL_COMPLEMENT)
   const [updateMedicalComplement] = useMutation(UPDATE_MEDICAL_COMPLEMENT)
 
   const [selectedExams, setSelectedExams] = useState<IExams[]>([])
-  const [selectedDiagnostic, setSelectedDiagnostic] = useState<any>(null)
+  const [selectedDiagnostic, setSelectedDiagnostic] = useState<{
+    code: string
+    descripcion: string
+  }>()
   const [values, setValues] = useState<IExams[]>([])
 
   const [diagnostics, setDiagnostics] = useState([])
@@ -112,11 +112,11 @@ const EditClientExams = ({
   const onSaveMedicalComplement = async () => {
     try {
       let result: any
-      if (!isEdit) {
+      if (!config.isEdit) {
         result = await createMedicalComplement({
           variables: {
             fichaId,
-            tipo: 'Examen',
+            tipo: config.tipo,
             cantidad: selectedExams.length,
             descripcion: data.nombre,
             examenes: selectedExams.map((item) => {
@@ -158,10 +158,9 @@ const EditClientExams = ({
       }
       const dataMedicalComplement: IClientExamsPrescriptionType =
         result.data.create_complementos_medicos_item
-      console.log(dataMedicalComplement)
-      onHide('Correcto', false)
+      onHide(dataMedicalComplement, 'Correcto', false)
     } catch (error: any) {
-      onHide(error.message, true)
+      onHide(undefined, error.message, true)
     }
   }
 
@@ -203,7 +202,7 @@ const EditClientExams = ({
                 value={rowData}
                 onChange={onExamChange}
                 checked={isCheckboxChecked(rowData)}
-                disabled={isView}
+                disabled={config.isView}
               />
 
               <label className='ml-2'>{rowData.nombre}</label>
@@ -225,7 +224,7 @@ const EditClientExams = ({
                   value={rowData.cantidad}
                   onValueChange={(e) => changeCantidad(e, rowData)}
                   minFractionDigits={0}
-                  disabled={isView || !isCheckboxChecked(rowData)}
+                  disabled={config.isView || !isCheckboxChecked(rowData)}
                   showButtons
                   buttonLayout='horizontal'
                   min={1}
@@ -248,7 +247,7 @@ const EditClientExams = ({
                   className='p-inputtext-sm w-full'
                   value={rowData.descripcion}
                   onChange={(e) => changeDescripcion(e, rowData)}
-                  disabled={isView || !isCheckboxChecked(rowData)}
+                  disabled={config.isView || !isCheckboxChecked(rowData)}
                 />
                 <label htmlFor='descriptionInput'>Descripción</label>
               </span>
@@ -265,7 +264,7 @@ const EditClientExams = ({
         label='Cerrar'
         severity='danger'
         type='button'
-        onClick={() => onHide('', null)}
+        onClick={() => onHide(undefined, '', null)}
         className='w-full md:w-fit'
       />
       <Button
@@ -274,12 +273,12 @@ const EditClientExams = ({
         type='button'
         onClick={() => onSaveMedicalComplement()}
         className='w-full md:w-fit'
-        visible={!isView}
+        visible={!config.isView}
       />
     </div>
   )
 
-  return (
+  return config.tipo === TypesExamsPrescription.EXAMEN ? (
     <>
       <div>
         <span className='p-float-label pb-3'>
@@ -293,7 +292,7 @@ const EditClientExams = ({
             selectedItemTemplate={seletedItemTemplate}
             onChange={(e) => setSelectedDiagnostic(e.value)}
             virtualScrollerOptions={{ itemSize: 38 }}
-            disabled={isView}
+            disabled={config.isView}
           />
           <label htmlFor='acdiagnostic'>Diagnostico</label>
         </span>
@@ -314,6 +313,8 @@ const EditClientExams = ({
       </div>
       <br></br>
     </>
+  ) : (
+    <></>
   )
 }
 
