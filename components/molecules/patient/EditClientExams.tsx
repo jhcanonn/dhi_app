@@ -68,7 +68,6 @@ const EditClientExams = ({
   }, [data])
 
   useEffect(() => {
-    console.log('diagnostics')
     if (diagnostics.length === 0) {
       const lsCie10 = window.localStorage.getItem(LocalStorageTags.CIE10)
       setDiagnostics(JSON.parse(lsCie10 ?? '[]'))

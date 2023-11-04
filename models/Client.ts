@@ -38,6 +38,20 @@ export type PatientAvatar = {
   }
 }
 
+export type PatientFile = {
+  archivos: {
+    create: {
+      pacientes_id: string
+      directus_files_id: {
+        id: UUID
+      }
+      tag: number
+    }[]
+    update: []
+    delete: number[]
+  }
+}
+
 export type PatientGallery = {
   galeria: {
     create: {
@@ -123,6 +137,11 @@ export enum StatusDataSheet {
   DRAFT = 'draft',
   ARCHIVED = 'archived',
   ANNULLED = 'annulled',
+}
+
+export enum TagType {
+  IMAGE = 'imagen',
+  FILE = 'archivo',
 }
 
 export type DataSheet = {

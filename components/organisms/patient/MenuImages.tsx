@@ -1,22 +1,21 @@
 'use client'
 
 import GalleryTable from './GalleryTable'
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { ReactNode, useEffect, useState } from 'react'
-import {
-  GET_CLIENT_BY_ID,
-  GET_TAGS,
-  MAX_MB_GALLERY,
-  PATIENTS_GALLERY,
-} from '@utils'
-import { useQuery } from '@apollo/client'
+import { MAX_MB_GALLERY, PATIENT_GALLERY } from '@utils'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { useDirectusFiles, usePatchPatient, withToast } from '@hooks'
-import { ClientDirectus, DirectusTag } from '@models'
+import { DirectusTag, TagType } from '@models'
 import { UUID } from 'crypto'
-import { useClientContext } from '@contexts'
 import { UpdatingFilesProgress } from '@components/molecules'
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import { classNames as cx } from 'primereact/utils'
+import {
+  useClientInfo,
+  useDirectusFiles,
+  usePatchPatient,
+  useTags,
+  withToast,
+} from '@hooks'
 
 type Props = {
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
@@ -25,28 +24,25 @@ type Props = {
 
 const MenuImages = ({ showSuccess, showError }: Props) => {
   const [fileIds, setFileIds] = useState<UUID[]>([])
-  const [tags, setTags] = useState<DirectusTag[]>([])
   const [selectedTags, setSelectedTags] = useState<DirectusTag[]>([])
   const [uploadLoading, setUploadLoading] = useState(false)
   const { createGalleryPhotos } = usePatchPatient()
   const { uploadFile } = useDirectusFiles()
-  const { data: dataTags, loading: loadingTags } = useQuery(GET_TAGS)
-
-  const { clientInfo, setClientInfo } = useClientContext()
-  const { refetch: refetchClientInfo } = useQuery(GET_CLIENT_BY_ID)
+  const { refreshClientInfo } = useClientInfo()
+  const { tags } = useTags(TagType.IMAGE)
 
   const uploadFileToDirectus = async (file: File) => {
     try {
-      const res = await uploadFile(file, PATIENTS_GALLERY)
+      const res = await uploadFile(file, PATIENT_GALLERY)
       if (res?.id) setFileIds((prevFile) => [...prevFile, res.id as UUID])
       showSuccess(
         'Carga exitosa!',
-        `Archivo ${res.filename_download} cargado exitosamente.`,
+        `Imagen ${res.filename_download} cargada exitosamente.`,
       )
     } catch (error: any) {
       showError(
         'Error en la carga',
-        `No se pudo cargar el archivo ${file.name}. ${error.message}`,
+        `No se pudo cargar la imagen ${file.name}. ${error.message}`,
       )
     }
   }
@@ -66,14 +62,10 @@ const MenuImages = ({ showSuccess, showError }: Props) => {
   const createGallery = async (tags: DirectusTag[], fileIds: UUID[]) => {
     const createdGallery = await createGalleryPhotos(tags, fileIds)
     if (createdGallery) {
-      const data: any = await refetchClientInfo({ id: clientInfo?.id })
-      setClientInfo(data.pacientes_by_id as ClientDirectus)
+      await refreshClientInfo()
+      setSelectedTags([])
     }
   }
-
-  useEffect(() => {
-    !loadingTags && setTags(dataTags?.tags || [])
-  }, [dataTags])
 
   useEffect(() => {
     if (!uploadLoading && fileIds.length > 0)
@@ -83,16 +75,22 @@ const MenuImages = ({ showSuccess, showError }: Props) => {
   return (
     <section className='flex flex-col gap-[0.3rem]'>
       <div className='!grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center min-h-[78px] md:min-h-[38px]'>
-        <MultiSelect
-          value={selectedTags}
-          onChange={(e: MultiSelectChangeEvent) => setSelectedTags(e.value)}
-          options={tags}
-          display='chip'
-          optionLabel='nombre'
-          placeholder='Seleccione etiquetas'
-          className='w-full col-span-1 lg:col-span-3'
-          filter
-        />
+        <span className='p-float-label w-full col-span-1 lg:col-span-3'>
+          <MultiSelect
+            inputId='imagesTagInput'
+            options={tags}
+            value={selectedTags}
+            onChange={(e: MultiSelectChangeEvent) => setSelectedTags(e.value)}
+            display='chip'
+            optionLabel='nombre'
+            placeholder='Seleccione etiquetas'
+            className='w-full col-span-1 lg:col-span-3'
+            filter
+          />
+          <label htmlFor='imagesTagInput' className='images-tags'>
+            Etiqueta(s)
+          </label>
+        </span>
         <FileUpload
           mode='basic'
           name='demo[]'
