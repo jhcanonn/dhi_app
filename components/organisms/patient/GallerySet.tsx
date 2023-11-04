@@ -9,9 +9,7 @@ import { GalleryType } from './GalleryTable'
 import { UUID } from 'crypto'
 import { useClientContext } from '@contexts'
 import { ClientPhoto } from '@models'
-import { deleteFileToDirectus, refreshToken } from '@utils'
-import { Cookies, withCookies } from 'react-cookie'
-import { usePatchPatient } from '@hooks'
+import { useDirectusFiles, usePatchPatient } from '@hooks'
 import { Image } from 'primereact/image'
 
 type ImageType = {
@@ -63,10 +61,9 @@ type Props = {
   set: GalleryType
   hideDelete?: boolean
   onUpdatePhotos: (fileId: string) => void
-  cookies: Cookies
 }
 
-const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
+const GallerySet = ({ set, hideDelete, onUpdatePhotos }: Props) => {
   const { id, patientGalleryRelId, photos, patient, tags } = set
   const tagKey = `gallery_set_${id}`
 
@@ -75,18 +72,18 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
   const [images, setImages] = useState<ImageType[]>([])
   const { clientInfo } = useClientContext()
   const { updateGalleryPhotos } = usePatchPatient()
+  const { deleteFile } = useDirectusFiles()
 
   const deleteImage = async (item: ImageType) => {
     if (clientInfo) {
       setImageLoading(true)
-      const access_token = await refreshToken(cookies)
       const updatedPhotos = await updateGalleryPhotos(
         patientGalleryRelId,
         id,
         item.id,
       )
       if (updatedPhotos) {
-        item.fileId && (await deleteFileToDirectus(item.fileId, access_token))
+        item.fileId && (await deleteFile(item.fileId))
         setImages((prevImage) => prevImage.filter((i) => i.id !== item.id))
         onUpdatePhotos(item.fileId)
       }
@@ -191,6 +188,7 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
         onHide={() => document.body.style.removeProperty('overflow')}
       />
       <Button
+        severity='info'
         label='Ver set'
         icon='pi pi-camera'
         size='small'
@@ -199,10 +197,10 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos, cookies }: Props) => {
           galleryRef.current.show()
           setImages(photosMap(photos))
         }}
-        className='[&_.pi-camera:before]:text-lg !py-[0.3rem]'
+        className='[&_.pi-camera:before]:text-lg !py-[0.1rem]'
       />
     </>
   )
 }
 
-export default withCookies(GallerySet)
+export default GallerySet

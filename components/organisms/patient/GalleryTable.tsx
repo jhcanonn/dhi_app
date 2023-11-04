@@ -16,6 +16,7 @@ export interface GalleryType {
   date: string
   photos: ClientPhoto[]
   patient: string
+  user: string
   tags: string
 }
 
@@ -70,6 +71,11 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
     const gallery = clientInfo?.galeria.map((g) => {
       const gallery = g.galeria_id
       const tags = gallery?.tags ? [...gallery.tags] : []
+      const userCreated = gallery.user_created
+      const user = userCreated.profesional
+        ? userCreated.profesional.nombre
+        : `${userCreated.first_name} ${userCreated.last_name}`
+
       return {
         id: gallery?.id,
         patientGalleryRelId: g.id,
@@ -77,6 +83,7 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         description: gallery?.descripcion,
         photos: gallery?.fotos,
         patient: clientInfo.full_name,
+        user,
         tags: tags
           .sort((a, b) => a.order - b.order)
           .filter((g) => g.tags_id.estado === StatusDirectus.PUBLISHED)
@@ -103,9 +110,15 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         key='tags'
         field='tags'
         header='Etiquetas'
-        style={{ width: '50%' }}
+        style={{ width: '45%' }}
       />
-      <Column key='date' field='date' header='Fecha' style={{ width: '30%' }} />
+      <Column key='date' field='date' header='Fecha' style={{ width: '20%' }} />
+      <Column
+        key='user'
+        field='user'
+        header='Usuario'
+        style={{ width: '15%' }}
+      />
       <Column
         key='actions'
         header='Acción'

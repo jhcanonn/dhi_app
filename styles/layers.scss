@@ -181,6 +181,11 @@
     @apply absolute text-brandFieldColor left-[0.5rem] top-[-0.75rem] text-xs rounded-[0.5rem] px-[0.4rem] mt-[0.2rem] bg-white;
   }
 
+  .p-float-label .p-inputwrapper-focus ~ label.images-tags,
+  .p-float-label .p-inputwrapper-filled ~ label.images-tags {
+    @apply top-[-0.95rem];
+  }
+
   .custom-field-border {
     @apply border border-brandFieldBorder rounded-[4px] pt-[5.6px] pb-[3px] px-[12px] relative;
   }

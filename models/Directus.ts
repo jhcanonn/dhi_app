@@ -136,8 +136,40 @@ export type ClientDirectus = {
       id: number
       descripcion: string
       date_created: string
+      user_created: {
+        id: UUID
+        first_name: string
+        last_name: string
+        profesional: {
+          id: number
+          nombre: string
+        }
+      }
       fotos: ClientPhoto[]
       tags: ClientPhotoTag[]
+    }
+  }[]
+  archivos: {
+    id: number
+    directus_files_id: {
+      id: UUID
+      title: string
+      description: string
+      uploaded_on: string
+      uploaded_by: {
+        id: UUID
+        first_name: string
+        last_name: string
+        profesional: {
+          id: number
+          nombre: string
+        }
+      }
+    }
+    tag: {
+      nombre: string
+      tipo: string
+      estado: string
     }
   }[]
 }

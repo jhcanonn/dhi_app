@@ -87,7 +87,8 @@ export const DEFAULT_APPOINTMENT_MINUTES = 30
 export const REQUEST_ATTEMPT_NUMBER = 3
 
 export const MAX_MB_GALLERY = 7
-export const PATIENTS_GALLERY = 'ce89509c-fcb6-4acd-afb2-3d3fec5e6058'
+export const PATIENT_GALLERY = 'ce89509c-fcb6-4acd-afb2-3d3fec5e6058'
+export const PATIENT_FILES = '94d99b64-b5e6-42b4-9324-f281bc7941ae'
 export const DHI_SUCRUSAL = 'DHI COLOMBIA RESTAURACION CLINICA CAPILAR SAS'
 export const HC_IMPLANTE_CODE = 'hc_implantecm_'
 export const COMING_SOON = 'Esta funcionalidad estará disponible proximamente.'

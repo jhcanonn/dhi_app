@@ -1,5 +1,10 @@
 import { useClientContext } from '@contexts'
-import { DirectusTag, PatientAvatar, PatientGallery } from '@models'
+import {
+  DirectusTag,
+  PatientAvatar,
+  PatientFile,
+  PatientGallery,
+} from '@models'
 import { DHI_SESSION, patchPatient, refreshToken } from '@utils'
 import { Cookies, useCookies } from 'react-cookie'
 import { UUID } from 'crypto'
@@ -115,12 +120,44 @@ const usePatchPatient = () => {
     return executePatch(payload)
   }
 
+  const createFile = (tag: DirectusTag, fileId: UUID) => {
+    const payload: PatientFile = {
+      archivos: {
+        create: [
+          {
+            pacientes_id: patientId,
+            directus_files_id: {
+              id: fileId,
+            },
+            tag: tag.id,
+          },
+        ],
+        update: [],
+        delete: [],
+      },
+    }
+    return executePatch(payload)
+  }
+
+  const deleteFile = (id: number) => {
+    const payload: PatientFile = {
+      archivos: {
+        create: [],
+        update: [],
+        delete: [id],
+      },
+    }
+    return executePatch(payload)
+  }
+
   return {
     createGalleryPhotos,
     updateGalleryPhotos,
     deleteGalleryPhotos,
     createAvatar,
     deleteAvatar,
+    createFile,
+    deleteFile,
   }
 }
 

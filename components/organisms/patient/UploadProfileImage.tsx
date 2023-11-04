@@ -1,6 +1,6 @@
 'use client'
 
-import { MAX_MB_GALLERY, PATIENTS_GALLERY } from '@utils'
+import { MAX_MB_GALLERY, PATIENT_GALLERY } from '@utils'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
@@ -39,7 +39,7 @@ const UploadProfileImage = ({
 
   const uploadFileToDirectus = async (file: File) => {
     try {
-      const res = await uploadFile(file, PATIENTS_GALLERY)
+      const res = await uploadFile(file, PATIENT_GALLERY)
       if (res?.id) {
         const resAvatar = await createAvatar(res.id as UUID)
         const newAvatar: ProfileAvatar = {
