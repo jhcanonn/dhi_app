@@ -4,20 +4,25 @@ import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { ReactNode, useState } from 'react'
 import {
+  ANULLED_MEDICAL_COMPLEMENT,
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
   TypesExamsPrescription,
   getFormatedDateToEs,
 } from '@utils'
 import { Column } from 'primereact/column'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { PrimeIcons } from 'primereact/api'
 import { Dropdown } from 'primereact/dropdown'
 import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import EditClientExams from '@components/molecules/patient/EditClientExams'
+import EditClientExams from '@components/molecules/patient/EditClientExamsPrescriptItem'
 import { withToast } from '@hooks'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { StatusComplementMedical } from '@models'
+import { Tag } from 'primereact/tag'
+import { Divider } from 'primereact/divider'
 
 export interface IDHIDataExams {
   complementos_medicos: IClientExamsPrescriptionType[]
@@ -60,9 +65,13 @@ export interface ITemplatesExamsPrescriptionType {
   }[]
   recetas: {
     id: number
+    formula?: string
     Recetas_id: IPrescription
   }[]
-  diagnostico: string
+  diagnostico: {
+    code: string
+    descripcion: string
+  }
 }
 
 export interface IClientExamsPrescriptionType {
@@ -105,6 +114,7 @@ export interface IClientExamsPrescriptionType {
   }[]
   recetas: {
     id: number
+    formula: string
     Recetas_id: IPrescription
   }[]
 }
@@ -115,78 +125,153 @@ type Props = {
 }
 
 const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
+  const [anulledMedicalComplement] = useMutation(ANULLED_MEDICAL_COMPLEMENT)
+
   const { clientInfo } = useClientContext()
   const fichaId = clientInfo?.ficha_id?.id
 
   const { data: dataRecipesExams, loading: dataRecipesExamsLoading } =
     useQuery<IDHIDataExams>(GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID, {
-      variables: { fichaId },
+      variables: { fichaId: fichaId ?? 0 },
     })
 
   const [selectedTemplateExamns, setSelectedTemplateExamns] =
     useState<ITemplatesExamsPrescriptionType | null>()
 
   const [selectedTemplatePrescription, setTelectedTemplatePrescription] =
-    useState<ITemplatesExamsPrescriptionType>()
+    useState<ITemplatesExamsPrescriptionType | null>()
 
   const [visible, setVisible] = useState<boolean>(false)
-  const [currentRowData, setCurrentRowData] =
-    useState<ITemplatesExamsPrescriptionType | null>(null)
+  const [currentRowData, setCurrentRowData] = useState<
+    ITemplatesExamsPrescriptionType | IClientExamsPrescriptionType | null
+  >(null)
 
   const [isView, setIsView] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
+  const [tipo, setTipo] = useState<string>('')
 
   const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
   }
 
+  const confirmDelete = (
+    rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
+  ) => {
+    confirmDialog({
+      tagKey: `tag_key_${rowData.id}`,
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      message: `Quieres anular ${rowData.tipo} ?`,
+      header: 'Confirmación',
+      icon: 'pi pi-info-circle',
+      acceptClassName: 'p-button-danger',
+      draggable: false,
+      async accept() {
+        rowData.estado = StatusComplementMedical.ANNULLED
+        await anulledMedicalComplement({
+          variables: {
+            id: rowData.id,
+          },
+        })
+      },
+    })
+  }
+
   //rowData: ExamsPrescriptionType
-  const actionsBodyTemplate = (rowData: ITemplatesExamsPrescriptionType) => (
-    <div className='w-full flex gap-2'>
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.EYE}
-        type='button'
-        outlined
-        tooltip='Ver'
-        tooltipOptions={{ position: 'bottom' }}
-        severity='info'
-        onClick={() => {
-          setCurrentRowData(rowData)
-          setIsView(true)
-          setIsEdit(false)
-          setVisible(true)
-        }}
-      />
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.USER_EDIT}
-        type='button'
-        outlined
-        severity='success'
-        tooltip='Editar'
-        onClick={() => {
-          setCurrentRowData(rowData)
-          setIsView(false)
-          setIsEdit(true)
-          setVisible(true)
-        }}
-        tooltipOptions={{ position: 'bottom' }}
-      />
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.TRASH}
-        type='button'
-        outlined
-        severity='danger'
-        tooltip='Anular'
-        tooltipOptions={{ position: 'bottom' }}
-      />
-    </div>
+  const actionsBodyTemplate = (
+    rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
+  ) => (
+    <>
+      <ConfirmDialog tagKey={`tag_key_${rowData.id}`} />
+      {rowData.estado === StatusComplementMedical.ANNULLED ? (
+        <>
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.EYE}
+            type='button'
+            outlined
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            severity='info'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(true)
+              setIsEdit(false)
+              setVisible(true)
+            }}
+          />
+          <Tag
+            severity='danger'
+            value='Anulada'
+            className='h-fit px-2 py-1 self-center'
+            rounded
+          />
+        </>
+      ) : (
+        <div className='w-full flex gap-2'>
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.EYE}
+            type='button'
+            outlined
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            severity='info'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(true)
+              setIsEdit(false)
+              setVisible(true)
+            }}
+          />
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.USER_EDIT}
+            type='button'
+            outlined
+            severity='success'
+            tooltip='Editar'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(false)
+              setIsEdit(true)
+              setVisible(true)
+            }}
+            tooltipOptions={{ position: 'bottom' }}
+          />
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.TRASH}
+            type='button'
+            outlined
+            severity='danger'
+            tooltip='Anular'
+            onClick={() => confirmDelete(rowData)}
+            tooltipOptions={{ position: 'bottom' }}
+          />
+          <Button
+            className='text-sm'
+            icon='pi pi-print'
+            type='button'
+            severity='info'
+            tooltip='Imprimir'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+          ></Button>
+        </div>
+      )}
+    </>
   )
 
-  const headerDialog = <h2>Solicitud de exámenes</h2>
-
+  const headerDialog = (
+    <h2>
+      Solicitud de{' '}
+      {tipo === TypesExamsPrescription.EXAMEN ? 'examenes' : 'receta'}
+    </h2>
+  )
   return (
     <div className='w-full max-w-[100rem] mx-auto px-4'>
       <div className='py-3 flex flex-col md:flex-row gap-2'>
@@ -194,23 +279,50 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           header={headerDialog}
           draggable={false}
           visible={visible}
-          onHide={() => setVisible(false)}
+          onHide={() => {
+            setVisible(false)
+            setSelectedTemplateExamns(null)
+            setTelectedTemplatePrescription(null)
+          }}
           className='w-[90vw] max-w-[100rem]'
         >
           {currentRowData ? (
             <EditClientExams
               data={currentRowData}
-              isView={isView}
-              isEdit={isEdit}
-              exams={dataRecipesExams?.examenes ?? []}
-              fichaId={fichaId!}
-              onHide={(message: string, isError: boolean | null) => {
+              config={{
+                isView,
+                isEdit,
+                tipo,
+                exams:
+                  tipo === TypesExamsPrescription.EXAMEN
+                    ? dataRecipesExams?.examenes ?? []
+                    : [],
+                prescriptions:
+                  tipo === TypesExamsPrescription.RECETA
+                    ? selectedTemplatePrescription?.recetas.map(
+                        (receta) => receta.Recetas_id,
+                      ) ?? []
+                    : [],
+              }}
+              clientInfo={clientInfo!}
+              onHide={(
+                data: IClientExamsPrescriptionType | undefined,
+                message: string,
+                isError: boolean | null,
+              ) => {
                 setVisible(false)
+                setSelectedTemplateExamns(null)
+                setTelectedTemplatePrescription(null)
                 if (isError === null) return
-                selectedTemplateExamns && setSelectedTemplateExamns(null)
                 if (isError) {
                   showError('Error', message)
                   return
+                }
+                if (data) {
+                  dataRecipesExams?.complementos_medicos?.unshift(data)
+                  setCurrentRowData(null)
+                  setIsView(true)
+                  setIsEdit(false)
                 }
                 showSuccess('Exitoso', message)
               }}
@@ -246,6 +358,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplateExamns}
           onClick={() => {
+            setTipo(TypesExamsPrescription.EXAMEN)
             setCurrentRowData(selectedTemplateExamns ?? null)
             setIsView(false)
             setVisible(true)
@@ -275,8 +388,18 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           className='px-4 py-0 disabled:!cursor-not-allowed disabled:!pointer-events-auto'
           icon={PrimeIcons.PLUS}
           disabled={!selectedTemplatePrescription}
+          onClick={() => {
+            setTipo(TypesExamsPrescription.RECETA)
+            setCurrentRowData(selectedTemplatePrescription ?? null)
+            setIsView(false)
+            setVisible(true)
+          }}
         />
       </div>
+      <Divider
+        align='center'
+        className='[&_.p-divider-content]:bg-transparent mt-0'
+      ></Divider>
 
       <DataTable
         value={dataRecipesExams?.complementos_medicos}
@@ -291,8 +414,11 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           dataRecipesExams?.complementos_medicos === null ||
           dataRecipesExamsLoading
         }
+        sortField='date_created'
+        sortOrder={-1}
       >
         <Column
+          sortable
           key='descripcion'
           field='descripcion'
           header='Descripcion'
@@ -300,6 +426,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='date_created'
           field='date_created'
           header='Fecha de emisión'
@@ -308,6 +435,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='tipo'
           field='tipo'
           header='Tipo'
@@ -315,6 +443,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='user_created.profesional.nombre'
           field='user_created.profesional.nombre'
           header='Profesional'

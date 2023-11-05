@@ -3,6 +3,7 @@
 import {
   IClientExamsPrescriptionType,
   IExams,
+  IPrescription,
   ITemplatesExamsPrescriptionType,
 } from '@components/organisms/patient/ExamsPrescriptionTable'
 import { Fieldset } from 'primereact/fieldset'
@@ -19,33 +20,48 @@ import { AutoComplete } from 'primereact/autocomplete'
 import {
   CREATE_MEDICAL_COMPLEMENT,
   LocalStorageTags,
+  TypesExamsPrescription,
   UPDATE_MEDICAL_COMPLEMENT,
 } from '@utils'
 import { useMutation } from '@apollo/client'
+import { ClientDirectus } from '@models'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { Divider } from 'primereact/divider'
 
 type Props = {
   data: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType
-  exams: IExams[]
-  fichaId: number
-  isView: boolean
-  isEdit: boolean
-  onHide: (message: string, isError: boolean | null) => void
+  clientInfo: ClientDirectus | null
+  config: {
+    tipo: string
+    isView: boolean
+    isEdit: boolean
+    exams: IExams[]
+    prescriptions: IPrescription[]
+  }
+  onHide: (
+    data: IClientExamsPrescriptionType | undefined,
+    message: string,
+    isError: boolean | null,
+  ) => void
 }
 
-const EditClientExams = ({
-  data,
-  exams,
-  fichaId,
-  isView,
-  isEdit,
-  onHide,
-}: Props) => {
+const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
   const [createMedicalComplement] = useMutation(CREATE_MEDICAL_COMPLEMENT)
   const [updateMedicalComplement] = useMutation(UPDATE_MEDICAL_COMPLEMENT)
 
   const [selectedExams, setSelectedExams] = useState<IExams[]>([])
-  const [selectedDiagnostic, setSelectedDiagnostic] = useState<any>(null)
-  const [values, setValues] = useState<IExams[]>([])
+  const [selectedDiagnostic, setSelectedDiagnostic] = useState<{
+    code: string
+    descripcion: string
+  }>()
+  const [valuesExams, setValuesExams] = useState<IExams[]>([])
+  const [valuesPrescription, setValuesPrescription] = useState<
+    {
+      id: number
+      formula?: string
+      Recetas_id: IPrescription
+    }[]
+  >([])
 
   const [diagnostics, setDiagnostics] = useState([])
   const [filteredDiagnostics, setFilteredDiagnostics] = useState(null)
@@ -55,7 +71,7 @@ const EditClientExams = ({
       const _selectedExams = data.examenes.map((item) => item.examenes_id)
       setSelectedExams(_selectedExams)
       setSelectedDiagnostic(data.diagnostico)
-      const _exams = [...exams]
+      const _exams = [...config.exams]
       _exams.forEach((exam) => {
         const detailExamenes = data?.examenes?.find(
           (e) => e.examenes_id.id === exam.id,
@@ -63,7 +79,12 @@ const EditClientExams = ({
         exam.cantidad = detailExamenes?.cantidad ?? 1
         exam.descripcion = detailExamenes?.descripcion
       })
-      setValues(_exams)
+      setValuesExams(_exams)
+      const prescriptions = data?.recetas?.map((receta) => {
+        receta.formula = receta.formula ?? receta.Recetas_id.receta
+        return receta
+      })
+      setValuesPrescription(prescriptions)
     }
   }, [data])
 
@@ -111,24 +132,39 @@ const EditClientExams = ({
   const onSaveMedicalComplement = async () => {
     try {
       let result: any
-      if (!isEdit) {
+      if (!config.isEdit) {
         result = await createMedicalComplement({
           variables: {
-            fichaId,
-            tipo: 'Examen',
-            cantidad: selectedExams.length,
+            fichaId: clientInfo?.ficha_id?.id,
+            tipo: config.tipo,
+            cantidad:
+              config.tipo === TypesExamsPrescription.EXAMEN
+                ? selectedExams.length
+                : 1,
             descripcion: data.nombre,
-            examenes: selectedExams.map((item) => {
-              const InputDataExam = exams.find((e) => e.id === item.id)
-              return {
-                cantidad: InputDataExam?.cantidad,
-                descripcion: InputDataExam?.descripcion,
-                examenes_id: { id: item.id },
-              }
-            }),
+            examenes:
+              config.tipo === TypesExamsPrescription.EXAMEN
+                ? selectedExams.map((item) => {
+                    const InputDataExam = valuesExams.find(
+                      (e) => e.id === item.id,
+                    )
+                    return {
+                      cantidad: InputDataExam?.cantidad,
+                      descripcion: InputDataExam?.descripcion,
+                      examenes_id: { id: item.id },
+                    }
+                  })
+                : undefined,
+            recetas:
+              config.tipo === TypesExamsPrescription.RECETA
+                ? valuesPrescription.map((precrip) => ({
+                    formula: precrip?.formula,
+                    Recetas_id: { id: precrip.Recetas_id.id },
+                  }))
+                : undefined,
             diagnostico: selectedDiagnostic
               ? { code: selectedDiagnostic.code }
-              : null,
+              : undefined,
           },
         })
       } else {
@@ -137,18 +173,32 @@ const EditClientExams = ({
             id: data.id,
             cantidad: selectedExams.length,
             descripcion: data.nombre,
-            examenes: selectedExams.map((item) => {
-              const InputDataExam = exams.find((e) => e.id === item.id)
-              const detailExamenes = data.examenes.find(
-                (e) => e.examenes_id.id === item.id,
-              )
-              return {
-                id: detailExamenes?.id ?? undefined,
-                cantidad: InputDataExam?.cantidad,
-                descripcion: InputDataExam?.descripcion,
-                examenes_id: { id: item.id },
-              }
-            }),
+            examenes:
+              config.tipo === TypesExamsPrescription.EXAMEN
+                ? selectedExams.map((item) => {
+                    const InputDataExam = valuesExams.find(
+                      (e) => e.id === item.id,
+                    )
+                    const detailExamenes = data.examenes.find(
+                      (e) => e.examenes_id.id === item.id,
+                    )
+                    return {
+                      id: detailExamenes?.id ?? undefined,
+                      cantidad: InputDataExam?.cantidad,
+                      descripcion: InputDataExam?.descripcion,
+                      examenes_id: { id: item.id },
+                    }
+                  })
+                : undefined,
+            recetas:
+              config.tipo === TypesExamsPrescription.RECETA
+                ? valuesPrescription.map((precrip) => ({
+                    id: precrip.id,
+                    formula: precrip.formula,
+                    Recetas_id: { id: precrip.Recetas_id.id },
+                  }))
+                : undefined,
+
             diagnostico: selectedDiagnostic
               ? { code: selectedDiagnostic.code }
               : null,
@@ -157,10 +207,9 @@ const EditClientExams = ({
       }
       const dataMedicalComplement: IClientExamsPrescriptionType =
         result.data.create_complementos_medicos_item
-      console.log(dataMedicalComplement)
-      onHide('Correcto', false)
+      onHide(dataMedicalComplement, 'Correcto', false)
     } catch (error: any) {
-      onHide(error.message, true)
+      onHide(undefined, error.message, true)
     }
   }
 
@@ -184,6 +233,21 @@ const EditClientExams = ({
     exam.descripcion = e?.target?.value ?? ''
   }
 
+  const changeReceta = (
+    e: ChangeEvent<HTMLTextAreaElement>,
+    prescrip: {
+      id: number
+      formula?: string
+      Recetas_id: IPrescription
+    },
+  ) => {
+    valuesPrescription.forEach((item) => {
+      if (item.id === prescrip.id) item.formula = e?.target?.value ?? ''
+    })
+
+    setValuesPrescription([...valuesPrescription])
+  }
+
   const itemTemplate = (rowData: IExams) => {
     return (
       <div className='grid lg:flex '>
@@ -202,7 +266,7 @@ const EditClientExams = ({
                 value={rowData}
                 onChange={onExamChange}
                 checked={isCheckboxChecked(rowData)}
-                disabled={isView}
+                disabled={config.isView}
               />
 
               <label className='ml-2'>{rowData.nombre}</label>
@@ -224,7 +288,7 @@ const EditClientExams = ({
                   value={rowData.cantidad}
                   onValueChange={(e) => changeCantidad(e, rowData)}
                   minFractionDigits={0}
-                  disabled={isView || !isCheckboxChecked(rowData)}
+                  disabled={config.isView || !isCheckboxChecked(rowData)}
                   showButtons
                   buttonLayout='horizontal'
                   min={1}
@@ -247,7 +311,7 @@ const EditClientExams = ({
                   className='p-inputtext-sm w-full'
                   value={rowData.descripcion}
                   onChange={(e) => changeDescripcion(e, rowData)}
-                  disabled={isView || !isCheckboxChecked(rowData)}
+                  disabled={config.isView || !isCheckboxChecked(rowData)}
                 />
                 <label htmlFor='descriptionInput'>Descripción</label>
               </span>
@@ -261,46 +325,51 @@ const EditClientExams = ({
   const footer = (
     <div className='flex flex-col md:flex-row gap-2 justify-center'>
       <Button
+        icon='pi pi-times'
         label='Cerrar'
         severity='danger'
         type='button'
-        onClick={() => onHide('', null)}
+        onClick={() => onHide(undefined, '', null)}
         className='w-full md:w-fit'
       />
       <Button
+        icon='pi pi-save'
         label='Guardar'
         severity='success'
         type='button'
         onClick={() => onSaveMedicalComplement()}
         className='w-full md:w-fit'
-        visible={!isView}
+        visible={!config.isView}
       />
     </div>
   )
 
-  return (
+  return config.tipo === TypesExamsPrescription.EXAMEN ? (
     <>
       <div>
-        <span className='p-float-label pb-3'>
-          <AutoComplete
-            inputId='acdiagnostic'
-            field='code'
-            value={selectedDiagnostic}
-            suggestions={filteredDiagnostics!}
-            completeMethod={search}
-            itemTemplate={idItemTemplate}
-            selectedItemTemplate={seletedItemTemplate}
-            onChange={(e) => setSelectedDiagnostic(e.value)}
-            virtualScrollerOptions={{ itemSize: 38 }}
-            disabled={isView}
-          />
-          <label htmlFor='acdiagnostic'>Diagnostico</label>
-        </span>
-
         <Fieldset legend={data.nombre}>
+          <span className='p-float-label'>
+            <AutoComplete
+              inputId='acdiagnostic'
+              field='code'
+              value={selectedDiagnostic}
+              suggestions={filteredDiagnostics!}
+              completeMethod={search}
+              itemTemplate={idItemTemplate}
+              selectedItemTemplate={seletedItemTemplate}
+              onChange={(e) => setSelectedDiagnostic(e.value)}
+              virtualScrollerOptions={{ itemSize: 38 }}
+              disabled={config.isView}
+            />
+            <label htmlFor='acdiagnostic'>Diagnostico</label>
+          </span>
+          <Divider
+            align='center'
+            className='[&_.p-divider-content]:bg-transparent mt-4 mb-3'
+          ></Divider>
           <div className='!grid grid-cols-1  w-full gap-x-4 m-0'>
             <DataScroller
-              value={values}
+              value={valuesExams}
               itemTemplate={itemTemplate}
               rows={1000}
               inline
@@ -313,6 +382,24 @@ const EditClientExams = ({
       </div>
       <br></br>
     </>
+  ) : (
+    valuesPrescription.map((prescription) => (
+      <Fieldset legend={data.nombre}>
+        <div className='!grid grid-cols-1  w-full gap-x-4 m-0'>
+          <InputTextarea
+            rows={20}
+            readOnly={config.isView}
+            value={prescription.formula}
+            onChange={(e) => changeReceta(e, prescription)}
+          ></InputTextarea>
+          <Divider
+            align='center'
+            className='[&_.p-divider-content]:bg-transparent mt-4 mb-3'
+          ></Divider>
+          {footer}
+        </div>
+      </Fieldset>
+    ))
   )
 }
 

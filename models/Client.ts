@@ -139,6 +139,13 @@ export enum StatusDataSheet {
   ANNULLED = 'annulled',
 }
 
+export enum StatusComplementMedical {
+  PUBLISHED = 'published',
+  DRAFT = 'draft',
+  ARCHIVED = 'archived',
+  ANNULLED = 'annulled',
+}
+
 export enum TagType {
   IMAGE = 'imagen',
   FILE = 'archivo',
