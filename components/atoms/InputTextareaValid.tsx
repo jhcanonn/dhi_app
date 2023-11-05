@@ -75,7 +75,7 @@ const InputTextareaValid = <T extends FieldValues>({
               rows={rows}
               className={cx({ 'p-invalid': error }, 'w-full')}
               autoResize={autoResize}
-              disabled={disabled}
+              readOnly={disabled}
             />
             <label htmlFor={name} className={cx({ 'p-error': error })}>
               {label}

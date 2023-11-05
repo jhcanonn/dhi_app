@@ -60,6 +60,7 @@ export interface ITemplatesExamsPrescriptionType {
   }[]
   recetas: {
     id: number
+    formula?: string
     Recetas_id: IPrescription
   }[]
   diagnostico: {
@@ -108,6 +109,7 @@ export interface IClientExamsPrescriptionType {
   }[]
   recetas: {
     id: number
+    formula: string
     Recetas_id: IPrescription
   }[]
 }
@@ -123,7 +125,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
 
   const { data: dataRecipesExams, loading: dataRecipesExamsLoading } =
     useQuery<IDHIDataExams>(GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID, {
-      variables: { fichaId },
+      variables: { fichaId: fichaId ?? 0 },
     })
 
   const [selectedTemplateExamns, setSelectedTemplateExamns] =
@@ -133,8 +135,9 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
     useState<ITemplatesExamsPrescriptionType | null>()
 
   const [visible, setVisible] = useState<boolean>(false)
-  const [currentRowData, setCurrentRowData] =
-    useState<ITemplatesExamsPrescriptionType | null>(null)
+  const [currentRowData, setCurrentRowData] = useState<
+    ITemplatesExamsPrescriptionType | IClientExamsPrescriptionType | null
+  >(null)
 
   const [isView, setIsView] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
@@ -156,6 +159,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         tooltipOptions={{ position: 'bottom' }}
         severity='info'
         onClick={() => {
+          setTipo(rowData.tipo)
           setCurrentRowData(rowData)
           setIsView(true)
           setIsEdit(false)
@@ -170,6 +174,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         severity='success'
         tooltip='Editar'
         onClick={() => {
+          setTipo(rowData.tipo)
           setCurrentRowData(rowData)
           setIsView(false)
           setIsEdit(true)
@@ -195,7 +200,6 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
       {tipo === TypesExamsPrescription.EXAMEN ? 'examenes' : 'receta'}
     </h2>
   )
-
   return (
     <div className='w-full max-w-[100rem] mx-auto px-4'>
       <div className='py-3 flex flex-col md:flex-row gap-2'>
@@ -213,9 +217,22 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           {currentRowData ? (
             <EditClientExams
               data={currentRowData}
-              config={{ isView, isEdit, tipo }}
-              exams={dataRecipesExams?.examenes ?? []}
-              fichaId={fichaId!}
+              config={{
+                isView,
+                isEdit,
+                tipo,
+                exams:
+                  tipo === TypesExamsPrescription.EXAMEN
+                    ? dataRecipesExams?.examenes ?? []
+                    : [],
+                prescriptions:
+                  tipo === TypesExamsPrescription.RECETA
+                    ? selectedTemplatePrescription?.recetas.map(
+                        (receta) => receta.Recetas_id,
+                      ) ?? []
+                    : [],
+              }}
+              clientInfo={clientInfo!}
               onHide={(
                 data: IClientExamsPrescriptionType | undefined,
                 message: string,
@@ -230,7 +247,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
                   return
                 }
                 if (data) {
-                  dataRecipesExams?.complementos_medicos?.push(data)
+                  dataRecipesExams?.complementos_medicos?.unshift(data)
                   setCurrentRowData(null)
                   setIsView(true)
                   setIsEdit(false)

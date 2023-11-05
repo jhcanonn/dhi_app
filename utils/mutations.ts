@@ -87,6 +87,7 @@ export const CREATE_MEDICAL_COMPLEMENT = gql`
     $cantidad: Int
     $descripcion: String
     $examenes: [create_complementos_medicos_examenes_input!]
+    $recetas: [create_complementos_medicos_recetas_input!]
     $diagnostico: create_cie_10_input
   ) {
     create_complementos_medicos_item(
@@ -96,6 +97,7 @@ export const CREATE_MEDICAL_COMPLEMENT = gql`
         cantidad: $cantidad
         descripcion: $descripcion
         examenes: $examenes
+        recetas: $recetas
         diagnostico: $diagnostico
       }
     ) {
@@ -154,6 +156,7 @@ export const CREATE_MEDICAL_COMPLEMENT = gql`
           receta
           orden
         }
+        formula
       }
     }
   }
@@ -165,6 +168,7 @@ export const UPDATE_MEDICAL_COMPLEMENT = gql`
     $cantidad: Int
     $descripcion: String
     $examenes: [update_complementos_medicos_examenes_input!]
+    $recetas: [update_complementos_medicos_recetas_input!]
     $diagnostico: update_cie_10_input
   ) {
     update_complementos_medicos_item(
@@ -173,6 +177,7 @@ export const UPDATE_MEDICAL_COMPLEMENT = gql`
         cantidad: $cantidad
         descripcion: $descripcion
         examenes: $examenes
+        recetas: $recetas
         diagnostico: $diagnostico
       }
     ) {
@@ -231,6 +236,7 @@ export const UPDATE_MEDICAL_COMPLEMENT = gql`
           receta
           orden
         }
+        formula
       }
     }
   }
