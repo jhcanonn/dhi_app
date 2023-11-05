@@ -4,12 +4,13 @@ import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { ReactNode, useState } from 'react'
 import {
+  ANULLED_MEDICAL_COMPLEMENT,
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
   TypesExamsPrescription,
   getFormatedDateToEs,
 } from '@utils'
 import { Column } from 'primereact/column'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { PrimeIcons } from 'primereact/api'
@@ -18,6 +19,9 @@ import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import EditClientExams from '@components/molecules/patient/EditClientExamsPrescriptItem'
 import { withToast } from '@hooks'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { StatusComplementMedical } from '@models'
+import { Tag } from 'primereact/tag'
 
 export interface IDHIDataExams {
   complementos_medicos: IClientExamsPrescriptionType[]
@@ -120,6 +124,8 @@ type Props = {
 }
 
 const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
+  const [anulledMedicalComplement] = useMutation(ANULLED_MEDICAL_COMPLEMENT)
+
   const { clientInfo } = useClientContext()
   const fichaId = clientInfo?.ficha_id?.id
 
@@ -147,51 +153,116 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
   }
 
+  const confirmDelete = (
+    rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
+  ) => {
+    confirmDialog({
+      tagKey: `tag_key_${rowData.id}`,
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      message: `Quieres anular ${rowData.tipo} ?`,
+      header: 'Confirmación',
+      icon: 'pi pi-info-circle',
+      acceptClassName: 'p-button-danger',
+      draggable: false,
+      async accept() {
+        rowData.estado = StatusComplementMedical.ANNULLED
+        await anulledMedicalComplement({
+          variables: {
+            id: rowData.id,
+          },
+        })
+      },
+    })
+  }
+
   //rowData: ExamsPrescriptionType
-  const actionsBodyTemplate = (rowData: ITemplatesExamsPrescriptionType) => (
-    <div className='w-full flex gap-2'>
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.EYE}
-        type='button'
-        outlined
-        tooltip='Ver'
-        tooltipOptions={{ position: 'bottom' }}
-        severity='info'
-        onClick={() => {
-          setTipo(rowData.tipo)
-          setCurrentRowData(rowData)
-          setIsView(true)
-          setIsEdit(false)
-          setVisible(true)
-        }}
-      />
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.USER_EDIT}
-        type='button'
-        outlined
-        severity='success'
-        tooltip='Editar'
-        onClick={() => {
-          setTipo(rowData.tipo)
-          setCurrentRowData(rowData)
-          setIsView(false)
-          setIsEdit(true)
-          setVisible(true)
-        }}
-        tooltipOptions={{ position: 'bottom' }}
-      />
-      <Button
-        className='text-sm'
-        icon={PrimeIcons.TRASH}
-        type='button'
-        outlined
-        severity='danger'
-        tooltip='Anular'
-        tooltipOptions={{ position: 'bottom' }}
-      />
-    </div>
+  const actionsBodyTemplate = (
+    rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
+  ) => (
+    <>
+      <ConfirmDialog tagKey={`tag_key_${rowData.id}`} />
+      {rowData.estado === StatusComplementMedical.ANNULLED ? (
+        <>
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.EYE}
+            type='button'
+            outlined
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            severity='info'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(true)
+              setIsEdit(false)
+              setVisible(true)
+            }}
+          />
+          <Tag
+            severity='danger'
+            value='Anulada'
+            className='h-fit px-2 py-1 self-center'
+            rounded
+          />
+        </>
+      ) : (
+        <div className='w-full flex gap-2'>
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.EYE}
+            type='button'
+            outlined
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            severity='info'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(true)
+              setIsEdit(false)
+              setVisible(true)
+            }}
+          />
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.USER_EDIT}
+            type='button'
+            outlined
+            severity='success'
+            tooltip='Editar'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(false)
+              setIsEdit(true)
+              setVisible(true)
+            }}
+            tooltipOptions={{ position: 'bottom' }}
+          />
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.TRASH}
+            type='button'
+            outlined
+            severity='danger'
+            tooltip='Anular'
+            onClick={() => confirmDelete(rowData)}
+            tooltipOptions={{ position: 'bottom' }}
+          />
+          <Button
+            className='text-sm'
+            icon='pi pi-print'
+            type='button'
+            severity='info'
+            tooltip='Imprimir'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+          ></Button>
+        </div>
+      )}
+    </>
   )
 
   const headerDialog = (

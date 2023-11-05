@@ -325,6 +325,7 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
   const footer = (
     <div className='flex flex-col md:flex-row gap-2 justify-center'>
       <Button
+        icon='pi pi-times'
         label='Cerrar'
         severity='danger'
         type='button'
@@ -332,6 +333,7 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
         className='w-full md:w-fit'
       />
       <Button
+        icon='pi pi-save'
         label='Guardar'
         severity='success'
         type='button'

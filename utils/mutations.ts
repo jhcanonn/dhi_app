@@ -241,3 +241,67 @@ export const UPDATE_MEDICAL_COMPLEMENT = gql`
     }
   }
 `
+
+export const ANULLED_MEDICAL_COMPLEMENT = gql`
+  mutation UpdateMedicalComplement($id: ID!) {
+    update_complementos_medicos_item(id: $id, data: { estado: "annulled" }) {
+      id
+      estado
+      orden
+      date_updated
+      tipo
+      user_created {
+        id
+        first_name
+        last_name
+        profesional {
+          nombre
+          identificacion
+          especialidad
+          cargo
+          no_registro_medico
+          firma {
+            id
+            filename_disk
+          }
+        }
+      }
+      date_created
+      cantidad
+      descripcion
+      diagnostico {
+        code
+        descripcion
+      }
+      ficha_id {
+        id
+      }
+      examenes {
+        id
+        examenes_id {
+          id
+          estado
+          orden
+          nombre
+          codigo
+          cantidad
+          categoria
+        }
+        cantidad
+        descripcion
+      }
+      recetas {
+        id
+        Recetas_id {
+          id
+          estado
+          nombre
+          diagnostico
+          receta
+          orden
+        }
+        formula
+      }
+    }
+  }
+`
