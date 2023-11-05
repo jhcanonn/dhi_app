@@ -330,7 +330,6 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
         id
         Recetas_id {
           id
-          date_created
           diagnostico
           nombre
           receta
@@ -377,7 +376,6 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
         id
         examenes_id {
           id
-          estado
           orden
           nombre
           codigo
@@ -391,12 +389,12 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
         id
         Recetas_id {
           id
-          estado
           nombre
           diagnostico
           receta
           orden
         }
+        formula
       }
     }
     examenes(filter: { estado: { _eq: "published" } }, sort: "orden") {
