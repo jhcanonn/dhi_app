@@ -22,6 +22,7 @@ import { withToast } from '@hooks'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { StatusComplementMedical } from '@models'
 import { Tag } from 'primereact/tag'
+import { Divider } from 'primereact/divider'
 
 export interface IDHIDataExams {
   complementos_medicos: IClientExamsPrescriptionType[]
@@ -395,6 +396,10 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           }}
         />
       </div>
+      <Divider
+        align='center'
+        className='[&_.p-divider-content]:bg-transparent mt-0'
+      ></Divider>
 
       <DataTable
         value={dataRecipesExams?.complementos_medicos}
@@ -409,8 +414,11 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           dataRecipesExams?.complementos_medicos === null ||
           dataRecipesExamsLoading
         }
+        sortField='date_created'
+        sortOrder={-1}
       >
         <Column
+          sortable
           key='descripcion'
           field='descripcion'
           header='Descripcion'
@@ -418,6 +426,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='date_created'
           field='date_created'
           header='Fecha de emisión'
@@ -426,6 +435,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='tipo'
           field='tipo'
           header='Tipo'
@@ -433,6 +443,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         />
 
         <Column
+          sortable
           key='user_created.profesional.nombre'
           field='user_created.profesional.nombre'
           header='Profesional'
