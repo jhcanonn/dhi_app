@@ -152,8 +152,11 @@ export const GET_CLIENTS = gql`
 `
 
 export const GET_TAGS = gql`
-  query {
-    tags(filter: { estado: { _eq: "published" } }) {
+  query ($type: String) {
+    tags(
+      filter: { estado: { _eq: "published" }, tipo: { _eq: $type } }
+      sort: "id"
+    ) {
       id
       nombre
       tipo
@@ -223,6 +226,15 @@ export const GET_CLIENT_BY_ID = gql`
           id
           descripcion
           date_created
+          user_created {
+            id
+            first_name
+            last_name
+            profesional {
+              id
+              nombre
+            }
+          }
           fotos {
             id
             directus_files_id {
@@ -240,6 +252,29 @@ export const GET_CLIENT_BY_ID = gql`
               estado
             }
           }
+        }
+      }
+      archivos {
+        id
+        directus_files_id {
+          id
+          title
+          description
+          uploaded_on
+          uploaded_by {
+            id
+            first_name
+            last_name
+            profesional {
+              id
+              nombre
+            }
+          }
+        }
+        tag {
+          nombre
+          tipo
+          estado
         }
       }
     }
