@@ -7,6 +7,7 @@ export const colors = {
 
 export const errorMessages = {
   mandatoryField: 'Este campo es obligatorio.',
+  shortMandatoryField: 'Obligatorio.',
   acceptField: 'Aceptar es obligatorio.',
   invalidValue: 'Ingrese un valor válido.',
   invalidFormat: 'El formato no es válido.',
@@ -34,6 +35,8 @@ export const CLIENT_PAGE_TAB = [
   'budget',
 ]
 
+export const CLIENT_PAGE_CRUD = ['create', 'read', 'update', 'delete']
+
 export const PAGE_PATH = {
   home: '/',
   login: '/login',
@@ -48,6 +51,7 @@ export const PAGE_PATH = {
   clientHistorySchedule: '/client/{id}/historyschedule',
   clientGallery: '/client/{id}/gallery',
   clientBudget: '/client/{id}/budget',
+  clientBudgetCreate: '/client/{id}/budget/create',
   gallery: '/client/gallery',
   crm: '/crm',
   finance: '/finance',
@@ -72,6 +76,7 @@ export enum LocalStorageTags {
 export enum PanelTags {
   ATENTIONS = 'Atenciones',
   PATIENT = 'Paciente',
+  BUDGET = 'Presupuesto',
 }
 
 export enum TypesExamsPrescription {
@@ -91,4 +96,5 @@ export const PATIENT_GALLERY = 'ce89509c-fcb6-4acd-afb2-3d3fec5e6058'
 export const PATIENT_FILES = '94d99b64-b5e6-42b4-9324-f281bc7941ae'
 export const DHI_SUCRUSAL = 'DHI COLOMBIA RESTAURACION CLINICA CAPILAR SAS'
 export const HC_IMPLANTE_CODE = 'hc_implantecm_'
+export const BUDGET_CODE = 'presupuesto_'
 export const COMING_SOON = 'Esta funcionalidad estará disponible proximamente.'

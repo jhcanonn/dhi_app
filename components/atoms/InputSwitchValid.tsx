@@ -10,6 +10,7 @@ import { errorMessages } from '@utils'
 export type Props<T> = FieldCommonProps<T> & {
   acceptMessage?: string
   disabled?: boolean
+  className?: string
 }
 
 const InputSwitchValid = <T extends FieldValues>({
@@ -18,6 +19,7 @@ const InputSwitchValid = <T extends FieldValues>({
   acceptMessage,
   disabled,
   required,
+  className,
   validate,
 }: Props<T>) => {
   const {
@@ -38,7 +40,7 @@ const InputSwitchValid = <T extends FieldValues>({
         field: { value, name, ref, onChange },
         fieldState: { error },
       }) => (
-        <div className='flex flex-col'>
+        <div className={`flex flex-col justify-center ${className}`}>
           <div className='flex gap-2'>
             <InputSwitch
               inputId={name}

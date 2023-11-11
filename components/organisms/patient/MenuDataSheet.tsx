@@ -175,7 +175,7 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
               )
             }
             outlined
-          ></Button>
+          />
           {/* onClick={() => PanelToPDF(panel, handleForm, false, dataHeader)}*/}
           {/* <Button onClick={() => HtmlToPDF(refForm.current)} >Imprimir</Button> */}
         </>

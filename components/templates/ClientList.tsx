@@ -10,12 +10,11 @@ import { GET_CLIENTS, PAGE_PATH, parseUrl } from '@utils'
 import { FilterMatchMode, PrimeIcons } from 'primereact/api'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
-import { useRouter } from 'next/navigation'
 import { Avatar } from 'primereact/avatar'
 import { OverlayPanel } from 'primereact/overlaypanel'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
-import { goToPage } from '@utils/go-to'
 import { Image } from 'primereact/image'
+import { useGoTo } from '@hooks'
 
 const ClientList = () => {
   const [clients, setClients] = useState<DhiPatient[]>([])
@@ -28,7 +27,7 @@ const ClientList = () => {
     correo: { value: null, matchMode: FilterMatchMode.CONTAINS },
     telefono: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
-  const router = useRouter()
+  const { goToPage } = useGoTo()
 
   const { data: dataClients, loading: dataClientsLoading } =
     useQuery(GET_CLIENTS)
@@ -58,10 +57,7 @@ const ClientList = () => {
         tooltip='Ver Paciente'
         tooltipOptions={{ position: 'bottom' }}
         onClick={() =>
-          goToPage(
-            parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }),
-            router,
-          )
+          goToPage(parseUrl(PAGE_PATH.clientDetail, { id: rowData.id! }))
         }
       />
       <Button
@@ -73,10 +69,7 @@ const ClientList = () => {
         tooltipOptions={{ position: 'bottom' }}
         severity='help'
         onClick={() =>
-          goToPage(
-            parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }),
-            router,
-          )
+          goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id: rowData.id! }))
         }
       />
     </div>

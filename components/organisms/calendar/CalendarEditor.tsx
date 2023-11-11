@@ -39,8 +39,8 @@ import {
   GET_CLIENT_BY_ID,
   regexPatterns,
   COMING_SOON,
+  pickObjectProps,
 } from '@utils'
-import { useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { useQuery } from '@apollo/client'
@@ -66,8 +66,7 @@ import { UploadProfileImage } from '../patient'
 import { Skeleton } from 'primereact/skeleton'
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { classNames as cx } from 'primereact/utils'
-import { goToPage } from '@utils/go-to'
-import { withToast } from '@hooks'
+import { useGoTo, withToast } from '@hooks'
 
 type Props = {
   showError: (summary: ReactNode, detail: ReactNode) => void
@@ -90,7 +89,7 @@ const CalendarEditor = ({
   const [showDataExtra, setShowDataExtra] = useState(false)
   const { refetch } = useQuery(GET_INFO_CLIENT)
 
-  const router = useRouter()
+  const { goToPage } = useGoTo()
   const { professionals, boxes, countries, setEvents } = useGlobalContext()
   const { resourceType, eventStates, pays } = useCalendarContext()
 
@@ -155,10 +154,8 @@ const CalendarEditor = ({
     getServices(eventData.box?.box_id!),
   )
   const handleForm = useForm({ defaultValues: eventData })
-  const { handleSubmit, resetField, setValue, getValues, trigger } = handleForm
-
-  const handleFormExtra = useForm({ defaultValues: {} })
-  const { getValues: getValuesExtra, reset: resetExtra } = handleFormExtra
+  const { handleSubmit, resetField, setValue, getValues, trigger, unregister } =
+    handleForm
 
   const blockAppointment = async (data: DhiEvent) => {
     try {
@@ -195,7 +192,7 @@ const CalendarEditor = ({
       scheduler.loading(true)
       data['professional_id'] = data.professional?.professional_id
       data['box_id'] = data.box?.box_id
-      data['data_extra'] = getValuesExtra()
+      data['data_extra'] = pickObjectProps(data, 'patient_extra_')
       const appointment = directusAppointmentMapper(data)
       const access_token = await refreshToken(cookies)
       if (event) {
@@ -220,7 +217,8 @@ const CalendarEditor = ({
     }
   }
 
-  const onSubmit = async (data: DhiEvent) => {
+  const onSubmit = async () => {
+    const data = getValues()
     const hs = moment(data.start).hour()
     const he = moment(data.end).hour()
     const me = moment(data.end).minute()
@@ -577,90 +575,99 @@ const CalendarEditor = ({
             </div>
           )}
         </div>
-      </form>
-      {showDataExtra && (
-        <div className='mt-2'>
-          <PatientDataExtra id='calendar_extra' handleForm={handleFormExtra} />
-        </div>
-      )}
-      <section
-        className={cx(
-          'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
-          { 'mt-3': showDataExtra },
+        {showDataExtra && (
+          <div className='mt-2'>
+            <PatientDataExtra id='calendar_extra' handleForm={handleForm} />
+          </div>
         )}
-      >
-        {(isEvent || (!isEvent && desabledFields)) && (
-          <Button
-            label={'Perfil'}
-            type='button'
-            severity='info'
-            rounded
-            onClick={() => {
-              goToPage(
-                parseUrl(PAGE_PATH.clientDetail, {
-                  id: getValues('client_id')!,
-                }),
-                router,
-              )
-            }}
-          />
-        )}
-        {event && (
-          <>
+        <section
+          className={cx(
+            'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
+            { 'mt-3': showDataExtra },
+          )}
+        >
+          {(isEvent || (!isEvent && desabledFields)) && (
             <Button
-              label={'Insumos'}
+              label={'Perfil'}
               type='button'
-              severity='secondary'
+              severity='info'
               rounded
-              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
+              onClick={() => {
+                goToPage(
+                  parseUrl(PAGE_PATH.clientDetail, {
+                    id: getValues('client_id')!,
+                  }),
+                )
+              }}
             />
-            <Button
-              label={'Historico'}
-              type='button'
-              severity='warning'
-              rounded
-              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
-            />
-            <Button
-              label={'Comentarios'}
-              type='button'
-              severity='help'
-              rounded
-              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
-            />
-            <Button
-              label={'Pagar'}
-              type='button'
-              severity='danger'
-              rounded
-              onClick={(e: any) => showInfo(e.target.textContent, COMING_SOON)}
-            />
-          </>
-        )}
-        {!isOldDate && (
-          <>
-            {!event && !desabledFields && (
-              <ToggleButton
-                checked={showDataExtra}
-                onLabel='Eliminar datos extra'
-                offLabel='Incluir datos extra'
-                onChange={(e: ToggleButtonChangeEvent) => {
-                  setShowDataExtra(e.value)
-                  !showDataExtra && resetExtra()
-                }}
-                className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
+          )}
+          {event && (
+            <>
+              <Button
+                label={'Insumos'}
+                type='button'
+                severity='secondary'
+                rounded
+                onClick={(e: any) =>
+                  showInfo(e.target.textContent, COMING_SOON)
+                }
               />
-            )}
-            <Button
-              label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
-              type='submit'
-              severity='success'
-              rounded
-              form='form_calendar_appointment'
-            />
-          </>
-        )}
-      </section>
+              <Button
+                label={'Historico'}
+                type='button'
+                severity='warning'
+                rounded
+                onClick={(e: any) =>
+                  showInfo(e.target.textContent, COMING_SOON)
+                }
+              />
+              <Button
+                label={'Comentarios'}
+                type='button'
+                severity='help'
+                rounded
+                onClick={(e: any) =>
+                  showInfo(e.target.textContent, COMING_SOON)
+                }
+              />
+              <Button
+                label={'Pagar'}
+                type='button'
+                severity='danger'
+                rounded
+                onClick={(e: any) =>
+                  showInfo(e.target.textContent, COMING_SOON)
+                }
+              />
+            </>
+          )}
+          {!isOldDate && (
+            <>
+              {!event && !desabledFields && (
+                <ToggleButton
+                  checked={showDataExtra}
+                  onLabel='Eliminar datos extra'
+                  offLabel='Incluir datos extra'
+                  onChange={(e: ToggleButtonChangeEvent) => {
+                    setShowDataExtra(e.value)
+                    showDataExtra &&
+                      Object.keys(getValues())
+                        .filter((key) => key.startsWith('patient_extra_'))
+                        .forEach((key) => unregister(key))
+                  }}
+                  className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
+                />
+              )}
+              <Button
+                label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
+                type='submit'
+                severity='success'
+                rounded
+              />
+            </>
+          )}
+        </section>
+      </form>
     </Card>
   )
 }

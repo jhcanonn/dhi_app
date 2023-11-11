@@ -4,14 +4,6 @@ import { useMutation } from '@apollo/client'
 import { Cookies, withCookies } from 'react-cookie'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import {
-  DHI_SESSION,
-  GET_TOKEN,
-  PAGE_PATH,
-  expiresCookie,
-  regexPatterns,
-} from '@utils'
 import { directusSystemClient } from './Providers'
 import { LoginData } from '@models'
 import { InputTextValid } from '@components/atoms'
@@ -23,10 +15,17 @@ import Link from 'next/link'
 import { Tooltip } from 'primereact/tooltip'
 import { refreshToken } from '@utils/api'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
-import { goToPage } from '@utils/go-to'
+import { useGoTo } from '@hooks'
+import {
+  DHI_SESSION,
+  GET_TOKEN,
+  PAGE_PATH,
+  expiresCookie,
+  regexPatterns,
+} from '@utils'
 
 const Login = ({ cookies }: { cookies: Cookies }) => {
-  const router = useRouter()
+  const { goToPage } = useGoTo()
 
   const [login, { data, loading, error }] = useMutation(GET_TOKEN, {
     client: directusSystemClient,
@@ -55,7 +54,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
 
   const verifyCookie = async () => {
     const access_token = await refreshToken(cookies)
-    access_token && goToPage(PAGE_PATH.calendar, router)
+    access_token && goToPage(PAGE_PATH.calendar)
   }
 
   useEffect(() => {
@@ -67,7 +66,7 @@ const Login = ({ cookies }: { cookies: Cookies }) => {
           path: '/',
           expires: expiresCookie(),
         })
-        goToPage(PAGE_PATH.calendar, router)
+        goToPage(PAGE_PATH.calendar)
       }
     }
   }, [data])

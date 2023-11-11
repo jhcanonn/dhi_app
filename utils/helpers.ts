@@ -90,3 +90,11 @@ export const convertValuesToDateIfSo = (data: any) => {
   }
   return data
 }
+
+export const pickObjectProps = (data: any, startMatch: string) =>
+  Object.keys(data)
+    .filter((key) => key.startsWith(startMatch))
+    .reduce((obj: any, key) => {
+      obj[key] = data[key]
+      return obj
+    }, {})
