@@ -3,8 +3,7 @@
 import { UUID } from 'crypto'
 import { useQuery } from '@apollo/client'
 import { DropdownValid, InputNumberValid } from '@components/atoms'
-import { useGlobalContext } from '@contexts'
-import { BUDGET_CODE, GET_BUDGET_ITEMS, GET_USERS, PanelTags } from '@utils'
+import { useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -15,6 +14,7 @@ import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
+import { useGoTo } from '@hooks'
 import {
   BudgetItemsDirectus,
   BudgetItemsProducts,
@@ -24,6 +24,14 @@ import {
   PanelsDirectus,
   UsersDirectus,
 } from '@models'
+import {
+  BUDGET_CODE,
+  GET_BUDGET_ITEMS,
+  GET_USERS,
+  PAGE_PATH,
+  PanelTags,
+  parseUrl,
+} from '@utils'
 
 type Users = {
   name: string
@@ -50,7 +58,9 @@ const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
   ) || []
 
 const ClientBudgetCreate = () => {
+  const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
+  const { clientInfo } = useClientContext()
   const [selectedPanel, setSelectedPanel] = useState<PanelsDirectus>()
   const [users, setUsers] = useState<Users[]>([])
   const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
@@ -173,39 +183,48 @@ const ClientBudgetCreate = () => {
           />
         </div>
         <div className='flex flex-col gap-4'>
-          <BudgetItems
-            handleForm={handleForm}
-            legend={BudgetItem.SERVICES}
-            buttonLabel='Agregar servcio'
-            list={getNameValueList(budgetItems?.servicios)}
-            onListChange={(
-              value: BudgetItemsService,
-              tag: string,
-              rowId: UUID,
-            ) => handleListChange(+value.precio, tag, rowId)}
-          />
-          <BudgetItems
-            handleForm={handleForm}
-            legend={BudgetItem.THERAPIES}
-            buttonLabel='Agregar plan'
-            list={getNameValueList(budgetItems?.terapias)}
-            onListChange={(
-              value: BudgetItemsTherapies,
-              tag: string,
-              rowId: UUID,
-            ) => handleListChange(+value.valor, tag, rowId)}
-          />
-          <BudgetItems
-            handleForm={handleForm}
-            legend={BudgetItem.PRODUCTS}
-            buttonLabel='Agregar producto'
-            list={getNameValueList(budgetItems?.productos)}
-            onListChange={(
-              value: BudgetItemsProducts,
-              tag: string,
-              rowId: UUID,
-            ) => handleListChange(+value.valor, tag, rowId)}
-          />
+          {selectedPanel?.budget_items.includes(BudgetItem.THERAPIES) && (
+            <BudgetItems
+              key={`${BUDGET_CODE}therapies_items`}
+              handleForm={handleForm}
+              legend={BudgetItem.THERAPIES}
+              buttonLabel='Agregar terapia'
+              list={getNameValueList(budgetItems?.terapias)}
+              onListChange={(
+                value: BudgetItemsTherapies,
+                tag: string,
+                rowId: UUID,
+              ) => handleListChange(+value.valor, tag, rowId)}
+            />
+          )}
+          {selectedPanel?.budget_items.includes(BudgetItem.PRODUCTS) && (
+            <BudgetItems
+              key={`${BUDGET_CODE}products_items`}
+              handleForm={handleForm}
+              legend={BudgetItem.PRODUCTS}
+              buttonLabel='Agregar producto'
+              list={getNameValueList(budgetItems?.productos)}
+              onListChange={(
+                value: BudgetItemsProducts,
+                tag: string,
+                rowId: UUID,
+              ) => handleListChange(+value.valor, tag, rowId)}
+            />
+          )}
+          {selectedPanel?.budget_items.includes(BudgetItem.SERVICES) && (
+            <BudgetItems
+              key={`${BUDGET_CODE}services_items`}
+              handleForm={handleForm}
+              legend={BudgetItem.SERVICES}
+              buttonLabel='Agregar servcio'
+              list={getNameValueList(budgetItems?.servicios)}
+              onListChange={(
+                value: BudgetItemsService,
+                tag: string,
+                rowId: UUID,
+              ) => handleListChange(+value.precio, tag, rowId)}
+            />
+          )}
         </div>
         <div className='mt-4'>
           {selectedPanel ? (
@@ -221,13 +240,26 @@ const ClientBudgetCreate = () => {
             </div>
           )}
         </div>
-        <Button
-          type='submit'
-          label='Guardar'
-          icon='pi pi-save'
-          severity='success'
-          className='w-full md:w-fit mt-3'
-        />
+        <div className='flex flex-col md:flex-row gap-2 justify-center mt-3'>
+          <Button
+            type='button'
+            label='Cerrar'
+            icon='pi pi-times'
+            severity='danger'
+            className='w-full md:w-fit'
+            onClick={() =>
+              clientInfo &&
+              goToPage(parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }))
+            }
+          />
+          <Button
+            type='submit'
+            label='Guardar'
+            icon='pi pi-save'
+            severity='success'
+            className='w-full md:w-fit'
+          />
+        </div>
       </form>
     </Card>
   )

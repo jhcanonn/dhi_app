@@ -63,6 +63,15 @@ const BudgetItems = ({
     }
   }, [rowIds])
 
+  useEffect(() => {
+    return () => {
+      Object.keys(getValues())
+        .filter((key) => key.startsWith(`${tag}_`))
+        .forEach((key) => unregister(key))
+      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+    }
+  }, [])
+
   return (
     <Fieldset legend={legend} className='relative min-w-0'>
       <Button

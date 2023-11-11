@@ -218,27 +218,29 @@ const ClientEdit = ({ showError }: Props) => {
           />
         </div>
         <PatientDataExtra id='extra' handleForm={handleForm} />
-      </section>
-      <section className='flex gap-2 flex-wrap mb-4 justify-end'>
-        <Button
-          label={'Cancelar'}
-          type='button'
-          severity='danger'
-          rounded
-          onClick={() => {
-            clientInfo &&
-              goToPage(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }))
-          }}
-          className='text-sm w-full md:w-auto'
-        />
-        <Button
-          label={'Guardar'}
-          type='submit'
-          severity='success'
-          rounded
-          className='text-sm w-full md:w-auto'
-          loading={loading}
-        />
+        <section className='flex flex-wrap gap-2 justify-center mt-4'>
+          <Button
+            type='button'
+            label='Cerrar'
+            icon='pi pi-times'
+            severity='danger'
+            onClick={() => {
+              clientInfo &&
+                goToPage(
+                  parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }),
+                )
+            }}
+            className='w-full md:w-fit'
+          />
+          <Button
+            type='submit'
+            label='Guardar'
+            icon='pi pi-save'
+            severity='success'
+            className='w-full md:w-fit'
+            loading={loading}
+          />
+        </section>
       </section>
     </form>
   )
