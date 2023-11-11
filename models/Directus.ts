@@ -267,6 +267,7 @@ export type PanelsDirectus = {
   agrupadores_id: AgrupadoresRelDirectus[]
   bloque_de_firma: boolean
   view_forms: string[]
+  budget_items: string[]
   cargo: string[]
 } & DefaultFieldsDirectus
 
