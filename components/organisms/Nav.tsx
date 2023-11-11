@@ -4,6 +4,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from 'primereact/button'
 import { useAsideContext, useGlobalContext } from '@contexts'
+import { Cookies, withCookies } from 'react-cookie'
+import { useQuery } from '@apollo/client'
+import { directusSystemClient } from '@components/templates/Providers'
+import { Avatar } from 'primereact/avatar'
+import { classNames as cx } from 'primereact/utils'
+import { useEffect } from 'react'
+import { getPanelsFromDirectus, refreshToken } from '@utils/api'
+import { PanelsDirectus } from '@models'
+import { generateURLAssetsWithToken } from '@utils/url-access-token'
+import { useGoTo } from '@hooks'
 import {
   DHI_SESSION,
   GET_CIE_10,
@@ -11,20 +21,9 @@ import {
   LocalStorageTags,
   PAGE_PATH,
 } from '@utils'
-import { Cookies, withCookies } from 'react-cookie'
-import { useQuery } from '@apollo/client'
-import { directusSystemClient } from '@components/templates/Providers'
-import { Avatar } from 'primereact/avatar'
-import { useRouter } from 'next/navigation'
-import { classNames as cx } from 'primereact/utils'
-import { useEffect } from 'react'
-import { getPanelsFromDirectus, refreshToken } from '@utils/api'
-import { PanelsDirectus } from '@models'
-import { generateURLAssetsWithToken } from '@utils/url-access-token'
-import { goToPage } from '@utils/go-to'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
-  const router = useRouter()
+  const { goToPage } = useGoTo()
   const { setUser, setPanels } = useGlobalContext()
   const { toggleVisible } = useAsideContext()
 
@@ -36,7 +35,7 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
 
   const handleLogout = () => {
     cookies.remove(DHI_SESSION)
-    goToPage(PAGE_PATH.login, router)
+    goToPage(PAGE_PATH.login)
   }
 
   const getPanels = async () => {

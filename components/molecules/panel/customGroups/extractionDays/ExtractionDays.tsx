@@ -18,6 +18,8 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
     control: { _defaultValues },
     watch,
     setValue,
+    getValues,
+    unregister,
   } = handleForm
 
   useEffect(() => {
@@ -43,7 +45,6 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             label='Agregar Día'
             type='button'
             severity='success'
-            tooltipOptions={{ position: 'bottom' }}
             onClick={() =>
               setDays((prev) => {
                 const lastDay = prev[days.length - 1]
@@ -58,13 +59,15 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             label='Eliminar Día'
             type='button'
             severity='danger'
-            tooltipOptions={{ position: 'bottom' }}
-            onClick={() =>
+            onClick={() => {
               setDays((prev) => {
                 const lastDay = prev[days.length - 1]
+                Object.keys(getValues())
+                  .filter((key) => key.includes(`_dia${lastDay}`))
+                  .forEach((key) => unregister(key))
                 return lastDay !== 1 ? prev.filter((d) => d !== lastDay) : prev
               })
-            }
+            }}
             outlined
           />
         </section>

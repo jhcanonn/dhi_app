@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const GET_PROFESSIONALS = gql`
   query {
-    profesionales {
+    profesionales(filter: { estado: { _eq: "published" } }) {
       id
       identificacion
       nombre
@@ -22,7 +22,7 @@ export const GET_PROFESSIONALS = gql`
 
 export const GET_BOXES = gql`
   query {
-    salas {
+    salas(filter: { estado: { _eq: "published" } }) {
       id
       nombre
       color
@@ -65,9 +65,52 @@ export const GET_USER_ME = gql`
   }
 `
 
+export const GET_USERS = gql`
+  query {
+    users(filter: { status: { _eq: "active" } }) {
+      id
+      first_name
+      last_name
+      email
+      profesional {
+        id
+        nombre
+        cargo
+        estado
+        no_registro_medico
+      }
+    }
+  }
+`
+
+export const GET_BUDGET_ITEMS = gql`
+  query {
+    servicios(filter: { estado: { _eq: "published" } }) {
+      id
+      nombre
+      precio
+    }
+    productos(filter: { estado: { _eq: "published" } }) {
+      id
+      nombre
+      valor
+      marca
+      contenido
+      descripcion
+    }
+    terapias(filter: { estado: { _eq: "published" } }) {
+      id
+      nombre
+      valor
+      descripcion
+      costo
+    }
+  }
+`
+
 export const GET_EVENT_STATE = gql`
   query {
-    estado_citas {
+    estado_citas(filter: { estado: { _eq: "published" } }) {
       id
       nombre
       color
@@ -78,7 +121,7 @@ export const GET_EVENT_STATE = gql`
 
 export const PAYS = gql`
   query {
-    estado_pago {
+    estado_pago(filter: { estado: { _eq: "published" } }) {
       id
       code
       nombre

@@ -3,14 +3,6 @@
 import { useQuery } from '@apollo/client'
 import { useClientContext } from '@contexts'
 import { ClientDirectus } from '@models'
-import {
-  CLIENT_PAGE_TAB,
-  GET_CLIENT_BY_ID,
-  PAGE_PATH,
-  parseUrl,
-  toTitleCase,
-} from '@utils'
-import { useRouter } from 'next/navigation'
 import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { MenuItem } from 'primereact/menuitem'
@@ -19,7 +11,15 @@ import { TabMenu } from 'primereact/tabmenu'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ScrollTop } from 'primereact/scrolltop'
-import { goToPage } from '@utils/go-to'
+import { useGoTo } from '@hooks'
+import {
+  CLIENT_PAGE_CRUD,
+  CLIENT_PAGE_TAB,
+  GET_CLIENT_BY_ID,
+  PAGE_PATH,
+  parseUrl,
+  toTitleCase,
+} from '@utils'
 
 type Props = {
   children: React.ReactNode
@@ -30,12 +30,15 @@ const ClientLayout = ({ children, params }: Props) => {
   const { id } = params
   const pathname = usePathname()
   const arr = pathname.split('/')
-  const lastItem = arr[arr.length - 1]
+  let lastItem = arr[arr.length - 1]
+  lastItem = CLIENT_PAGE_CRUD.includes(lastItem)
+    ? arr[arr.length - 2]
+    : lastItem
   const tabIndex = CLIENT_PAGE_TAB.indexOf(lastItem) + 1
 
   const [activeIndex, setActiveIndex] = useState<number>(tabIndex)
-  const router = useRouter()
   const { setClientInfo, setLoadingInfo } = useClientContext()
+  const { goToPage } = useGoTo()
 
   const { data, loading } = useQuery(GET_CLIENT_BY_ID, { variables: { id } })
 
@@ -43,30 +46,28 @@ const ClientLayout = ({ children, params }: Props) => {
     {
       label: 'Perfil',
       icon: PrimeIcons.USER,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id }), router),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientDetail, { id })),
     },
     {
       label: 'Histórico citas',
       icon: PrimeIcons.SERVER,
       command: () =>
-        goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id }), router),
+        goToPage(parseUrl(PAGE_PATH.clientHistorySchedule, { id })),
     },
     {
       label: 'Atenciones',
       icon: PrimeIcons.BOOK,
-      command: () =>
-        goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id }), router),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientDataSheet, { id })),
     },
     {
       label: 'Galería',
       icon: PrimeIcons.IMAGES,
-      command: () =>
-        goToPage(parseUrl(PAGE_PATH.clientGallery, { id }), router),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientGallery, { id })),
     },
     {
       label: 'Presupuesto',
       icon: PrimeIcons.DOLLAR,
-      command: () => goToPage(parseUrl(PAGE_PATH.clientBudget, { id }), router),
+      command: () => goToPage(parseUrl(PAGE_PATH.clientBudget, { id })),
     },
   ]
 
@@ -97,7 +98,7 @@ const ClientLayout = ({ children, params }: Props) => {
             type='button'
             severity='success'
             rounded
-            onClick={() => goToPage(PAGE_PATH.finance, router)}
+            onClick={() => goToPage(PAGE_PATH.finance)}
             className='px-4 py-1 font-bold text-md'
           />
         </div>

@@ -126,7 +126,12 @@ export type DataSheetType = {
   name: string
 }
 
-export type DataSheetDate = {
+export type DataTableCurrency = {
+  value: number
+  formated: string
+}
+
+export type DataTableDate = {
   date: Date
   timestamp: number
   formated: string
@@ -151,11 +156,20 @@ export enum TagType {
   FILE = 'archivo',
 }
 
+export enum FieldsCodeBudgetItems {
+  L = '_list_',
+  C = '_cantidad_',
+  V = '_valor_',
+  D = '_dcto_',
+  VD = '_valor_con_dcto_',
+  VT = '_valor_total_',
+}
+
 export type DataSheet = {
   id: UUID
   status?: StatusDataSheet
   type: DataSheetType
-  date: DataSheetDate
+  date: DataTableDate
   professional: string
   professionalDocument: string
   profesionalFirma: {

@@ -29,6 +29,7 @@
     "@types/react": "18.2.33",
     "@types/react-cookies": "^0.1.2",
     "@types/react-dom": "18.2.14",
+    "@types/uuid": "^9.0.7",
     "autoprefixer": "10.4.16",
     "axios": "^1.6.0",
     "date-fns": "^2.30.0",
@@ -52,7 +53,8 @@
     "sass": "^1.69.5",
     "sharp": "^0.32.6",
     "tailwindcss": "3.3.5",
-    "url-template": "^3.1.0"
+    "url-template": "^3.1.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.0.1",

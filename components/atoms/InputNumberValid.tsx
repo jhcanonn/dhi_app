@@ -20,9 +20,14 @@ export type Props<T> = FieldCommonProps<T> & {
   suffix?: string
   minLength?: number
   min?: number
+  max?: number
+  currency?: string
+  locale?: string
+  useGrouping?: boolean
   minFractionDigits?: number
   maxFractionDigits?: number
   className?: string
+  shortErrorMessage?: boolean
   onCustomChange?: (e: InputNumberChangeEvent) => void
 }
 
@@ -36,10 +41,15 @@ const InputNumberValid = <T extends FieldValues>({
   suffix,
   minLength,
   min,
+  max,
+  currency,
+  locale,
+  useGrouping,
   minFractionDigits,
   maxFractionDigits,
   className,
   required,
+  shortErrorMessage,
   validate,
   onCustomChange,
 }: Props<T>) => {
@@ -53,7 +63,11 @@ const InputNumberValid = <T extends FieldValues>({
       name={name as any}
       control={control}
       rules={{
-        required: required ? errorMessages.mandatoryField : false,
+        required: required
+          ? shortErrorMessage
+            ? errorMessages.shortMandatoryField
+            : errorMessages.mandatoryField
+          : false,
         validate: (value) =>
           validate ? validate(value) || errorMessages.invalidValue : true,
         minLength: minLength && {
@@ -75,10 +89,10 @@ const InputNumberValid = <T extends FieldValues>({
             onCustomChange && onCustomChange(e)
           },
           inputClassName: cx({ 'p-invalid': error }),
-          useGrouping: false,
+          useGrouping: useGrouping ?? false,
           mode,
           disabled,
-          className: "[&_[type='button']]:bg-defaultBlue",
+          className: "[&_[type='button']]:bg-defaultBlue [&_input]:w-full",
           suffix,
           minFractionDigits:
             mode === InputNumberMode.DECIMAL
@@ -89,6 +103,9 @@ const InputNumberValid = <T extends FieldValues>({
             mode === InputNumberMode.DECIMAL
               ? maxFractionDigits ?? 5
               : undefined,
+          max,
+          currency,
+          locale,
         }
 
         if (min !== undefined) inputNumberProps = { ...inputNumberProps, min }
