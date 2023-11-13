@@ -128,34 +128,9 @@ export const generatePanelToPDF = async (
 ) => {
   if (panel) {
     const marginHeader: Margins = repeaterHeader ? [72, 30] : [0, 0, 0, 10]
-
     const headerPdf = headerDataAndLogoDHI(marginHeader, dataHeader)
 
-    const footer: any = (currentPage: number, pageCount: number) => {
-      const t = {
-        layout: 'noBorders',
-        fontSize: 8,
-        margin: [72, 0, 0, 72],
-        table: {
-          widths: ['*', '*'],
-          body: [
-            [
-              {
-                text: 'Página  ' + currentPage.toString() + ' de ' + pageCount,
-              },
-            ],
-          ],
-        },
-      }
-
-      return t
-    }
-
     const content: any = []
-
-    if (!repeaterHeader) {
-      content.push(headerPdf)
-    }
 
     panel.agrupadores_id
       .sort((a, b) => a.orden - b.orden)
@@ -263,15 +238,10 @@ export const generatePanelToPDF = async (
       })
 
     const pageMargins: Margins = !repeaterHeader
-      ? [72, 30, 72, 100]
-      : [72, 240, 72, 100]
+      ? [72, 30, 72, 140]
+      : [72, 240, 72, 140]
 
-    createOpenPDF(
-      repeaterHeader ? headerPdf : (undefined as any),
-      pageMargins,
-      content,
-      footer,
-    )
+    createOpenPDF(headerPdf, pageMargins, content, repeaterHeader)
   }
 }
 
@@ -406,14 +376,14 @@ const createOpenPDF = async (
   }
 
   if (!repeaterHeader) {
-    content.unshift(headerPdf)
+    content = [headerPdf, ...content]
   }
   const props: TDocumentDefinitions = {
     header: repeaterHeader ? headerPdf : (undefined as any),
     pageSize: 'LETTER',
     pageMargins,
     content,
-    footer,
+    footer: footer,
     styles: {
       sectionHeader: {
         bold: true,
