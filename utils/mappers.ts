@@ -278,6 +278,7 @@ export const clientInfoToHeaderDataPDFMapper = (
     ClienteDireccion: direccion,
     profesionalName: rowData?.professional,
     profesionalNumDoc: rowData?.professionalDocument,
+    profesionalSignature: rowData?.profesionalFirma?.id,
     direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
 }
