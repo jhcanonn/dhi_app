@@ -305,3 +305,38 @@ export const ANULLED_MEDICAL_COMPLEMENT = gql`
     }
   }
 `
+
+export const BUDGET_CREATE = gql`
+  mutation ($budgetData: create_presupuesto_input!) {
+    create_presupuesto_item(data: $budgetData) {
+      id
+      estado
+      date_created
+      user_created {
+        first_name
+        last_name
+      }
+    }
+  }
+`
+
+export const BUDGET_CREATE_RELATIONS = gql`
+  mutation (
+    $dataServices: [create_presupuesto_salas_servicios_input!]
+    $dataProducts: [create_presupuesto_productos_input!]
+    $dataTherapies: [create_presupuesto_terapias_salas_servicios_input!]
+  ) {
+    create_presupuesto_salas_servicios_items(data: $dataServices) {
+      id
+      estado
+    }
+    create_presupuesto_productos_items(data: $dataProducts) {
+      id
+      estado
+    }
+    create_presupuesto_terapias_salas_servicios_items(data: $dataTherapies) {
+      id
+      estado
+    }
+  }
+`

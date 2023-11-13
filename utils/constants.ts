@@ -19,6 +19,16 @@ export const errorMessages = {
   hoursOutRange: 'Solo se permiten citas entre 7AM y 7PM',
 }
 
+export const budgetFormCodes = {
+  presupuesto_vacio: 'presupuesto_vacio_',
+  presupuesto_barba: 'presupuesto_barba_',
+  presupuesto_capilar: 'presupuesto_capilar_',
+  presupuesto_medicamentos: 'presupuesto_medicamento_',
+  presupuesto_micropigmentacion: 'presupuesto_micropigmentacion_',
+  presupuesto_terapia_complementaria: 'presupuesto_terapia_complementaria_',
+  presupuesto_terapias_capilares: 'presupuesto_terapia_capilar_',
+}
+
 export const regexPatterns = {
   onlyEmpty: /^(?!\s+$)[\s\S]*$/,
   email: /\S+@\S+\.\S+/,

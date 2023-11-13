@@ -1,7 +1,7 @@
 'use client'
 
 import { UUID } from 'crypto'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { DropdownValid, InputNumberValid } from '@components/atoms'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
@@ -16,6 +16,8 @@ import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
 import { useGoTo } from '@hooks'
 import {
+  BudgetCreateForm,
+  BudgetItem,
   BudgetItemsBoxService,
   BudgetItemsDirectus,
   BudgetItemsProducts,
@@ -34,17 +36,15 @@ import {
   budgetProductsMapper,
   parseUrl,
   budgetTherapiesMapper,
+  BUDGET_CREATE,
+  budgetCreateMapper,
+  BUDGET_CREATE_RELATIONS,
+  budgetCreateRelationsMapper,
 } from '@utils'
 
 type Users = {
   name: string
   value: UUID
-}
-
-enum BudgetItem {
-  SERVICES = 'Servicios',
-  PRODUCTS = 'Productos',
-  THERAPIES = 'Terapias',
 }
 
 const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
@@ -56,6 +56,7 @@ const ClientBudgetCreate = () => {
   const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
   const { clientInfo } = useClientContext()
+  const [loading, setLoading] = useState(false)
   const [selectedPanel, setSelectedPanel] = useState<PanelsDirectus>()
   const [users, setUsers] = useState<Users[]>([])
   const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
@@ -69,6 +70,9 @@ const ClientBudgetCreate = () => {
   const { data: dataBudgetItems, loading: loadingBudgetItems } =
     useQuery(GET_BUDGET_ITEMS)
 
+  const [budgetCreate] = useMutation(BUDGET_CREATE)
+  const [budgetCreateRelations] = useMutation(BUDGET_CREATE_RELATIONS)
+
   const budgetPanels = panels
     .filter((p) => p.view_forms.includes(PanelTags.BUDGET))
     .sort((a, b) => a.orden - b.orden)
@@ -79,8 +83,24 @@ const ClientBudgetCreate = () => {
   const handleForm = useForm({ defaultValues })
   const { handleSubmit, setValue, getValues, unregister } = handleForm
 
-  const onSubmit = async () => {
-    console.log(getValues())
+  const onSubmit = async (data: BudgetCreateForm) => {
+    setLoading(true)
+    const createdBudget: any = await budgetCreate({
+      variables: { budgetData: budgetCreateMapper(data, clientInfo?.id) },
+    })
+    if (createdBudget?.data?.create_presupuesto_item?.id) {
+      const createdRelations = await budgetCreateRelations({
+        variables: budgetCreateRelationsMapper(
+          data,
+          createdBudget.data.create_presupuesto_item.id as UUID,
+        ),
+      })
+      if (createdRelations?.data) {
+        setLoading(false)
+        clientInfo &&
+          goToPage(parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }))
+      }
+    }
   }
 
   const handleListChange = (value: number, tag: string, rowId: UUID) => {
@@ -257,6 +277,7 @@ const ClientBudgetCreate = () => {
             icon='pi pi-save'
             severity='success'
             className='w-full md:w-fit'
+            loading={loading}
           />
         </div>
       </form>

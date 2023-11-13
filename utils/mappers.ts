@@ -3,6 +3,9 @@ import {
   AppointmentQuery,
   Box,
   BoxDirectus,
+  BudgetCreateForm,
+  BudgetCreateRelationsDirectus,
+  BudgetItem,
   BudgetItemsBoxService,
   BudgetItemsProducts,
   BudgetItemsTherapies,
@@ -14,6 +17,7 @@ import {
   DhiPatient,
   EventState,
   EventStateDirectus,
+  FieldsCodeBudgetItems,
   Pay,
   PaysDirectus,
   Professional,
@@ -22,12 +26,18 @@ import {
   ServiceDHI,
   StatusDirectus,
 } from '@models'
+import {
+  BLOCK_BOX,
+  BLOCK_SERVICE,
+  BUDGET_CODE,
+  budgetFormCodes,
+} from './constants'
 import moment from 'moment'
 import { idTypes } from './settings'
-import { BLOCK_BOX, BLOCK_SERVICE } from './constants'
 import { calcularEdadConMeses, getFormatedDateToEs } from './helpers'
 import { IDataHeader } from './utils-pdf'
 import { ListGroupType } from '@components/organisms/patient/BudgetItems'
+import { UUID } from 'crypto'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals?.map(
@@ -312,4 +322,83 @@ export const budgetServicesMapper = (
       items,
     } as ListGroupType
   })
+}
+
+export const budgetCreateMapper = (
+  data: BudgetCreateForm,
+  clientId: number | undefined,
+) => {
+  const initCode =
+    budgetFormCodes[data.presupuesto_planilla as keyof typeof budgetFormCodes]
+  return {
+    nombre: data[`${initCode}nombre`],
+    paciente: { id: clientId },
+    comercial: { id: data.presupuesto_comercial },
+    panel_id: { code: data.presupuesto_planilla },
+    data_form: {
+      presupuesto_fecha_vencimiento:
+        data[`${initCode}fecha_vencimiento`] || null,
+      presupuesto_aceptado: data[`${initCode}aceptado`] || false,
+      presupuesto_incluye: data[`${initCode}incluye`] || '',
+      presupuesto_formas_pago: data[`${initCode}formas_pago`] || '',
+      presupuesto_observaciones: data[`${initCode}observaciones`] || '',
+    },
+    valor_total: data.presupuesto_total,
+  }
+}
+
+export const budgetCreateRelationsMapper = (
+  data: BudgetCreateForm,
+  budgetId: UUID,
+) => {
+  const dataKeyValue = Object.entries(data)
+  const relationsData: BudgetCreateRelationsDirectus = {
+    dataServices: [],
+    dataProducts: [],
+    dataTherapies: [],
+  }
+
+  Object.values(BudgetItem).forEach((code) => {
+    const listTag = `${BUDGET_CODE}${code.trim().toLowerCase()}${
+      FieldsCodeBudgetItems.L
+    }`
+    dataKeyValue
+      .filter(([key]) => key.startsWith(listTag))
+      .forEach(([, value]) => {
+        const itemId: number = JSON.parse(value).id
+        switch (code) {
+          case BudgetItem.PRODUCTS:
+            relationsData.dataProducts.push({
+              presupuesto_id: {
+                id: budgetId,
+              },
+              productos_id: {
+                id: itemId,
+              },
+            })
+            break
+          case BudgetItem.SERVICES:
+            relationsData.dataServices.push({
+              presupuesto_id: {
+                id: budgetId,
+              },
+              salas_servicios_id: {
+                id: itemId,
+              },
+            })
+            break
+          case BudgetItem.THERAPIES:
+            relationsData.dataTherapies.push({
+              presupuesto_id: {
+                id: budgetId,
+              },
+              terapias_salas_servicios_id: {
+                id: itemId,
+              },
+            })
+        }
+      })
+  })
+
+  return relationsData
 }

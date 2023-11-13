@@ -314,7 +314,7 @@ const EditClientExamsPrescription = ({
               <span className='p-float-label'>
                 <InputNumber
                   id='quantyInput'
-                  className='p-inputtext-sm [&_input]:w-full'
+                  className='p-inputtext-sm [&_input]:w-full [&_input]:text-center'
                   value={rowData.cantidad}
                   onValueChange={(e) => changeCantidad(e, rowData)}
                   minFractionDigits={0}
