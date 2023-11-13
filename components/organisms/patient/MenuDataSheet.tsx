@@ -32,7 +32,7 @@ import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Tag } from 'primereact/tag'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
-import { generatePanelToPDF } from '@utils/panel-to-pdf'
+import { generatePanelToPDF } from '@utils/utils-pdf'
 import { withToast } from '@hooks'
 
 const defaultFilters: DataTableFilterMeta = {

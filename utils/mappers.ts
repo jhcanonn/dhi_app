@@ -23,7 +23,7 @@ import moment from 'moment'
 import { idTypes } from './settings'
 import { BLOCK_SERVICE } from './constants'
 import { calcularEdadConMeses, getFormatedDateToEs } from './helpers'
-import { IDataHeader } from './panel-to-pdf'
+import { IDataHeader } from './utils-pdf'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals?.map(
@@ -262,8 +262,8 @@ export const clientInfoToHeaderDataPDFMapper = (
     clienteEdad: age ? `${age?.anios} años, ${age?.meses} meses` : '',
     clienteNumDoc: `${client.tipo_documento} ${client.documento}`,
     ClienteDireccion: direccion,
-    profesionalName: rowData.professional,
-    profesionalNumDoc: rowData.professionalDocument,
+    profesionalName: rowData?.professional,
+    profesionalNumDoc: rowData?.professionalDocument,
     direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
 }

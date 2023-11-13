@@ -7,6 +7,7 @@ import {
   ANULLED_MEDICAL_COMPLEMENT,
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
   TypesExamsPrescription,
+  clientInfoToHeaderDataPDFMapper,
   getFormatedDateToEs,
 } from '@utils'
 import { Column } from 'primereact/column'
@@ -23,6 +24,7 @@ import { StatusComplementMedical } from '@models'
 import { Tag } from 'primereact/tag'
 import { Divider } from 'primereact/divider'
 import { EditClientExamsPrescription } from '@components/molecules'
+import { generateExamnToPDF, generatePrescriptionToPDF } from '@utils/utils-pdf'
 
 export interface IDHIDataExams {
   complementos_medicos: IClientExamsPrescriptionType[]
@@ -74,6 +76,19 @@ export interface ITemplatesExamsPrescriptionType {
   }
 }
 
+export interface IExamenType {
+  id: number
+  examenes_id: IExams
+  cantidad: number
+  descripcion: string
+}
+
+export interface IRecetaType {
+  id: number
+  formula: string
+  Recetas_id: IPrescription
+}
+
 export interface IClientExamsPrescriptionType {
   id: number
   estado: string
@@ -106,17 +121,8 @@ export interface IClientExamsPrescriptionType {
   ficha_id: {
     id: number
   }
-  examenes: {
-    id: number
-    examenes_id: IExams
-    cantidad: number
-    descripcion: string
-  }[]
-  recetas: {
-    id: number
-    formula: string
-    Recetas_id: IPrescription
-  }[]
+  examenes: IExamenType[]
+  recetas: IRecetaType[]
 }
 
 type Props = {
@@ -175,6 +181,24 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         rowData.estado = StatusComplementMedical.ANNULLED
       },
     })
+  }
+
+  const generatePDF = (rowData: IClientExamsPrescriptionType) => {
+    if (rowData.tipo === TypesExamsPrescription.EXAMEN) {
+      generateExamnToPDF(
+        rowData.examenes,
+        false,
+        clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+      )
+    }
+
+    if (rowData.tipo === TypesExamsPrescription.RECETA) {
+      generatePrescriptionToPDF(
+        rowData.recetas,
+        false,
+        clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+      )
+    }
   }
 
   //rowData: ExamsPrescriptionType
@@ -243,6 +267,9 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
               tooltip='Imprimir'
               tooltipOptions={{ position: 'bottom' }}
               outlined
+              onClick={() => {
+                generatePDF(rowData as any)
+              }}
             ></Button>
           </>
         )}
