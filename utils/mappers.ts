@@ -3,6 +3,9 @@ import {
   AppointmentQuery,
   Box,
   BoxDirectus,
+  BudgetItemsBoxService,
+  BudgetItemsProducts,
+  BudgetItemsTherapies,
   ClientDirectus,
   Country,
   DataSheet,
@@ -21,9 +24,10 @@ import {
 } from '@models'
 import moment from 'moment'
 import { idTypes } from './settings'
-import { BLOCK_SERVICE } from './constants'
+import { BLOCK_BOX, BLOCK_SERVICE } from './constants'
 import { calcularEdadConMeses, getFormatedDateToEs } from './helpers'
 import { IDataHeader } from './utils-pdf'
+import { ListGroupType } from '@components/organisms/patient/BudgetItems'
 
 export const professionalsMapper = (professionals: ProfessionalDirectus[]) => {
   return professionals?.map(
@@ -266,4 +270,46 @@ export const clientInfoToHeaderDataPDFMapper = (
     profesionalNumDoc: rowData?.professionalDocument,
     direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
+}
+
+export const budgetTherapiesMapper = (items: BudgetItemsTherapies[]) =>
+  items.map((item) => ({
+    name: item.terapias_id.nombre,
+    value: JSON.stringify(item),
+  }))
+
+export const budgetProductsMapper = (items: BudgetItemsProducts[]) =>
+  items.map((item) => ({
+    name: item.nombre,
+    value: JSON.stringify(item),
+  }))
+
+export const budgetServicesMapper = (
+  items: BudgetItemsBoxService[],
+): ListGroupType[] => {
+  const groupedBoxes: { [boxId: number]: { name: string; value: string }[] } =
+    items
+      .filter((item) => item.salas_id.nombre !== BLOCK_BOX)
+      .reduce((acc, item) => {
+        const key = item.salas_id.id
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (!acc[key]) acc[key] = []
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        acc[key].push({
+          name: item.servicios_id.nombre,
+          value: JSON.stringify(item),
+        })
+        return acc
+      }, {})
+
+  return Object.values(groupedBoxes).map((items) => {
+    const itemInfo: BudgetItemsBoxService = JSON.parse(items[0].value)
+    return {
+      label: itemInfo.salas_id.nombre,
+      color: itemInfo.salas_id.color,
+      items,
+    } as ListGroupType
+  })
 }

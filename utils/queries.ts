@@ -85,10 +85,23 @@ export const GET_USERS = gql`
 
 export const GET_BUDGET_ITEMS = gql`
   query {
-    servicios(filter: { estado: { _eq: "published" } }) {
+    salas_servicios(
+      filter: {
+        salas_id: { estado: { _eq: "published" } }
+        servicios_id: { estado: { _eq: "published" } }
+      }
+    ) {
       id
-      nombre
-      precio
+      salas_id {
+        id
+        nombre
+        color
+      }
+      servicios_id {
+        id
+        nombre
+        precio
+      }
     }
     productos(filter: { estado: { _eq: "published" } }) {
       id
@@ -98,12 +111,24 @@ export const GET_BUDGET_ITEMS = gql`
       contenido
       descripcion
     }
-    terapias(filter: { estado: { _eq: "published" } }) {
+    terapias_salas_servicios(
+      filter: {
+        terapias_id: { estado: { _eq: "published" } }
+        salas_servicios_id: {
+          salas_id: { estado: { _eq: "published" } }
+          servicios_id: { estado: { _eq: "published" } }
+        }
+      }
+    ) {
       id
-      nombre
-      valor
-      descripcion
-      costo
+      sesiones
+      terapias_id {
+        id
+        nombre
+        valor
+        descripcion
+        costo
+      }
     }
   }
 `

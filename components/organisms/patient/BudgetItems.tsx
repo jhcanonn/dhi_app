@@ -13,11 +13,18 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
 
+export type ListGroupType = {
+  label: string
+  color: string
+  items: any[]
+}
+
 type BudgetItemsProps = {
   handleForm: UseFormReturn<any, any, undefined>
   legend: string
   buttonLabel: string
-  list: any[]
+  list?: any[]
+  listGrouped?: ListGroupType[]
   onListChange: (value: any, tag: string, rowId: UUID) => void
 }
 
@@ -26,11 +33,24 @@ export const getBudgetTotal = (formData: any) =>
     .filter(([key]) => key.includes(FieldsCodeBudgetItems.VT))
     .reduce((acc, [, value]) => acc + Number(value), 0)
 
+const groupedItemTemplate = (option: ListGroupType) => {
+  return (
+    <div className='flex gap-2 align-items-center'>
+      <div
+        className='rounded-md !w-4 !h-4'
+        style={{ backgroundColor: option.color }}
+      ></div>
+      <p className='text-[1rem]'>{option.label}</p>
+    </div>
+  )
+}
+
 const BudgetItems = ({
   handleForm,
   legend,
   buttonLabel,
   list,
+  listGrouped,
   onListChange,
 }: BudgetItemsProps) => {
   const [rowIds, setRowIds] = useState<UUID[]>([])
@@ -115,7 +135,13 @@ const BudgetItems = ({
                       <DropdownValid
                         handleForm={handleForm}
                         name={`${tag}${FieldsCodeBudgetItems.L}${rowId}`}
-                        list={list}
+                        list={(listGrouped ?? list) || []}
+                        groupedItemTemplate={
+                          listGrouped
+                            ? (option: ListGroupType) =>
+                                groupedItemTemplate(option)
+                            : undefined
+                        }
                         required
                         onCustomChange={(e: DropdownChangeEvent) =>
                           onListChange(JSON.parse(e.value), tag, rowId)

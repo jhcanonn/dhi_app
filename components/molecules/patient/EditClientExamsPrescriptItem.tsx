@@ -278,16 +278,16 @@ const EditClientExamsPrescription = ({
 
   const itemTemplate = (rowData: IExams) => {
     return (
-      <div className='grid lg:flex '>
+      <div className='!grid grid-cols-1 md:grid-cols-7 gap-x-0 md:gap-x-4 gap-y-2 mt-2 mb-4 md:mb-2'>
         <div
-          className='col-4'
+          className='col-span-1 md:col-span-2 flex flex-col justify-center'
           style={{ cursor: 'pointer' }}
           onClick={() => {
             document.getElementById(rowData.id.toString())?.click()
           }}
         >
           <div className='flex flex-row gap-1'>
-            <div className='pt-3'>
+            <div className='w-full'>
               <Checkbox
                 inputId={rowData.id.toString()}
                 name='exams'
@@ -296,23 +296,25 @@ const EditClientExamsPrescription = ({
                 checked={isCheckboxChecked(rowData)}
                 disabled={config.isView}
               />
-
               <label className='ml-2'>{rowData.nombre}</label>
             </div>
           </div>
         </div>
-        <div className='col-1'>
+        <div className='col-span-1 flex flex-col justify-center'>
           <div className='flex flex-row gap-1'>
-            <div className='pt-3'>{rowData.codigo}</div>
+            <p>
+              <span className='text-md md:text-sm mr-2'>Código:</span>{' '}
+              {rowData.codigo}
+            </p>
           </div>
         </div>
-        <div className='col-3'>
+        <div className='col-span-1 md:col-span-2 lg:col-span-1'>
           <div className='flex flex-row gap-1'>
-            <div className='pt-2'>
+            <div className='pt-2 w-full'>
               <span className='p-float-label'>
                 <InputNumber
                   id='quantyInput'
-                  className='p-inputtext-sm'
+                  className='p-inputtext-sm [&_input]:w-full'
                   value={rowData.cantidad}
                   onValueChange={(e) => changeCantidad(e, rowData)}
                   minFractionDigits={0}
@@ -330,7 +332,7 @@ const EditClientExamsPrescription = ({
             </div>
           </div>
         </div>
-        <div className='col'>
+        <div className='col-span-1 md:col-span-2 lg:col-span-3'>
           <div className='flex flex-row gap-1'>
             <div className='pt-2  w-full'>
               <span className='p-float-label'>
@@ -394,7 +396,7 @@ const EditClientExamsPrescription = ({
           <Divider
             align='center'
             className='[&_.p-divider-content]:bg-transparent mt-4 mb-3'
-          ></Divider>
+          />
           <div className='!grid grid-cols-1  w-full gap-x-4 m-0'>
             <DataScroller
               value={valuesExams}
@@ -412,18 +414,18 @@ const EditClientExamsPrescription = ({
     </>
   ) : (
     valuesPrescription.map((prescription) => (
-      <Fieldset legend={data.nombre}>
-        <div className='!grid grid-cols-1  w-full gap-x-4 m-0'>
+      <Fieldset key={`prescription_${prescription.id}`} legend={data.nombre}>
+        <div className='!grid grid-cols-1 w-full gap-x-4 m-0'>
           <InputTextarea
             rows={20}
             readOnly={config.isView}
             value={prescription.formula}
             onChange={(e) => changeReceta(e, prescription)}
-          ></InputTextarea>
+          />
           <Divider
             align='center'
             className='[&_.p-divider-content]:bg-transparent mt-4 mb-3'
-          ></Divider>
+          />
           {footer}
         </div>
       </Fieldset>
