@@ -308,10 +308,18 @@ export type UsersDirectus = {
   }
 }
 
-export type BudgetItemsService = {
+export type BudgetItemsBoxService = {
   id: number
-  nombre: string
-  precio: number
+  salas_id: {
+    id: number
+    nombre: string
+    color: string
+  }
+  servicios_id: {
+    id: number
+    nombre: string
+    precio: number
+  }
 }
 
 export type BudgetItemsProducts = {
@@ -325,16 +333,20 @@ export type BudgetItemsProducts = {
 
 export type BudgetItemsTherapies = {
   id: number
-  nombre: string
-  valor: number
-  descripcion: string
-  costo: number
+  sesiones: number
+  terapias_id: {
+    id: number
+    nombre: string
+    valor: number
+    descripcion: string
+    costo: number
+  }
 }
 
 export type BudgetItemsDirectus = {
-  servicios: BudgetItemsService[]
+  salas_servicios: BudgetItemsBoxService[]
   productos: BudgetItemsProducts[]
-  terapias: BudgetItemsTherapies[]
+  terapias_salas_servicios: BudgetItemsTherapies[]
 }
 
 export enum StatusDirectus {

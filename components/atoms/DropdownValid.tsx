@@ -21,6 +21,7 @@ export type Props<T> = FieldCommonProps<T> & {
   className?: string
   emptyMessage?: ReactNode | ((props: DropdownProps) => ReactNode)
   itemTemplate?: ReactNode | ((option: any) => ReactNode)
+  groupedItemTemplate?: ReactNode | ((option: any) => ReactNode)
   valueTemplate?: ReactNode | ((option: any, props: DropdownProps) => ReactNode)
   onCustomChange?: (e: DropdownChangeEvent) => void
 }
@@ -38,6 +39,7 @@ const DropdownValid = <T extends FieldValues>({
   validate,
   emptyMessage,
   itemTemplate,
+  groupedItemTemplate,
   valueTemplate,
   onCustomChange,
 }: Props<T>) => {
@@ -66,6 +68,9 @@ const DropdownValid = <T extends FieldValues>({
               value={value}
               optionLabel='name'
               options={list}
+              optionGroupLabel={groupedItemTemplate ? 'label' : undefined}
+              optionGroupChildren={groupedItemTemplate ? 'items' : undefined}
+              optionGroupTemplate={groupedItemTemplate}
               focusInputRef={ref}
               onBlur={onBlur}
               onChange={(e) => {
