@@ -349,6 +349,51 @@ export type BudgetItemsDirectus = {
   terapias_salas_servicios: BudgetItemsTherapies[]
 }
 
+type BudgetCreateRelServices = {
+  presupuesto_id: {
+    id: UUID
+  }
+  salas_servicios_id: {
+    id: number
+  }
+}
+
+type BudgetCreateRelProducts = {
+  presupuesto_id: {
+    id: UUID
+  }
+  productos_id: {
+    id: number
+  }
+}
+
+type BudgetCreateRelTherapies = {
+  presupuesto_id: {
+    id: UUID
+  }
+  terapias_salas_servicios_id: {
+    id: number
+  }
+}
+
+export type BudgetCreateRelationsDirectus = {
+  dataServices: BudgetCreateRelServices[]
+  dataProducts: BudgetCreateRelProducts[]
+  dataTherapies: BudgetCreateRelTherapies[]
+}
+
+export type BudgetCreateForm = {
+  presupuesto_planilla: string
+  presupuesto_comercial: UUID
+  presupuesto_total: number
+} & Record<string, any>
+
+export enum BudgetItem {
+  SERVICES = 'Servicios',
+  PRODUCTS = 'Productos',
+  THERAPIES = 'Terapias',
+}
+
 export enum StatusDirectus {
   PUBLISHED = 'published',
   DRAFT = 'draft',
