@@ -184,11 +184,20 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
   }
 
   const generatePDF = (rowData: IClientExamsPrescriptionType) => {
+    const profesional = rowData?.user_created?.profesional
     if (rowData.tipo === TypesExamsPrescription.EXAMEN) {
       generateExamnToPDF(
         rowData.examenes,
+        rowData.diagnostico,
         false,
-        clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+        clientInfoToHeaderDataPDFMapper(
+          clientInfo as any,
+          {
+            professional: profesional?.nombre,
+            professionalDocument: profesional?.identificacion,
+            profesionalFirma: profesional?.firma,
+          } as any,
+        ),
       )
     }
 
@@ -196,7 +205,14 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
       generatePrescriptionToPDF(
         rowData.recetas,
         false,
-        clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+        clientInfoToHeaderDataPDFMapper(
+          clientInfo as any,
+          {
+            professional: profesional?.nombre,
+            professionalDocument: profesional?.identificacion,
+            profesionalFirma: profesional?.firma,
+          } as any,
+        ),
       )
     }
   }
