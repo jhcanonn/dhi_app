@@ -167,12 +167,12 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
       acceptClassName: 'p-button-danger',
       draggable: false,
       async accept() {
-        rowData.estado = StatusComplementMedical.ANNULLED
         await anulledMedicalComplement({
           variables: {
             id: rowData.id,
           },
         })
+        rowData.estado = StatusComplementMedical.ANNULLED
       },
     })
   }

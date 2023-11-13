@@ -41,9 +41,8 @@ const FilterBar = () => {
   const isIndividual = calendarType === CalendarType.INDIVIDUAL
   const isProfessional = resourceType === ResourceType.PROFESSIONAL
   const [checkedCalendarType, setCheckedCalendarType] = useState(!isIndividual)
-  const [checkedResourceType, setCheckedResourceType] = useState(
-    !isProfessional,
-  )
+  const [checkedResourceType, setCheckedResourceType] =
+    useState(!isProfessional)
   const [checkedMode, setCheckedMode] = useState(
     resourceMode !== ResourceMode.DEFAULT,
   )

@@ -45,7 +45,18 @@ type Props = {
   ) => void
 }
 
-const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
+interface IValuesPrescription {
+  id: number
+  formula?: string
+  Recetas_id: IPrescription
+}
+
+const EditClientExamsPrescription = ({
+  data,
+  clientInfo,
+  config,
+  onHide,
+}: Props) => {
   const [createMedicalComplement] = useMutation(CREATE_MEDICAL_COMPLEMENT)
   const [updateMedicalComplement] = useMutation(UPDATE_MEDICAL_COMPLEMENT)
 
@@ -56,11 +67,7 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
   }>()
   const [valuesExams, setValuesExams] = useState<IExams[]>([])
   const [valuesPrescription, setValuesPrescription] = useState<
-    {
-      id: number
-      formula?: string
-      Recetas_id: IPrescription
-    }[]
+    IValuesPrescription[]
   >([])
 
   const [diagnostics, setDiagnostics] = useState([])
@@ -71,20 +78,24 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
       const _selectedExams = data.examenes.map((item) => item.examenes_id)
       setSelectedExams(_selectedExams)
       setSelectedDiagnostic(data.diagnostico)
-      const _exams = [...config.exams]
-      _exams.forEach((exam) => {
+      const _exams = [...config.exams].map((exam: IExams) => {
         const detailExamenes = data?.examenes?.find(
           (e) => e.examenes_id.id === exam.id,
         )
-        exam.cantidad = detailExamenes?.cantidad ?? 1
-        exam.descripcion = detailExamenes?.descripcion
+        return {
+          ...exam,
+          cantidad: detailExamenes?.cantidad ?? 1,
+          descripcion: detailExamenes?.descripcion ?? '',
+        }
       })
       setValuesExams(_exams)
-      const prescriptions = data?.recetas?.map((receta) => {
-        receta.formula = receta.formula ?? receta.Recetas_id.receta
-        return receta
-      })
-      setValuesPrescription(prescriptions)
+      if (data?.recetas) {
+        const prescriptions = [...data.recetas].map((receta) => ({
+          ...receta,
+          formula: receta.formula ?? receta.Recetas_id.receta,
+        }))
+        setValuesPrescription(prescriptions)
+      }
     }
   }, [data])
 
@@ -223,29 +234,46 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
     `${item.code} - ${item.descripcion}`
 
   const changeCantidad = (e: InputNumberValueChangeEvent, exam: IExams) => {
-    exam.cantidad = Number(e?.target?.value ?? 1)
+    const _exams = valuesExams.map((examMap: IExams) => {
+      return {
+        ...examMap,
+        cantidad:
+          examMap.id == exam.id
+            ? Number(e?.target?.value ?? 1)
+            : examMap.cantidad,
+      }
+    })
+    setValuesExams(_exams)
   }
 
   const changeDescripcion = (
     e: ChangeEvent<HTMLInputElement>,
     exam: IExams,
   ) => {
-    exam.descripcion = e?.target?.value ?? ''
+    const _exams = valuesExams.map((examMap: IExams) => {
+      return {
+        ...examMap,
+        descripcion:
+          examMap.id == exam.id ? e?.target?.value ?? '' : examMap.descripcion,
+      }
+    })
+    setValuesExams(_exams)
   }
 
   const changeReceta = (
     e: ChangeEvent<HTMLTextAreaElement>,
-    prescrip: {
-      id: number
-      formula?: string
-      Recetas_id: IPrescription
-    },
+    prescrip: IValuesPrescription,
   ) => {
-    valuesPrescription.forEach((item) => {
-      if (item.id === prescrip.id) item.formula = e?.target?.value ?? ''
-    })
-
-    setValuesPrescription([...valuesPrescription])
+    const _valuesPrescription = valuesPrescription.map(
+      (item: IValuesPrescription) => {
+        return {
+          ...item,
+          formula:
+            item.id === prescrip.id ? e?.target?.value ?? '' : item.formula,
+        }
+      },
+    )
+    setValuesPrescription(_valuesPrescription)
   }
 
   const itemTemplate = (rowData: IExams) => {
@@ -403,4 +431,4 @@ const EditClientExams = ({ data, clientInfo, config, onHide }: Props) => {
   )
 }
 
-export default EditClientExams
+export default EditClientExamsPrescription
