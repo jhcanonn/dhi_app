@@ -16,9 +16,9 @@ import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
 import { useGoTo } from '@hooks'
 import {
+  BudgetItemsBoxService,
   BudgetItemsDirectus,
   BudgetItemsProducts,
-  BudgetItemsService,
   BudgetItemsTherapies,
   FieldsCodeBudgetItems,
   PanelsDirectus,
@@ -30,7 +30,10 @@ import {
   GET_USERS,
   PAGE_PATH,
   PanelTags,
+  budgetServicesMapper,
+  budgetProductsMapper,
   parseUrl,
+  budgetTherapiesMapper,
 } from '@utils'
 
 type Users = {
@@ -43,14 +46,6 @@ enum BudgetItem {
   PRODUCTS = 'Productos',
   THERAPIES = 'Terapias',
 }
-
-const getNameValueList = (arr: any) =>
-  arr
-    ? arr.map((a: any) => ({
-        name: a.nombre,
-        value: JSON.stringify(a),
-      }))
-    : []
 
 const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
   selectedPanel?.agrupadores_id.flatMap((g) =>
@@ -189,12 +184,14 @@ const ClientBudgetCreate = () => {
               handleForm={handleForm}
               legend={BudgetItem.THERAPIES}
               buttonLabel='Agregar terapia'
-              list={getNameValueList(budgetItems?.terapias)}
+              list={budgetTherapiesMapper(
+                budgetItems?.terapias_salas_servicios || [],
+              )}
               onListChange={(
                 value: BudgetItemsTherapies,
                 tag: string,
                 rowId: UUID,
-              ) => handleListChange(+value.valor, tag, rowId)}
+              ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.PRODUCTS) && (
@@ -203,7 +200,7 @@ const ClientBudgetCreate = () => {
               handleForm={handleForm}
               legend={BudgetItem.PRODUCTS}
               buttonLabel='Agregar producto'
-              list={getNameValueList(budgetItems?.productos)}
+              list={budgetProductsMapper(budgetItems?.productos || [])}
               onListChange={(
                 value: BudgetItemsProducts,
                 tag: string,
@@ -217,12 +214,14 @@ const ClientBudgetCreate = () => {
               handleForm={handleForm}
               legend={BudgetItem.SERVICES}
               buttonLabel='Agregar servcio'
-              list={getNameValueList(budgetItems?.servicios)}
+              listGrouped={budgetServicesMapper(
+                budgetItems?.salas_servicios || [],
+              )}
               onListChange={(
-                value: BudgetItemsService,
+                value: BudgetItemsBoxService,
                 tag: string,
                 rowId: UUID,
-              ) => handleListChange(+value.precio, tag, rowId)}
+              ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
             />
           )}
         </div>
