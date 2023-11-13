@@ -5,6 +5,7 @@ import {
   DateTimeValid,
   DropdownValid,
   InputNumberValid,
+  InputSwitchValid,
   InputTextValid,
   InputTextareaValid,
   PhoneNumberValid,
@@ -215,6 +216,18 @@ const PanelFields = ({ panelCode, group, handleForm, disabledData }: Props) => {
                   required={field.validaciones?.required}
                   list={field.opciones?.length ? field.opciones : []}
                   gridRows={field.filas_grilla}
+                  disabled={fieldDisable}
+                  className={fieldClassName}
+                />
+              )
+            case FieldTypeDirectus.SWITCH:
+              return (
+                <InputSwitchValid
+                  key={field.codigo}
+                  name={field.codigo}
+                  acceptMessage={field.etiqueta}
+                  handleForm={handleForm}
+                  required={field.validaciones?.required}
                   disabled={fieldDisable}
                   className={fieldClassName}
                 />

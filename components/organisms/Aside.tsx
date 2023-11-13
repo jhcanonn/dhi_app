@@ -5,13 +5,12 @@ import { Sidebar } from 'primereact/sidebar'
 import { SlideMenu } from 'primereact/slidemenu'
 import { useAsideContext } from '@contexts'
 import { useWindowHeight } from '@react-hook/window-size'
-import { useRouter } from 'next/navigation'
 import { PAGE_PATH } from '@utils'
-import { goToPage } from '@utils/go-to'
+import { useGoTo } from '@hooks'
 
 const Aside = () => {
   const { visible, toggleVisible } = useAsideContext()
-  const router = useRouter()
+  const { goToPage } = useGoTo()
   const wh = useWindowHeight()
 
   const sideBarWidth = 320
@@ -27,7 +26,7 @@ const Aside = () => {
           icon: PrimeIcons.CALENDAR,
           command: () => {
             toggleVisible()
-            goToPage(PAGE_PATH.calendar, router)
+            goToPage(PAGE_PATH.calendar)
           },
         },
         {
@@ -38,7 +37,7 @@ const Aside = () => {
           icon: PrimeIcons.PLUS,
           command: () => {
             toggleVisible()
-            goToPage(PAGE_PATH.dayCalendar, router)
+            goToPage(PAGE_PATH.dayCalendar)
           },
         },
         {
@@ -46,7 +45,7 @@ const Aside = () => {
           icon: PrimeIcons.LIST,
           command: () => {
             toggleVisible()
-            goToPage(PAGE_PATH.dateListCalendar, router)
+            goToPage(PAGE_PATH.dateListCalendar)
           },
         },
       ],
@@ -60,7 +59,7 @@ const Aside = () => {
           icon: PrimeIcons.USERS,
           command: () => {
             toggleVisible()
-            goToPage(PAGE_PATH.clientList, router)
+            goToPage(PAGE_PATH.clientList)
           },
         },
         {
@@ -68,7 +67,7 @@ const Aside = () => {
           icon: PrimeIcons.IMAGES,
           command: () => {
             toggleVisible()
-            goToPage(PAGE_PATH.gallery, router)
+            goToPage(PAGE_PATH.gallery)
           },
         },
       ],
@@ -78,7 +77,7 @@ const Aside = () => {
       icon: PrimeIcons.HEART,
       command: () => {
         toggleVisible()
-        goToPage(PAGE_PATH.crm, router)
+        goToPage(PAGE_PATH.crm)
       },
     },
     {
@@ -86,7 +85,7 @@ const Aside = () => {
       icon: PrimeIcons.DOLLAR,
       command: () => {
         toggleVisible()
-        goToPage(PAGE_PATH.finance, router)
+        goToPage(PAGE_PATH.finance)
       },
     },
     {
@@ -97,7 +96,7 @@ const Aside = () => {
       icon: PrimeIcons.COG,
       command: () => {
         toggleVisible()
-        goToPage(PAGE_PATH.settings, router)
+        goToPage(PAGE_PATH.settings)
       },
     },
   ]

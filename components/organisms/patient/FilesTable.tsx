@@ -71,7 +71,6 @@ const FilesTable = ({ onUploadLoading }: Props) => {
         <section className='flex gap-2 justify-center'>
           <Button
             icon='pi pi-eye'
-            size='large'
             severity='info'
             tooltip='Ver archivo'
             tooltipOptions={{ position: 'bottom' }}

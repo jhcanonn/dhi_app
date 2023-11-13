@@ -267,6 +267,7 @@ export type PanelsDirectus = {
   agrupadores_id: AgrupadoresRelDirectus[]
   bloque_de_firma: boolean
   view_forms: string[]
+  budget_items: string[]
   cargo: string[]
 } & DefaultFieldsDirectus
 
@@ -293,6 +294,49 @@ export type DataSheetDirectus = {
   }
 }
 
+export type UsersDirectus = {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  profesional: {
+    id: string
+    nombre: string
+    cargo: string
+    estado: string
+    no_registro_medico: string
+  }
+}
+
+export type BudgetItemsService = {
+  id: number
+  nombre: string
+  precio: number
+}
+
+export type BudgetItemsProducts = {
+  id: number
+  nombre: string
+  valor: number
+  marca: string
+  contenido: string
+  descripcion: string
+}
+
+export type BudgetItemsTherapies = {
+  id: number
+  nombre: string
+  valor: number
+  descripcion: string
+  costo: number
+}
+
+export type BudgetItemsDirectus = {
+  servicios: BudgetItemsService[]
+  productos: BudgetItemsProducts[]
+  terapias: BudgetItemsTherapies[]
+}
+
 export enum StatusDirectus {
   PUBLISHED = 'published',
   DRAFT = 'draft',
@@ -308,6 +352,7 @@ export enum FieldTypeDirectus {
   TIME = 'time',
   DATETIME = 'datetime',
   CHECKBOX = 'checkbox',
+  SWITCH = 'switch',
   PHONE = 'phone',
   AUTOCOMPLETE = 'autocomplete',
 }
