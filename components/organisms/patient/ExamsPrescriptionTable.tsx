@@ -17,12 +17,12 @@ import { PrimeIcons } from 'primereact/api'
 import { Dropdown } from 'primereact/dropdown'
 import { Dialog } from 'primereact/dialog'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import EditClientExams from '@components/molecules/patient/EditClientExamsPrescriptItem'
 import { withToast } from '@hooks'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { StatusComplementMedical } from '@models'
 import { Tag } from 'primereact/tag'
 import { Divider } from 'primereact/divider'
+import { EditClientExamsPrescription } from '@components/molecules'
 
 export interface IDHIDataExams {
   complementos_medicos: IClientExamsPrescriptionType[]
@@ -271,7 +271,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
           className='w-[90vw] max-w-[100rem]'
         >
           {currentRowData ? (
-            <EditClientExams
+            <EditClientExamsPrescription
               data={currentRowData}
               config={{
                 isView,
