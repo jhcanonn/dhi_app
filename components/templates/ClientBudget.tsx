@@ -1,10 +1,14 @@
 'use client'
 
-import moment from 'moment'
-import { UUID } from 'crypto'
+import {
+  BUDGET_CODE,
+  GET_BUDGETS,
+  PAGE_PATH,
+  budgetsMapper,
+  parseUrl,
+} from '@utils'
 import { useClientContext } from '@contexts'
-import { DataTableCurrency, DataTableDate } from '@models'
-import { BUDGET_CODE, PAGE_PATH, getFormatedDateToEs, parseUrl } from '@utils'
+import { BudgetType } from '@models'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -13,19 +17,7 @@ import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { useEffect, useState } from 'react'
 import { useGoTo } from '@hooks'
-
-type BudgetType = {
-  id: UUID
-  name: string
-  created_date: DataTableDate
-  due_date: DataTableDate
-  value: DataTableCurrency
-  payed: DataTableCurrency
-  state_budget: string
-  state_payed: string
-  state_track: string
-  cost: DataTableCurrency
-}
+import { useQuery } from '@apollo/client'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -47,6 +39,14 @@ const ClientBudget = () => {
   const [currentBudget, setCurrentBudget] = useState<BudgetType | null>(null)
   const { clientInfo } = useClientContext()
   const { goToPage } = useGoTo()
+
+  const {
+    data: dataBudges,
+    loading: loadingBudges,
+    refetch: refetchBudgets,
+  } = useQuery(GET_BUDGETS, {
+    variables: { patientId: clientInfo?.id },
+  })
 
   const headerContent = (
     <h2>
@@ -80,8 +80,18 @@ const ClientBudget = () => {
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex gap-2 justify-center'>
           <Button
-            icon='pi pi-file-edit'
+            icon='pi pi-pencil'
             severity='success'
+            tooltip='Editar'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+            onClick={() => {
+              console.log(`Edit budget: ${budget.id}`)
+            }}
+          />
+          <Button
+            icon='pi pi-file-edit'
+            severity='help'
             tooltip='Datos'
             tooltipOptions={{ position: 'bottom' }}
             outlined
@@ -114,70 +124,12 @@ const ClientBudget = () => {
   }
 
   useEffect(() => {
-    const patientId = clientInfo?.id
-    const fakeDate = '2023-10-31T21:35:54.173Z'
-    patientId &&
-      setBudgets([
-        {
-          id: 'b03a7752-7d92-11ee-b962-0242ac120002',
-          name: 'Presupuesto 1',
-          created_date: {
-            date: moment(fakeDate).toDate(),
-            timestamp: moment(fakeDate).valueOf(),
-            formated: getFormatedDateToEs(fakeDate, 'ddd ll'),
-          },
-          due_date: {
-            date: moment(fakeDate).toDate(),
-            timestamp: moment(fakeDate).valueOf(),
-            formated: getFormatedDateToEs(fakeDate, 'ddd ll'),
-          },
-          value: {
-            value: 23000,
-            formated: '$ 23.000',
-          },
-          payed: {
-            value: 29000,
-            formated: '$ 29.000',
-          },
-          state_budget: 'Aceptado',
-          state_payed: 'Pagado',
-          state_track: '',
-          cost: {
-            value: 0,
-            formated: '',
-          },
-        },
-        {
-          id: 'b03a7752-7d92-11ee-b962-0242ac120003',
-          name: 'Presupuesto 2',
-          created_date: {
-            date: moment(fakeDate).toDate(),
-            timestamp: moment(fakeDate).valueOf(),
-            formated: getFormatedDateToEs(fakeDate, 'ddd ll'),
-          },
-          due_date: {
-            date: moment(fakeDate).toDate(),
-            timestamp: moment(fakeDate).valueOf(),
-            formated: getFormatedDateToEs(fakeDate, 'ddd ll'),
-          },
-          value: {
-            value: 2000,
-            formated: '$ 2.000',
-          },
-          payed: {
-            value: 293000,
-            formated: '$ 293.000',
-          },
-          state_budget: 'Aceptado',
-          state_payed: 'Pagado',
-          state_track: '',
-          cost: {
-            value: 0,
-            formated: '',
-          },
-        },
-      ])
-  }, [clientInfo])
+    refetchBudgets({ patientId: clientInfo?.id })
+  }, [])
+
+  useEffect(() => {
+    !loadingBudges && setBudgets(budgetsMapper(dataBudges.presupuesto || []))
+  }, [dataBudges])
 
   return (
     <Card className='custom-table-card flex flex-col gap-4'>
@@ -213,27 +165,27 @@ const ClientBudget = () => {
         rowsPerPageOptions={[5, 10, 25, 50]}
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
-        // loading={clientInfo === null}
+        loading={loadingBudges}
       >
         <Column
           key='name'
           field='name'
           header='Nombre'
-          style={{ minWidth: '8rem' }}
+          style={{ minWidth: '11rem', width: '13rem' }}
         />
         <Column
           key='created_date'
           field='created_date.timestamp'
-          header='Fecha creación'
+          header='Fecha Creación'
           body={createdDateBodyTemplate}
-          style={{ minWidth: '7rem' }}
+          style={{ minWidth: '7rem', width: '11rem' }}
         />
         <Column
           key='due_date'
           field='due_date.timestamp'
-          header='Fecha vencimiento'
+          header='Fecha Vencimiento'
           body={dueDateBodyTemplate}
-          style={{ minWidth: '7rem' }}
+          style={{ minWidth: '7rem', width: '11rem' }}
         />
         <Column
           key='value'
@@ -252,13 +204,13 @@ const ClientBudget = () => {
         <Column
           key='state_budget'
           field='state_budget'
-          header='Estado presupuesto'
+          header='Estado Presupuesto'
         />
-        <Column key='state_payed' field='state_payed' header='Estado pagado' />
+        <Column key='state_payed' field='state_payed' header='Estado Pago' />
         <Column
           key='state_track'
           field='state_track'
-          header='Estado seguimiento'
+          header='Estado Seguimiento'
         />
         <Column
           key='cost'

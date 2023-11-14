@@ -98,3 +98,9 @@ export const pickObjectProps = (data: any, startMatch: string) =>
       obj[key] = data[key]
       return obj
     }, {})
+
+export const getCurrencyCOP = (value: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+  }).format(value)

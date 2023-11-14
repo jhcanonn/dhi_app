@@ -83,6 +83,19 @@ export const GET_USERS = gql`
   }
 `
 
+export const GET_BUDGETS = gql`
+  query ($patientId: GraphQLStringOrFloat) {
+    presupuesto(filter: { paciente: { id: { _eq: $patientId } } }) {
+      id
+      nombre
+      valor_total
+      date_created
+      data_form
+      estado
+    }
+  }
+`
+
 export const GET_BUDGET_ITEMS = gql`
   query {
     salas_servicios(
