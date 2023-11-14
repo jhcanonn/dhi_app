@@ -9,6 +9,9 @@ import {
   BudgetItemsBoxService,
   BudgetItemsProducts,
   BudgetItemsTherapies,
+  BudgetState,
+  BudgetType,
+  BudgetsDirectus,
   ClientDirectus,
   Country,
   DataSheet,
@@ -34,7 +37,11 @@ import {
 } from './constants'
 import moment from 'moment'
 import { idTypes } from './settings'
-import { calcularEdadConMeses, getFormatedDateToEs } from './helpers'
+import {
+  calcularEdadConMeses,
+  getCurrencyCOP,
+  getFormatedDateToEs,
+} from './helpers'
 import { IDataHeader } from './utils-pdf'
 import { ListGroupType } from '@components/organisms/patient/BudgetItems'
 import { UUID } from 'crypto'
@@ -283,6 +290,49 @@ export const clientInfoToHeaderDataPDFMapper = (
   }
 }
 
+export const budgetsMapper = (budgets: BudgetsDirectus[]) =>
+  budgets.map((b) => {
+    const extraData = b.data_form
+    return {
+      id: b.id,
+      name: b.nombre,
+      value: {
+        value: b.valor_total,
+        formated: getCurrencyCOP(b.valor_total),
+      },
+      payed: {
+        value: 0,
+        formated: getCurrencyCOP(0),
+      },
+      cost: {
+        value: 0,
+        formated: getCurrencyCOP(0),
+      },
+      created_date: {
+        date: moment(b.date_created).toDate(),
+        timestamp: moment(b.date_created).valueOf(),
+        formated: getFormatedDateToEs(b.date_created, 'ddd ll'),
+      },
+      due_date: {
+        date: extraData.presupuesto_fecha_vencimiento
+          ? moment(extraData.presupuesto_fecha_vencimiento).toDate()
+          : null,
+        timestamp: extraData.presupuesto_fecha_vencimiento
+          ? moment(extraData.presupuesto_fecha_vencimiento).valueOf()
+          : null,
+        formated: extraData.presupuesto_fecha_vencimiento
+          ? getFormatedDateToEs(
+              extraData.presupuesto_fecha_vencimiento,
+              'ddd ll',
+            )
+          : null,
+      },
+      state_budget: b.estado,
+      state_payed: '',
+      state_track: '',
+    } as BudgetType
+  })
+
 export const budgetTherapiesMapper = (items: BudgetItemsTherapies[]) =>
   items.map((item) => ({
     name: item.terapias_id.nombre,
@@ -339,12 +389,14 @@ export const budgetCreateMapper = (
     data_form: {
       presupuesto_fecha_vencimiento:
         data[`${initCode}fecha_vencimiento`] || null,
-      presupuesto_aceptado: data[`${initCode}aceptado`] || false,
       presupuesto_incluye: data[`${initCode}incluye`] || '',
       presupuesto_formas_pago: data[`${initCode}formas_pago`] || '',
       presupuesto_observaciones: data[`${initCode}observaciones`] || '',
     },
     valor_total: data.presupuesto_total,
+    estado: data[`${initCode}aceptado`]
+      ? BudgetState.ACEPTADO
+      : BudgetState.NO_ACEPTADO,
   }
 }
 

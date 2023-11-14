@@ -137,6 +137,19 @@ export type DataTableDate = {
   formated: string
 }
 
+export type BudgetType = {
+  id: UUID
+  name: string
+  created_date: DataTableDate
+  due_date: DataTableDate
+  value: DataTableCurrency
+  payed: DataTableCurrency
+  state_budget: string
+  state_payed: string
+  state_track: string
+  cost: DataTableCurrency
+}
+
 export enum StatusDataSheet {
   PUBLISHED = 'published',
   DRAFT = 'draft',
