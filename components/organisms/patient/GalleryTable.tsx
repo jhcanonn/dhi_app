@@ -1,24 +1,29 @@
 'use client'
 
+import GallerySet from './GallerySet'
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, useState } from 'react'
 import { getFormatedDateToEs } from '@utils'
-import { ClientPhoto, StatusDirectus } from '@models'
+import { ClientPhoto, DataTableDate, StatusDirectus } from '@models'
 import { Column } from 'primereact/column'
-import GallerySet from './GallerySet'
 import { usePatchPatient } from '@hooks'
+import moment from 'moment'
 
 export interface GalleryType {
   id: number
   patientGalleryRelId: number
   description: string
-  date: string
+  date: DataTableDate
   photos: ClientPhoto[]
   patient: string
   user: string
   tags: string
 }
+
+const dateBodyTemplate = (gallery: GalleryType) => (
+  <p>{gallery.date.formated}</p>
+)
 
 const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
   const [gallery, setGallery] = useState<GalleryType[]>([])
@@ -79,7 +84,11 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
       return {
         id: gallery?.id,
         patientGalleryRelId: g.id,
-        date: getFormatedDateToEs(gallery?.date_created),
+        date: {
+          date: moment(gallery?.date_created).toDate(),
+          timestamp: moment(gallery?.date_created).valueOf(),
+          formated: getFormatedDateToEs(gallery?.date_created, 'ddd ll'),
+        },
         description: gallery?.descripcion,
         photos: gallery?.fotos,
         patient: clientInfo.full_name,
@@ -105,19 +114,31 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
       tableStyle={{ minWidth: '40rem' }}
       className='custom-table'
       loading={clientInfo === null}
+      removableSort
+      sortField='date.timestamp'
+      sortOrder={-1}
     >
       <Column
         key='tags'
         field='tags'
         header='Etiquetas'
         style={{ width: '45%' }}
+        sortable
       />
-      <Column key='date' field='date' header='Fecha' style={{ width: '20%' }} />
+      <Column
+        key='date'
+        field='date.timestamp'
+        header='Fecha'
+        body={dateBodyTemplate}
+        style={{ width: '20%' }}
+        sortable
+      />
       <Column
         key='user'
         field='user'
         header='Usuario'
         style={{ width: '15%' }}
+        sortable
       />
       <Column
         key='actions'

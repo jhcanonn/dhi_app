@@ -57,7 +57,6 @@ const FoliculosCapilarTable = ({ handleForm, disabledData }: Props) => {
         name={FieldsCodeFC.FC_ODP}
         label='Objetivo de densidad promedio'
         min={0}
-        suffix=' cm²'
         disabled={disabledData}
         required
         onCustomChange={(e) => {

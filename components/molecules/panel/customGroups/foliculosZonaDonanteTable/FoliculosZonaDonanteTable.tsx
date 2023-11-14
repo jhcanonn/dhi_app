@@ -74,7 +74,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                   handleForm={handleForm}
                   name={FieldsCodeFZD.FZD_PDE}
                   min={0}
-                  suffix=' cm²'
                   disabled
                   required
                 />

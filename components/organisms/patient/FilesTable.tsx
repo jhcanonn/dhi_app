@@ -12,6 +12,7 @@ import { Dialog } from 'primereact/dialog'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { useClientInfo, useDirectusFiles, usePatchPatient } from '@hooks'
 import { UUID } from 'crypto'
+import moment from 'moment'
 
 type FileType = Pick<GalleryType, 'id' | 'date' | 'user'> & {
   tag: string
@@ -22,6 +23,8 @@ type FileType = Pick<GalleryType, 'id' | 'date' | 'user'> & {
 type Props = {
   onUploadLoading: (loading: boolean) => void
 }
+
+const dateBodyTemplate = (file: FileType) => <p>{file.date.formated}</p>
 
 const FilesTable = ({ onUploadLoading }: Props) => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -106,7 +109,11 @@ const FilesTable = ({ onUploadLoading }: Props) => {
         return {
           id: a.id,
           fileId: file.id,
-          date: getFormatedDateToEs(file.uploaded_on),
+          date: {
+            date: moment(file.uploaded_on).toDate(),
+            timestamp: moment(file.uploaded_on).valueOf(),
+            formated: getFormatedDateToEs(file.uploaded_on, 'ddd ll'),
+          },
           user,
           tag: a.tag?.nombre,
           fileUrl: generateURLAssetsWithToken(file.id, {
@@ -144,24 +151,31 @@ const FilesTable = ({ onUploadLoading }: Props) => {
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
         loading={clientInfo === null}
+        removableSort
+        sortField='date.timestamp'
+        sortOrder={-1}
       >
         <Column
           key='tag'
           field='tag'
           header='Etiqueta'
           style={{ width: '45%' }}
+          sortable
         />
         <Column
           key='date'
-          field='date'
+          field='date.timestamp'
           header='Fecha'
+          body={dateBodyTemplate}
           style={{ width: '20%' }}
+          sortable
         />
         <Column
           key='user'
           field='user'
           header='Usuario'
           style={{ width: '15%' }}
+          sortable
         />
         <Column
           key='actions'

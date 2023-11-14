@@ -349,19 +349,37 @@ export type BudgetItemsDirectus = {
   terapias_salas_servicios: BudgetItemsTherapies[]
 }
 
+export type BudgetExtraData = {
+  panel_id: {
+    code: string
+  }
+  comercial: {
+    id: UUID
+  }
+  servicios: {
+    id: number
+  }[]
+  terapias: {
+    id: number
+  }[]
+  productos: {
+    id: number
+  }[]
+}
+
 export type BudgetsDirectus = {
   id: UUID
   nombre: string
-  valor_total: number
-  date_created: string
   data_form: {
     presupuesto_fecha_vencimiento: string
     presupuesto_incluye: string
     presupuesto_formas_pago: string
     presupuesto_observaciones: string
   }
+  valor_total: number
+  date_created: string
   estado: string
-}
+} & BudgetExtraData
 
 type BudgetCreateRelServices = {
   presupuesto_id: {
@@ -412,6 +430,15 @@ export enum BudgetState {
   ACEPTADO = 'aceptado',
   ACEPTADO_PARCIAL = 'aceptado_parcial',
   NO_ACEPTADO = 'no_aceptado',
+}
+
+export enum BudgetPanelCodes {
+  NAME = 'nombre',
+  DUE_DATE = 'fecha_vencimiento',
+  ACCEPTED = 'aceptado',
+  INCLUDES = 'incluye',
+  PAYMENT_METHODS = 'formas_pago',
+  GENERAL_OBS = 'observaciones',
 }
 
 export enum StatusDirectus {

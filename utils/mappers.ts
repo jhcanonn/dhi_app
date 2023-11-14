@@ -9,6 +9,7 @@ import {
   BudgetItemsBoxService,
   BudgetItemsProducts,
   BudgetItemsTherapies,
+  BudgetPanelCodes,
   BudgetState,
   BudgetType,
   BudgetsDirectus,
@@ -292,7 +293,7 @@ export const clientInfoToHeaderDataPDFMapper = (
 
 export const budgetsMapper = (budgets: BudgetsDirectus[]) =>
   budgets.map((b) => {
-    const extraData = b.data_form
+    const { presupuesto_fecha_vencimiento, ...extraData } = b.data_form
     return {
       id: b.id,
       name: b.nombre,
@@ -314,22 +315,27 @@ export const budgetsMapper = (budgets: BudgetsDirectus[]) =>
         formated: getFormatedDateToEs(b.date_created, 'ddd ll'),
       },
       due_date: {
-        date: extraData.presupuesto_fecha_vencimiento
-          ? moment(extraData.presupuesto_fecha_vencimiento).toDate()
+        date: presupuesto_fecha_vencimiento
+          ? moment(presupuesto_fecha_vencimiento).toDate()
           : null,
-        timestamp: extraData.presupuesto_fecha_vencimiento
-          ? moment(extraData.presupuesto_fecha_vencimiento).valueOf()
+        timestamp: presupuesto_fecha_vencimiento
+          ? moment(presupuesto_fecha_vencimiento).valueOf()
           : null,
-        formated: extraData.presupuesto_fecha_vencimiento
-          ? getFormatedDateToEs(
-              extraData.presupuesto_fecha_vencimiento,
-              'ddd ll',
-            )
+        formated: presupuesto_fecha_vencimiento
+          ? getFormatedDateToEs(presupuesto_fecha_vencimiento, 'ddd ll')
           : null,
       },
       state_budget: b.estado,
       state_payed: '',
       state_track: '',
+      extraData: {
+        panel_id: b.panel_id,
+        comercial: b.comercial,
+        servicios: b.servicios,
+        terapias: b.terapias,
+        productos: b.productos,
+        ...extraData,
+      },
     } as BudgetType
   })
 
@@ -382,22 +388,45 @@ export const budgetCreateMapper = (
   const initCode =
     budgetFormCodes[data.presupuesto_planilla as keyof typeof budgetFormCodes]
   return {
-    nombre: data[`${initCode}nombre`],
+    nombre: data[`${initCode}${BudgetPanelCodes.NAME}`],
     paciente: { id: clientId },
     comercial: { id: data.presupuesto_comercial },
     panel_id: { code: data.presupuesto_planilla },
     data_form: {
       presupuesto_fecha_vencimiento:
-        data[`${initCode}fecha_vencimiento`] || null,
-      presupuesto_incluye: data[`${initCode}incluye`] || '',
-      presupuesto_formas_pago: data[`${initCode}formas_pago`] || '',
-      presupuesto_observaciones: data[`${initCode}observaciones`] || '',
+        data[`${initCode}${BudgetPanelCodes.DUE_DATE}`] || null,
+      presupuesto_incluye:
+        data[`${initCode}${BudgetPanelCodes.INCLUDES}`] || '',
+      presupuesto_formas_pago:
+        data[`${initCode}${BudgetPanelCodes.PAYMENT_METHODS}`] || '',
+      presupuesto_observaciones:
+        data[`${initCode}${BudgetPanelCodes.GENERAL_OBS}`] || '',
     },
     valor_total: data.presupuesto_total,
-    estado: data[`${initCode}aceptado`]
+    estado: data[`${initCode}${BudgetPanelCodes.ACCEPTED}`]
       ? BudgetState.ACEPTADO
       : BudgetState.NO_ACEPTADO,
   }
+}
+
+export const budgetInitialDataMapper = (budget: BudgetType) => {
+  const extra = budget.extraData
+  const panelCode = extra.panel_id.code
+  const initCode = budgetFormCodes[panelCode as keyof typeof budgetFormCodes]
+  return {
+    presupuesto_planilla: panelCode,
+    presupuesto_comercial: extra.comercial.id,
+    presupuesto_total: budget.value.value,
+    [`${initCode}${BudgetPanelCodes.NAME}`]: budget.name,
+    [`${initCode}${BudgetPanelCodes.DUE_DATE}`]: budget.due_date.date,
+    [`${initCode}${BudgetPanelCodes.ACCEPTED}`]:
+      budget.state_budget === BudgetState.ACEPTADO,
+    [`${initCode}${BudgetPanelCodes.INCLUDES}`]: extra.presupuesto_incluye,
+    [`${initCode}${BudgetPanelCodes.PAYMENT_METHODS}`]:
+      extra.presupuesto_formas_pago,
+    [`${initCode}${BudgetPanelCodes.GENERAL_OBS}`]:
+      extra.presupuesto_observaciones,
+  } as BudgetCreateForm
 }
 
 export const budgetCreateRelationsMapper = (

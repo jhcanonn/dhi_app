@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { DropdownValid, InputNumberValid } from '@components/atoms'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { directusSystemClient } from './Providers'
 import { BudgetItems } from '@components/organisms'
@@ -14,7 +14,7 @@ import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
-import { useGoTo } from '@hooks'
+import { useGoTo, withToast } from '@hooks'
 import {
   BudgetCreateForm,
   BudgetItem,
@@ -37,8 +37,8 @@ import {
   parseUrl,
   budgetTherapiesMapper,
   BUDGET_CREATE,
-  budgetCreateMapper,
   BUDGET_CREATE_RELATIONS,
+  budgetCreateMapper,
   budgetCreateRelationsMapper,
 } from '@utils'
 
@@ -47,12 +47,17 @@ type Users = {
   value: UUID
 }
 
+type BudgetProps = {
+  initialData?: BudgetCreateForm
+  showWarning: (summary: ReactNode, detail: ReactNode) => void
+}
+
 const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
   selectedPanel?.agrupadores_id.flatMap((g) =>
     g.agrupadores_code.campos_id.map((c) => c.campos_id),
   ) || []
 
-const ClientBudgetCreate = () => {
+const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
   const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
   const { clientInfo } = useClientContext()
@@ -79,12 +84,14 @@ const ClientBudgetCreate = () => {
 
   const codePlanilla = `${BUDGET_CODE}planilla`
 
-  const defaultValues: any = {}
+  let defaultValues: any = {}
+  if (initialData) defaultValues = initialData
   const handleForm = useForm({ defaultValues })
   const { handleSubmit, setValue, getValues, unregister } = handleForm
 
-  const onSubmit = async (data: BudgetCreateForm) => {
+  const createBudget = async () => {
     setLoading(true)
+    const data = getValues()
     const createdBudget: any = await budgetCreate({
       variables: { budgetData: budgetCreateMapper(data, clientInfo?.id) },
     })
@@ -100,6 +107,24 @@ const ClientBudgetCreate = () => {
         clientInfo &&
           goToPage(parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }))
       }
+    }
+  }
+
+  const editBudget = async () => {
+    setLoading(true)
+    const data = getValues()
+    console.log({ data })
+    setLoading(false)
+  }
+
+  const onSubmit = async () => {
+    if (getValues(`${BUDGET_CODE}total`) > 0) {
+      initialData ? await editBudget() : await createBudget()
+    } else {
+      showWarning(
+        'Total Presupuesto: $0,00',
+        'El presupuesto debe ser mayor a cero.',
+      )
     }
   }
 
@@ -137,23 +162,32 @@ const ClientBudgetCreate = () => {
   }, [dataBudgetItems])
 
   useEffect(() => {
-    const defaultBudget = `${BUDGET_CODE}vacio`
-    !getValues(codePlanilla) && setValue(codePlanilla, defaultBudget)
-    !selectedPanel &&
-      setSelectedPanel(budgetPanels.find((bp) => bp.code === defaultBudget))
-    setValue(`${BUDGET_CODE}total`, 0)
+    if (initialData) {
+      setSelectedPanel(
+        budgetPanels.find((bp) => bp.code === defaultValues[codePlanilla]),
+      )
+    } else {
+      const defaultBudget = `${BUDGET_CODE}vacio`
+      !getValues(codePlanilla) && setValue(codePlanilla, defaultBudget)
+      !selectedPanel &&
+        setSelectedPanel(budgetPanels.find((bp) => bp.code === defaultBudget))
+      setValue(`${BUDGET_CODE}total`, 0)
+    }
   }, [panels])
 
   useEffect(() => {
     getSelectedPanelFields(selectedPanel).forEach((field) =>
-      setValue(field.codigo, field.valor_predeterminado),
+      setValue(
+        field.codigo,
+        initialData ? initialData[field.codigo] : field.valor_predeterminado,
+      ),
     )
   }, [selectedPanel])
 
   return (
     <Card className='custom-table-card'>
       <form
-        id={`form_${BUDGET_CODE}crate`}
+        id={`form_${BUDGET_CODE}create_edit`}
         autoComplete='off'
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
@@ -259,30 +293,34 @@ const ClientBudgetCreate = () => {
             </div>
           )}
         </div>
-        <div className='flex flex-col md:flex-row gap-2 justify-center mt-3'>
-          <Button
-            type='button'
-            label='Cerrar'
-            icon='pi pi-times'
-            severity='danger'
-            className='w-full md:w-fit'
-            onClick={() =>
-              clientInfo &&
-              goToPage(parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }))
-            }
-          />
-          <Button
-            type='submit'
-            label='Guardar'
-            icon='pi pi-save'
-            severity='success'
-            className='w-full md:w-fit'
-            loading={loading}
-          />
-        </div>
+        {!initialData && (
+          <div className='flex flex-col md:flex-row gap-2 justify-center mt-3'>
+            <Button
+              type='button'
+              label='Cerrar'
+              icon='pi pi-times'
+              severity='danger'
+              className='w-full md:w-fit'
+              onClick={() =>
+                clientInfo &&
+                goToPage(
+                  parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }),
+                )
+              }
+            />
+            <Button
+              type='submit'
+              label='Guardar'
+              icon='pi pi-save'
+              severity='success'
+              className='w-full md:w-fit'
+              loading={loading}
+            />
+          </div>
+        )}
       </form>
     </Card>
   )
 }
 
-export default ClientBudgetCreate
+export default withToast(ClientBudgetForm)

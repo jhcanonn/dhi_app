@@ -479,6 +479,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
         <Column
           key='actions'
           header='Acción'
+          align={'center'}
           body={actionsBodyTemplate}
           style={{ width: '10%' }}
         />

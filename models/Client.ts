@@ -1,6 +1,6 @@
 import { UUID } from 'crypto'
 import { Country, IdType } from './Calendar'
-import { ProfileAvatar } from './Directus'
+import { BudgetExtraData, ProfileAvatar } from './Directus'
 
 export type DhiPatient = {
   avatar?: ProfileAvatar[]
@@ -148,6 +148,11 @@ export type BudgetType = {
   state_payed: string
   state_track: string
   cost: DataTableCurrency
+  extraData: BudgetExtraData & {
+    presupuesto_incluye: string
+    presupuesto_formas_pago: string
+    presupuesto_observaciones: string
+  }
 }
 
 export enum StatusDataSheet {

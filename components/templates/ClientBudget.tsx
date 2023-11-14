@@ -4,9 +4,11 @@ import {
   BUDGET_CODE,
   GET_BUDGETS,
   PAGE_PATH,
+  budgetInitialDataMapper,
   budgetsMapper,
   parseUrl,
 } from '@utils'
+import ClientBudgetForm from './ClientBudgetForm'
 import { useClientContext } from '@contexts'
 import { BudgetType } from '@models'
 import { Button } from 'primereact/button'
@@ -33,8 +35,30 @@ const payedBodyTemplate = (budget: BudgetType) => <p>{budget.payed.formated}</p>
 
 const costBodyTemplate = (budget: BudgetType) => <p>{budget.cost.formated}</p>
 
+const footerContent = (setVisible: (v: boolean) => void, formId?: string) => (
+  <div className='flex flex-col md:flex-row gap-2 justify-center'>
+    <Button
+      type='button'
+      label='Cerrar'
+      icon='pi pi-times'
+      severity='danger'
+      className='w-full md:w-fit'
+      onClick={() => setVisible(false)}
+    />
+    <Button
+      label='Guardar'
+      icon='pi pi-save'
+      severity='success'
+      className='w-full md:w-fit'
+      form={formId}
+      // loading={savingBudget}
+    />
+  </div>
+)
+
 const ClientBudget = () => {
-  const [visible, setVisible] = useState<boolean>(false)
+  const [visibleData, setVisibleData] = useState<boolean>(false)
+  const [visibleEdit, setVisibleEdit] = useState<boolean>(false)
   const [budgets, setBudgets] = useState<BudgetType[]>([])
   const [currentBudget, setCurrentBudget] = useState<BudgetType | null>(null)
   const { clientInfo } = useClientContext()
@@ -86,7 +110,8 @@ const ClientBudget = () => {
             tooltipOptions={{ position: 'bottom' }}
             outlined
             onClick={() => {
-              console.log(`Edit budget: ${budget.id}`)
+              setVisibleEdit(true)
+              setCurrentBudget(budget)
             }}
           />
           <Button
@@ -96,7 +121,7 @@ const ClientBudget = () => {
             tooltipOptions={{ position: 'bottom' }}
             outlined
             onClick={() => {
-              setVisible(true)
+              setVisibleData(true)
               setCurrentBudget(budget)
             }}
           />
@@ -149,12 +174,27 @@ const ClientBudget = () => {
       />
       <Dialog
         draggable={false}
-        visible={visible}
-        onHide={() => setVisible(false)}
+        visible={visibleData}
+        onHide={() => setVisibleData(false)}
         header={headerContent}
+        footer={footerContent(setVisibleData)}
         className='w-[90vw] max-w-[100rem]'
       >
         <h2>Data budget id: {currentBudget?.id}</h2>
+      </Dialog>
+      <Dialog
+        draggable={false}
+        visible={visibleEdit}
+        onHide={() => setVisibleEdit(false)}
+        header={headerContent}
+        footer={footerContent(setVisibleEdit, `form_${BUDGET_CODE}create_edit`)}
+        className='w-[90vw] max-w-[100rem]'
+      >
+        <ClientBudgetForm
+          initialData={
+            currentBudget ? budgetInitialDataMapper(currentBudget) : undefined
+          }
+        />
       </Dialog>
       <DataTable
         value={budgets}
@@ -166,12 +206,16 @@ const ClientBudget = () => {
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
         loading={loadingBudges}
+        removableSort
+        sortField='created_date.timestamp'
+        sortOrder={-1}
       >
         <Column
           key='name'
           field='name'
           header='Nombre'
           style={{ minWidth: '11rem', width: '13rem' }}
+          sortable
         />
         <Column
           key='created_date'
@@ -179,6 +223,7 @@ const ClientBudget = () => {
           header='Fecha Creación'
           body={createdDateBodyTemplate}
           style={{ minWidth: '7rem', width: '11rem' }}
+          sortable
         />
         <Column
           key='due_date'
@@ -186,6 +231,7 @@ const ClientBudget = () => {
           header='Fecha Vencimiento'
           body={dueDateBodyTemplate}
           style={{ minWidth: '7rem', width: '11rem' }}
+          sortable
         />
         <Column
           key='value'
@@ -193,6 +239,7 @@ const ClientBudget = () => {
           header='Valor'
           body={valueBodyTemplate}
           style={{ minWidth: '6rem' }}
+          sortable
         />
         <Column
           key='payed'
@@ -200,17 +247,25 @@ const ClientBudget = () => {
           header='Pagado'
           body={payedBodyTemplate}
           style={{ minWidth: '6rem' }}
+          sortable
         />
         <Column
           key='state_budget'
           field='state_budget'
           header='Estado Presupuesto'
+          sortable
         />
-        <Column key='state_payed' field='state_payed' header='Estado Pago' />
+        <Column
+          key='state_payed'
+          field='state_payed'
+          header='Estado Pago'
+          sortable
+        />
         <Column
           key='state_track'
           field='state_track'
           header='Estado Seguimiento'
+          sortable
         />
         <Column
           key='cost'
@@ -218,6 +273,7 @@ const ClientBudget = () => {
           header='Costos'
           body={costBodyTemplate}
           style={{ minWidth: '6rem' }}
+          sortable
         />
         <Column
           key='options'
