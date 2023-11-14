@@ -33,7 +33,6 @@ const cejaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CD_DE,
     required: false,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -45,7 +44,6 @@ const cejaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CD_DR,
     required: false,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -91,7 +89,6 @@ const cejaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CI_DE,
     required: false,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -103,7 +100,6 @@ const cejaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CI_DR,
     required: false,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },

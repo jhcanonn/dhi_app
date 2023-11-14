@@ -60,11 +60,10 @@ const occipitalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_ODE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'T', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_ODR, required: true, suffix: ' cm²' },
+  { code: FieldsCodeFZD.FZD_ODR, required: true },
   {
     code: FieldsCodeFZD.FZD_OAA,
     required: true,
@@ -95,11 +94,10 @@ const temporalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_TDE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'O', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_TDR, required: true, suffix: ' cm²' },
+  { code: FieldsCodeFZD.FZD_TDR, required: true },
   {
     code: FieldsCodeFZD.FZD_TAA,
     required: true,

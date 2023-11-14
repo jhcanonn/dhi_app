@@ -58,7 +58,6 @@ const FoliculosBarbaTable = ({ handleForm, disabledData }: Props) => {
         name={FieldsCodeFB.FB_ODP}
         label='Objetivo de densidad promedio'
         min={0}
-        suffix=' cm²'
         disabled={disabledData}
         onCustomChange={(e) => {
           const currentValue = e.value || 0

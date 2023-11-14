@@ -73,7 +73,6 @@ const zonaaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZA_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -85,7 +84,6 @@ const zonaaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZA_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -133,7 +131,6 @@ const zonabFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZB_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -145,7 +142,6 @@ const zonabFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZB_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -191,7 +187,6 @@ const zonacFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZC_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -203,7 +198,6 @@ const zonacFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ZC_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -249,7 +243,6 @@ const lineaFrontalFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LF_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -262,7 +255,6 @@ const lineaFrontalFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LF_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -282,7 +274,6 @@ const entradaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ED_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -294,7 +285,6 @@ const entradaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_ED_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -340,7 +330,6 @@ const entradaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_EI_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -352,7 +341,6 @@ const entradaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_EI_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -398,7 +386,6 @@ const lateralDerechoFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LD_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -410,7 +397,6 @@ const lateralDerechoFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LD_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },
@@ -456,7 +442,6 @@ const lateralIzquerdoFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LI_DE,
     required: true,
-    suffix: ' cm²',
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -468,7 +453,6 @@ const lateralIzquerdoFields: FoliculosField[] = [
   {
     code: FieldsCodeFC.FC_LI_DR,
     required: true,
-    suffix: ' cm²',
     defaultValue: 0,
     disabled: true,
   },

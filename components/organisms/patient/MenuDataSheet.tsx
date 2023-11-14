@@ -124,7 +124,7 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
   }
 
   const optionsBodyTemplate = (rowData: DataSheet) => (
-    <div className='w-full flex gap-2'>
+    <div className='w-full flex gap-2 justify-center'>
       <ConfirmDialog tagKey={`annul_${rowData.id}`} />
       {rowData.status === StatusDataSheet.ANNULLED ? (
         <Tag
@@ -231,19 +231,22 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
   const headerDialog = <h2>Edición {currentRowData?.type.name}</h2>
 
   const footerDialog = (
-    <div className='flex flex-col md:flex-row gap-2 justify-end'>
+    <div className='flex flex-col md:flex-row gap-2 justify-center'>
       <Button
+        type='button'
         label='Cerrar'
+        icon='pi pi-times'
         severity='danger'
-        onClick={() => setVisible(false)}
         className='w-full md:w-fit'
+        onClick={() => setVisible(false)}
       />
       <Button
         label='Guardar'
+        icon='pi pi-save'
         severity='success'
+        className='w-full md:w-fit'
         form={`form_${currentRowData?.type.code}_edit_${currentRowData?.id}`}
         loading={savingDataSheet}
-        className='w-full md:w-fit'
       />
     </div>
   )
@@ -348,7 +351,8 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
           style={{ width: '30%' }}
         />
         <Column
-          header='Opciones'
+          header='Acciones'
+          align={'center'}
           style={{ width: '12%' }}
           body={optionsBodyTemplate}
         />

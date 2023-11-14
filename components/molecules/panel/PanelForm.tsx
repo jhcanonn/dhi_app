@@ -11,7 +11,7 @@ import { UseFormReturn, useForm } from 'react-hook-form'
 export type PanelFormProps = {
   formId: string
   panel: PanelsDirectus | undefined
-  initialData?: JSON
+  initialData?: Record<string, any>
   disabledData?: boolean
   hideSubmitButton?: boolean
   handleFormExternal?: UseFormReturn<any, any, undefined>

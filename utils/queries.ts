@@ -88,9 +88,24 @@ export const GET_BUDGETS = gql`
     presupuesto(filter: { paciente: { id: { _eq: $patientId } } }) {
       id
       nombre
+      panel_id {
+        code
+      }
+      comercial {
+        id
+      }
+      servicios {
+        id
+      }
+      terapias {
+        id
+      }
+      productos {
+        id
+      }
+      data_form
       valor_total
       date_created
-      data_form
       estado
     }
   }
