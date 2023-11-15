@@ -140,7 +140,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
       `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
       getValues(cantCode) * getValues(valorDctoCode),
     )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
   }
 
   useEffect(() => {

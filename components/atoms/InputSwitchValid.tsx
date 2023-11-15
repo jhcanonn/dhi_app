@@ -3,7 +3,7 @@
 import { ErrorText } from '.'
 import { Controller, FieldValues } from 'react-hook-form'
 import { classNames as cx } from 'primereact/utils'
-import { InputSwitch } from 'primereact/inputswitch'
+import { InputSwitch, InputSwitchChangeEvent } from 'primereact/inputswitch'
 import { FieldCommonProps } from '@models'
 import { errorMessages } from '@utils'
 
@@ -11,6 +11,7 @@ export type Props<T> = FieldCommonProps<T> & {
   acceptMessage?: string
   disabled?: boolean
   className?: string
+  onCustomChange?: (e: InputSwitchChangeEvent) => void
 }
 
 const InputSwitchValid = <T extends FieldValues>({
@@ -20,6 +21,7 @@ const InputSwitchValid = <T extends FieldValues>({
   disabled,
   required,
   className,
+  onCustomChange,
   validate,
 }: Props<T>) => {
   const {
@@ -44,15 +46,20 @@ const InputSwitchValid = <T extends FieldValues>({
           <div className='flex gap-2'>
             <InputSwitch
               inputId={name}
-              checked={value}
+              checked={!!value}
               inputRef={ref}
               className={cx({ 'p-invalid': error }, 'rounded-2xl')}
-              onChange={(e) => onChange(e.value)}
+              onChange={(e: InputSwitchChangeEvent) => {
+                onChange(e.value)
+                onCustomChange && onCustomChange(e)
+              }}
               disabled={disabled}
             />
-            <label className={cx({ 'p-error': errors.checked })}>
-              {acceptMessage}
-            </label>
+            {acceptMessage && (
+              <label className={cx({ 'p-error': errors.checked })}>
+                {acceptMessage}
+              </label>
+            )}
           </div>
           <ErrorText name={name} errors={errors} />
         </div>

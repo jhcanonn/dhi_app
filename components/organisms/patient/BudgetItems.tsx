@@ -1,8 +1,12 @@
 'use client'
 
-import { DropdownValid, InputNumberValid } from '@components/atoms'
+import {
+  DropdownValid,
+  InputNumberValid,
+  InputSwitchValid,
+} from '@components/atoms'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { FieldsCodeBudgetItems } from '@models'
+import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
 import { BUDGET_CODE } from '@utils'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
@@ -28,10 +32,18 @@ type BudgetItemsProps = {
   onListChange: (value: any, tag: string, rowId: UUID) => void
 }
 
-export const getBudgetTotal = (formData: any) =>
+export const getBudgetTotal = (formData: any, initCode: string) =>
   Object.entries(formData)
-    .filter(([key]) => key.includes(FieldsCodeBudgetItems.VT))
-    .reduce((acc, [, value]) => acc + Number(value), 0)
+    .filter(([key]) => key.includes(FieldsCodeBudgetItems.A))
+    .reduce((acc, [key, accepted]) => {
+      const rowId = key.split('_').slice(-1)[0] as UUID
+      return (
+        acc +
+        (accepted
+          ? Number(formData[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`])
+          : 0)
+      )
+    }, 0)
 
 const groupedItemTemplate = (option: ListGroupType) => {
   return (
@@ -70,7 +82,27 @@ const BudgetItems = ({
       `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
       catidad * getValues(valorDctoCode),
     )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
+  }
+
+  const handleSwithChange = () => {
+    const acceptedCodes = Object.entries(getValues()).filter(([key]) =>
+      key.includes(FieldsCodeBudgetItems.A),
+    )
+    const total = acceptedCodes.reduce((acc, [, value]) => {
+      const accept = value ? 1 : 0
+      return acc + accept
+    }, 0)
+
+    setValue(
+      getValues(`${BUDGET_CODE}planilla`) + '_' + BudgetPanelCodes.STATE,
+      total === 0
+        ? BudgetState.NO_ACEPTADO
+        : total === acceptedCodes.length
+        ? BudgetState.ACEPTADO
+        : BudgetState.ACEPTADO_PARCIAL,
+    )
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
   }
 
   useEffect(() => {
@@ -88,7 +120,7 @@ const BudgetItems = ({
       Object.keys(getValues())
         .filter((key) => key.startsWith(`${tag}_`))
         .forEach((key) => unregister(key))
-      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
     }
   }, [])
 
@@ -121,6 +153,7 @@ const BudgetItems = ({
                 <th className='min-w-[4.5rem]'>% Dcto.</th>
                 <th className='min-w-[10rem]'>Valor con descuento</th>
                 <th className='min-w-[10rem]'>Valor total</th>
+                <th className='min-w-[4.5rem]'>Aceptado</th>
                 <th className='rounded-r-md'></th>
               </tr>
             </thead>
@@ -206,6 +239,14 @@ const BudgetItems = ({
                         useGrouping={true}
                       />
                     </td>
+                    <td className={cx({ 'pt-2': isFirtsRow })}>
+                      <InputSwitchValid
+                        name={`${tag}${FieldsCodeBudgetItems.A}${rowId}`}
+                        handleForm={handleForm}
+                        className='[&>div]:justify-center'
+                        onCustomChange={handleSwithChange}
+                      />
+                    </td>
                     <td
                       className={cx('flex flex-col items-center', {
                         'pt-2': isFirtsRow,
@@ -225,7 +266,7 @@ const BudgetItems = ({
                             .forEach((key) => unregister(key))
                           setValue(
                             `${BUDGET_CODE}total`,
-                            getBudgetTotal(getValues()),
+                            getBudgetTotal(getValues(), tag),
                           )
                         }}
                         outlined

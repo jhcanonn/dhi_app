@@ -181,6 +181,7 @@ export enum FieldsCodeBudgetItems {
   D = '_dcto_',
   VD = '_valor_con_dcto_',
   VT = '_valor_total_',
+  A = '_aceptado_',
 }
 
 export type DataSheet = {

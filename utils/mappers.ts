@@ -10,7 +10,6 @@ import {
   BudgetItemsProducts,
   BudgetItemsTherapies,
   BudgetPanelCodes,
-  BudgetState,
   BudgetType,
   BudgetsDirectus,
   ClientDirectus,
@@ -403,9 +402,7 @@ export const budgetCreateMapper = (
         data[`${initCode}${BudgetPanelCodes.GENERAL_OBS}`] || '',
     },
     valor_total: data.presupuesto_total,
-    estado: data[`${initCode}${BudgetPanelCodes.ACCEPTED}`]
-      ? BudgetState.ACEPTADO
-      : BudgetState.NO_ACEPTADO,
+    estado: data[`${initCode}${BudgetPanelCodes.STATE}`],
   }
 }
 
@@ -419,8 +416,7 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
     presupuesto_total: budget.value.value,
     [`${initCode}${BudgetPanelCodes.NAME}`]: budget.name,
     [`${initCode}${BudgetPanelCodes.DUE_DATE}`]: budget.due_date.date,
-    [`${initCode}${BudgetPanelCodes.ACCEPTED}`]:
-      budget.state_budget === BudgetState.ACEPTADO,
+    [`${initCode}${BudgetPanelCodes.STATE}`]: budget.state_budget,
     [`${initCode}${BudgetPanelCodes.INCLUDES}`]: extra.presupuesto_incluye,
     [`${initCode}${BudgetPanelCodes.PAYMENT_METHODS}`]:
       extra.presupuesto_formas_pago,
@@ -433,7 +429,6 @@ export const budgetCreateRelationsMapper = (
   data: BudgetCreateForm,
   budgetId: UUID,
 ) => {
-  const dataKeyValue = Object.entries(data)
   const relationsData: BudgetCreateRelationsDirectus = {
     dataServices: [],
     dataProducts: [],
@@ -441,45 +436,67 @@ export const budgetCreateRelationsMapper = (
   }
 
   Object.values(BudgetItem).forEach((code) => {
-    const listTag = `${BUDGET_CODE}${code.trim().toLowerCase()}${
-      FieldsCodeBudgetItems.L
-    }`
-    dataKeyValue
-      .filter(([key]) => key.startsWith(listTag))
-      .forEach(([, value]) => {
-        const itemId: number = JSON.parse(value).id
-        switch (code) {
-          case BudgetItem.PRODUCTS:
-            relationsData.dataProducts.push({
-              presupuesto_id: {
-                id: budgetId,
-              },
-              productos_id: {
-                id: itemId,
-              },
-            })
-            break
-          case BudgetItem.SERVICES:
-            relationsData.dataServices.push({
-              presupuesto_id: {
-                id: budgetId,
-              },
-              salas_servicios_id: {
-                id: itemId,
-              },
-            })
-            break
-          case BudgetItem.THERAPIES:
-            relationsData.dataTherapies.push({
-              presupuesto_id: {
-                id: budgetId,
-              },
-              terapias_salas_servicios_id: {
-                id: itemId,
-              },
-            })
-        }
-      })
+    const initCode = `${BUDGET_CODE}${code.trim().toLowerCase()}`
+    const rowsId = [
+      ...new Set(
+        Object.keys(data)
+          .filter((key) => key.startsWith(initCode))
+          .map((key) => key.split('_').slice(-1)[0] as UUID),
+      ),
+    ]
+
+    rowsId.forEach((rowId) => {
+      const itemId: number = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.L}${rowId}`],
+      ).id
+      const cantidad = data[`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]
+      const valor_unitario =
+        data[`${initCode}${FieldsCodeBudgetItems.V}${rowId}`]
+      const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
+      const valor_con_descuento =
+        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+      const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
+      const aceptado = !!data[`${initCode}${FieldsCodeBudgetItems.A}${rowId}`]
+
+      const relatedProps = {
+        presupuesto_id: {
+          id: budgetId,
+        },
+        cantidad,
+        valor_unitario,
+        descuento,
+        valor_con_descuento,
+        valor_total,
+        aceptado,
+      }
+
+      switch (code) {
+        case BudgetItem.PRODUCTS:
+          relationsData.dataProducts.push({
+            productos_id: {
+              id: itemId,
+            },
+            ...relatedProps,
+          })
+          break
+        case BudgetItem.SERVICES:
+          relationsData.dataServices.push({
+            salas_servicios_id: {
+              id: itemId,
+            },
+            ...relatedProps,
+          })
+          break
+        case BudgetItem.THERAPIES:
+          relationsData.dataTherapies.push({
+            terapias_salas_servicios_id: {
+              id: itemId,
+            },
+            ...relatedProps,
+          })
+          break
+      }
+    })
   })
 
   return relationsData
