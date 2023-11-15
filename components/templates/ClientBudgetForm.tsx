@@ -13,7 +13,10 @@ import { Button } from 'primereact/button'
 import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
+import {
+  getBudgetTotal,
+  handleAcceptedChange,
+} from '@components/organisms/patient/BudgetItems'
 import { useGoTo, withToast } from '@hooks'
 import {
   BudgetCreateForm,
@@ -24,12 +27,12 @@ import {
   BudgetItemsTherapies,
   FieldsCodeBudgetItems,
   PanelsDirectus,
-  UsersDirectus,
+  CommercialDirectus,
 } from '@models'
 import {
   BUDGET_CODE,
   GET_BUDGET_ITEMS,
-  GET_USERS,
+  GET_COMMERCIALS,
   PAGE_PATH,
   PanelTags,
   budgetServicesMapper,
@@ -40,9 +43,10 @@ import {
   BUDGET_CREATE_RELATIONS,
   budgetCreateMapper,
   budgetCreateRelationsMapper,
+  ROLES,
 } from '@utils'
 
-type Users = {
+type Commercial = {
   name: string
   value: UUID
 }
@@ -63,14 +67,20 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
   const { clientInfo } = useClientContext()
   const [loading, setLoading] = useState(false)
   const [selectedPanel, setSelectedPanel] = useState<PanelsDirectus>()
-  const [users, setUsers] = useState<Users[]>([])
+  const [commercials, setCommercials] = useState<Commercial[]>([])
   const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
     null,
   )
 
-  const { data: dataUsers, loading: loadingUsers } = useQuery(GET_USERS, {
-    client: directusSystemClient,
-  })
+  const { data: dataCommercials, loading: loadingCommercials } = useQuery(
+    GET_COMMERCIALS,
+    {
+      client: directusSystemClient,
+      variables: {
+        roleId: ROLES.dhi_comercial,
+      },
+    },
+  )
 
   const { data: dataBudgetItems, loading: loadingBudgetItems } =
     useQuery(GET_BUDGET_ITEMS)
@@ -140,22 +150,20 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
       `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
       getValues(cantCode) * getValues(valorDctoCode),
     )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
   }
 
   useEffect(() => {
-    if (!loadingUsers) {
-      const users: UsersDirectus[] = dataUsers.users
-      setUsers(
-        users.map((u) => {
-          const name = u.profesional
-            ? u.profesional.nombre
-            : `${u.first_name} ${u.last_name}`
-          return { name: name.trim(), value: u.id as UUID }
-        }),
+    if (!loadingCommercials) {
+      const commercials: CommercialDirectus[] = dataCommercials.users
+      setCommercials(
+        commercials.map((comm) => ({
+          name: `${comm.first_name} ${comm.last_name}`.trim(),
+          value: comm.id as UUID,
+        })),
       )
     }
-  }, [dataUsers])
+  }, [dataCommercials])
 
   useEffect(() => {
     !loadingBudgetItems && setBudgetItems(dataBudgetItems)
@@ -208,6 +216,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
                 )
                 return budgetPanels.find((bp) => bp.code === e.value)
               })
+              handleAcceptedChange(handleForm)
             }}
             required
           />
@@ -215,7 +224,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
             name={`${BUDGET_CODE}comercial`}
             label='Comercial'
             handleForm={handleForm}
-            list={users}
+            list={commercials}
             required
           />
           <InputNumberValid

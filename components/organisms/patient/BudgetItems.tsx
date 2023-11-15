@@ -32,17 +32,16 @@ type BudgetItemsProps = {
   onListChange: (value: any, tag: string, rowId: UUID) => void
 }
 
-export const getBudgetTotal = (formData: any, initCode: string) =>
+export const getBudgetTotal = (formData: any) =>
   Object.entries(formData)
     .filter(([key]) => key.includes(FieldsCodeBudgetItems.A))
     .reduce((acc, [key, accepted]) => {
       const rowId = key.split('_').slice(-1)[0] as UUID
-      return (
-        acc +
-        (accepted
-          ? Number(formData[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`])
-          : 0)
+      const vtCode = Object.keys(formData).find((key) =>
+        key.endsWith(`${FieldsCodeBudgetItems.VT}${rowId}`),
       )
+      const valorTotal = Number(vtCode ? formData[vtCode] : 0)
+      return acc + (accepted ? valorTotal : 0)
     }, 0)
 
 const groupedItemTemplate = (option: ListGroupType) => {
@@ -55,6 +54,30 @@ const groupedItemTemplate = (option: ListGroupType) => {
       <p className='text-[1rem]'>{option.label}</p>
     </div>
   )
+}
+
+export const handleAcceptedChange = (
+  handleForm: UseFormReturn<any, any, undefined>,
+) => {
+  const { setValue, getValues } = handleForm
+
+  const acceptedCodes = Object.entries(getValues()).filter(([key]) =>
+    key.includes(FieldsCodeBudgetItems.A),
+  )
+  const total = acceptedCodes.reduce((acc, [, value]) => {
+    const accept = value ? 1 : 0
+    return acc + accept
+  }, 0)
+
+  setValue(
+    getValues(`${BUDGET_CODE}planilla`) + '_' + BudgetPanelCodes.STATE,
+    total === 0
+      ? BudgetState.NO_ACEPTADO
+      : total === acceptedCodes.length
+      ? BudgetState.ACEPTADO
+      : BudgetState.ACEPTADO_PARCIAL,
+  )
+  setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
 }
 
 const BudgetItems = ({
@@ -82,27 +105,7 @@ const BudgetItems = ({
       `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
       catidad * getValues(valorDctoCode),
     )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
-  }
-
-  const handleSwithChange = () => {
-    const acceptedCodes = Object.entries(getValues()).filter(([key]) =>
-      key.includes(FieldsCodeBudgetItems.A),
-    )
-    const total = acceptedCodes.reduce((acc, [, value]) => {
-      const accept = value ? 1 : 0
-      return acc + accept
-    }, 0)
-
-    setValue(
-      getValues(`${BUDGET_CODE}planilla`) + '_' + BudgetPanelCodes.STATE,
-      total === 0
-        ? BudgetState.NO_ACEPTADO
-        : total === acceptedCodes.length
-        ? BudgetState.ACEPTADO
-        : BudgetState.ACEPTADO_PARCIAL,
-    )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
   }
 
   useEffect(() => {
@@ -112,6 +115,7 @@ const BudgetItems = ({
         setValue(`${tag}${code}${id}`, 0),
       )
       setValue(`${tag}${FieldsCodeBudgetItems.L}${id}`, undefined)
+      handleAcceptedChange(handleForm)
     }
   }, [rowIds])
 
@@ -120,7 +124,7 @@ const BudgetItems = ({
       Object.keys(getValues())
         .filter((key) => key.startsWith(`${tag}_`))
         .forEach((key) => unregister(key))
-      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues(), tag))
+      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
     }
   }, [])
 
@@ -244,7 +248,7 @@ const BudgetItems = ({
                         name={`${tag}${FieldsCodeBudgetItems.A}${rowId}`}
                         handleForm={handleForm}
                         className='[&>div]:justify-center'
-                        onCustomChange={handleSwithChange}
+                        onCustomChange={() => handleAcceptedChange(handleForm)}
                       />
                     </td>
                     <td
@@ -266,8 +270,9 @@ const BudgetItems = ({
                             .forEach((key) => unregister(key))
                           setValue(
                             `${BUDGET_CODE}total`,
-                            getBudgetTotal(getValues(), tag),
+                            getBudgetTotal(getValues()),
                           )
+                          handleAcceptedChange(handleForm)
                         }}
                         outlined
                       />
