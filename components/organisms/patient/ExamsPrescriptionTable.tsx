@@ -446,35 +446,32 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
       >
         <Column
           sortable
-          key='descripcion'
-          field='descripcion'
-          header='Descripción'
-          style={{ width: '25%' }}
-        />
-
-        <Column
-          sortable
           key='date_created'
           field='date_created'
           header='Fecha de emisión'
           body={dateBodyTemplate}
-          style={{ width: '20%' }}
+          style={{ width: '20%', minWidth: '10rem' }}
         />
-
+        <Column
+          sortable
+          key='descripcion'
+          field='descripcion'
+          header='Descripción'
+          style={{ width: '25%', minWidth: '15rem' }}
+        />
         <Column
           sortable
           key='tipo'
           field='tipo'
           header='Tipo'
-          style={{ width: '20%' }}
+          style={{ width: '20%', minWidth: '5rem' }}
         />
-
         <Column
           sortable
           key='user_created.profesional.nombre'
           field='user_created.profesional.nombre'
           header='Profesional'
-          style={{ width: '25%' }}
+          style={{ width: '25%', minWidth: '10rem' }}
         />
         <Column
           key='actions'

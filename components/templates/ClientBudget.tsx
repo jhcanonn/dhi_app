@@ -211,13 +211,6 @@ const ClientBudget = () => {
         sortOrder={-1}
       >
         <Column
-          key='name'
-          field='name'
-          header='Nombre'
-          style={{ minWidth: '11rem', width: '13rem' }}
-          sortable
-        />
-        <Column
           key='created_date'
           field='created_date.timestamp'
           header='Fecha Creación'
@@ -231,6 +224,13 @@ const ClientBudget = () => {
           header='Fecha Vencimiento'
           body={dueDateBodyTemplate}
           style={{ minWidth: '7rem', width: '11rem' }}
+          sortable
+        />
+        <Column
+          key='name'
+          field='name'
+          header='Nombre'
+          style={{ minWidth: '11rem', width: '13rem' }}
           sortable
         />
         <Column
