@@ -1,7 +1,7 @@
 'use client'
 
-import { UseFormReturn } from 'react-hook-form'
 import ExtDay from './ExtDay'
+import { UseFormReturn } from 'react-hook-form'
 import { Button } from 'primereact/button'
 import { useEffect, useState } from 'react'
 import { FieldsCodeED } from './dataED'
@@ -62,9 +62,10 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
             onClick={() => {
               setDays((prev) => {
                 const lastDay = prev[days.length - 1]
-                Object.keys(getValues())
-                  .filter((key) => key.includes(`_dia${lastDay}`))
-                  .forEach((key) => unregister(key))
+                lastDay !== 1 &&
+                  Object.keys(getValues())
+                    .filter((key) => key.includes(`_dia${lastDay}`))
+                    .forEach((key) => unregister(key))
                 return lastDay !== 1 ? prev.filter((d) => d !== lastDay) : prev
               })
             }}

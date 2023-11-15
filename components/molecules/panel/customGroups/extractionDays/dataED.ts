@@ -52,17 +52,29 @@ const calcDayTotal = (
 export const calcTotalED = (
   handleForm: UseFormReturn<any, any, undefined>,
   startCode: FieldsCodeED,
-  index: number,
-  isTotal?: boolean,
+  index?: number,
 ) => {
   const { setValue, getValues } = handleForm
-  const regex = new RegExp(`${startCode}${isTotal ? '' : index}_dia\\d+`)
+  const regex = new RegExp(`${startCode}${index ?? ''}_dia\\d+`)
 
   const sum = Object.entries(getValues())
     .filter(([key]) => key.match(regex))
     .reduce((acc, [, value]) => acc + (Number(value) || 0), 0)
 
-  setValue(`${startCode}${isTotal ? '' : `${index}_total`}`, sum)
+  setValue(`${startCode}${index ? `${index}_total` : ''}`, sum)
+}
+
+export const calcRadio = (
+  handleForm: UseFormReturn<any, any, undefined>,
+  dayCode?: string,
+) => {
+  const { setValue, getValues } = handleForm
+  const radio =
+    getValues(`${FieldsCodeED.ED_GT}${dayCode ?? ''}`) !== 0
+      ? getValues(`${FieldsCodeED.ED_GFT}${dayCode ?? ''}`) /
+        getValues(`${FieldsCodeED.ED_GT}${dayCode ?? ''}`)
+      : 0
+  setValue(`${FieldsCodeED.ED_R}${dayCode ?? '_total'}`, radio)
 }
 
 const calcByChange = (
@@ -78,8 +90,10 @@ const calcByChange = (
   calcDayTotal(handleForm, FieldsCodeED.ED_GF, FieldsCodeED.ED_GFT, dayCode)
   calcTotalED(handleForm, FieldsCodeED.ED_G, index)
   calcTotalED(handleForm, FieldsCodeED.ED_GF, index)
-  calcTotalED(handleForm, FieldsCodeED.ED_GT, index, true)
-  calcTotalED(handleForm, FieldsCodeED.ED_GFT, index, true)
+  calcTotalED(handleForm, FieldsCodeED.ED_GT)
+  calcTotalED(handleForm, FieldsCodeED.ED_GFT)
+  calcRadio(handleForm, dayCode)
+  calcRadio(handleForm)
 }
 
 export let graftFields: GraftField[] = []
