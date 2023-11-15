@@ -5,15 +5,16 @@ import {
   InputNumberValid,
   InputTextareaValid,
 } from '@components/atoms'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { Divider } from 'primereact/divider'
-import { UseFormReturn } from 'react-hook-form'
 import {
   FieldsCodeED,
   GRAFT_QUANTITY,
+  calcRadio,
   calcTotalED,
   graftFields,
 } from './dataED'
+import { InputNumberMode } from '@components/atoms/InputNumberValid'
+import { Divider } from 'primereact/divider'
+import { UseFormReturn } from 'react-hook-form'
 import { useEffect } from 'react'
 import { HC_IMPLANTE_CODE, regexPatterns } from '@utils'
 import { classNames as cx } from 'primereact/utils'
@@ -42,7 +43,7 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
       )
       setValue(`${FieldsCodeED.ED_GT}${totalCode}`, 0)
       setValue(`${FieldsCodeED.ED_GFT}${totalCode}`, 0)
-      setValue(`${FieldsCodeED.ED_R}${endCode}`, undefined)
+      setValue(`${FieldsCodeED.ED_R}${endCode}`, 0)
       if (!isTotal) {
         setValue(`${FieldsCodeED.ED_FI}${endCode}`, null)
         setValue(`${FieldsCodeED.ED_FF}${endCode}`, null)
@@ -61,8 +62,9 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
       for (let i = 1; i <= GRAFT_QUANTITY; i++) {
         calcTotalED(handleForm, FieldsCodeED.ED_G, i)
         calcTotalED(handleForm, FieldsCodeED.ED_GF, i)
-        calcTotalED(handleForm, FieldsCodeED.ED_GT, i, true)
-        calcTotalED(handleForm, FieldsCodeED.ED_GFT, i, true)
+        calcTotalED(handleForm, FieldsCodeED.ED_GT)
+        calcTotalED(handleForm, FieldsCodeED.ED_GFT)
+        calcRadio(handleForm)
       }
     }
   }, [])
@@ -123,7 +125,7 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
           label={`Radio ${isTotal ? 'total' : `día ${day}`}`}
           mode={InputNumberMode.DECIMAL}
           min={0}
-          disabled={disabledData}
+          disabled
           required
           className='col-span-2'
         />

@@ -119,25 +119,25 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
       sortOrder={-1}
     >
       <Column
-        key='tags'
-        field='tags'
-        header='Etiquetas'
-        style={{ width: '45%' }}
-        sortable
-      />
-      <Column
         key='date'
         field='date.timestamp'
         header='Fecha'
         body={dateBodyTemplate}
-        style={{ width: '20%' }}
+        style={{ width: '15%', minWidth: '7rem' }}
+        sortable
+      />
+      <Column
+        key='tags'
+        field='tags'
+        header='Etiquetas'
+        style={{ width: '50%', minWidth: '25rem' }}
         sortable
       />
       <Column
         key='user'
         field='user'
         header='Usuario'
-        style={{ width: '15%' }}
+        style={{ width: '15%', minWidth: '10rem' }}
         sortable
       />
       <Column
@@ -145,7 +145,7 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         header='Acción'
         align={'center'}
         body={actionsBodyTemplate}
-        style={{ width: '20%' }}
+        style={{ width: '20%', minWidth: '7rem' }}
       />
     </DataTable>
   )

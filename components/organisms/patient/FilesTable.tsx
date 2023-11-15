@@ -156,25 +156,25 @@ const FilesTable = ({ onUploadLoading }: Props) => {
         sortOrder={-1}
       >
         <Column
-          key='tag'
-          field='tag'
-          header='Etiqueta'
-          style={{ width: '45%' }}
-          sortable
-        />
-        <Column
           key='date'
           field='date.timestamp'
           header='Fecha'
           body={dateBodyTemplate}
-          style={{ width: '20%' }}
+          style={{ width: '20%', minWidth: '7rem' }}
+          sortable
+        />
+        <Column
+          key='tag'
+          field='tag'
+          header='Etiqueta'
+          style={{ width: '45%', minWidth: '25rem' }}
           sortable
         />
         <Column
           key='user'
           field='user'
           header='Usuario'
-          style={{ width: '15%' }}
+          style={{ width: '15%', minWidth: '10rem' }}
           sortable
         />
         <Column

@@ -324,7 +324,7 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
         <Column
           field='date.timestamp'
           header='Fecha'
-          style={{ width: '15%' }}
+          style={{ width: '15%', minWidth: '7rem' }}
           sortable
           body={dateBodyTemplate}
         />
@@ -333,7 +333,7 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
           filterField='type'
           showFilterMatchModes={false}
           filterMenuStyle={{ width: '15rem' }}
-          style={{ width: '20%' }}
+          style={{ width: '20%', minWidth: '10rem' }}
           body={typeBodyTemplate}
           filter
           filterElement={typesFilterTemplate}
@@ -342,13 +342,13 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
           field='professional'
           header='Profesional'
           sortable
-          style={{ width: '20%' }}
+          style={{ width: '20%', minWidth: '10rem' }}
         />
         <Column
           field='sucursal'
           header='Sucursal'
           sortable
-          style={{ width: '30%' }}
+          style={{ width: '30%', minWidth: '15rem' }}
         />
         <Column
           header='Acciones'
