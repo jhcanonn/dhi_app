@@ -294,18 +294,11 @@ export type DataSheetDirectus = {
   }
 }
 
-export type UsersDirectus = {
+export type CommercialDirectus = {
   id: string
   first_name: string
   last_name: string
   email: string
-  profesional: {
-    id: string
-    nombre: string
-    cargo: string
-    estado: string
-    no_registro_medico: string
-  }
 }
 
 export type BudgetItemsBoxService = {

@@ -65,20 +65,15 @@ export const GET_USER_ME = gql`
   }
 `
 
-export const GET_USERS = gql`
-  query {
-    users(filter: { status: { _eq: "active" } }) {
+export const GET_COMMERCIALS = gql`
+  query ($roleId: String) {
+    users(
+      filter: { status: { _eq: "active" }, role: { id: { _eq: $roleId } } }
+    ) {
       id
       first_name
       last_name
       email
-      profesional {
-        id
-        nombre
-        cargo
-        estado
-        no_registro_medico
-      }
     }
   }
 `
