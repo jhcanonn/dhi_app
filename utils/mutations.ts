@@ -328,15 +328,12 @@ export const BUDGET_CREATE_RELATIONS = gql`
   ) {
     create_presupuesto_salas_servicios_items(data: $dataServices) {
       id
-      estado
     }
     create_presupuesto_productos_items(data: $dataProducts) {
       id
-      estado
     }
     create_presupuesto_terapias_salas_servicios_items(data: $dataTherapies) {
       id
-      estado
     }
   }
 `

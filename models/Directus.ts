@@ -381,6 +381,15 @@ export type BudgetsDirectus = {
   estado: string
 } & BudgetExtraData
 
+type BudgetRelationProps = {
+  cantidad: number
+  valor_unitario: number
+  descuento: number
+  valor_con_descuento: number
+  valor_total: number
+  aceptado: boolean
+}
+
 type BudgetCreateRelServices = {
   presupuesto_id: {
     id: UUID
@@ -388,7 +397,7 @@ type BudgetCreateRelServices = {
   salas_servicios_id: {
     id: number
   }
-}
+} & BudgetRelationProps
 
 type BudgetCreateRelProducts = {
   presupuesto_id: {
@@ -397,7 +406,7 @@ type BudgetCreateRelProducts = {
   productos_id: {
     id: number
   }
-}
+} & BudgetRelationProps
 
 type BudgetCreateRelTherapies = {
   presupuesto_id: {
@@ -406,7 +415,7 @@ type BudgetCreateRelTherapies = {
   terapias_salas_servicios_id: {
     id: number
   }
-}
+} & BudgetRelationProps
 
 export type BudgetCreateRelationsDirectus = {
   dataServices: BudgetCreateRelServices[]
@@ -430,12 +439,13 @@ export enum BudgetState {
   ACEPTADO = 'aceptado',
   ACEPTADO_PARCIAL = 'aceptado_parcial',
   NO_ACEPTADO = 'no_aceptado',
+  DECLINADO = 'declinado',
 }
 
 export enum BudgetPanelCodes {
   NAME = 'nombre',
   DUE_DATE = 'fecha_vencimiento',
-  ACCEPTED = 'aceptado',
+  STATE = 'estado',
   INCLUDES = 'incluye',
   PAYMENT_METHODS = 'formas_pago',
   GENERAL_OBS = 'observaciones',
