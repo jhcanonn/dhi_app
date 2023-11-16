@@ -10,6 +10,7 @@ import {
   BudgetItemsProducts,
   BudgetItemsTherapies,
   BudgetPanelCodes,
+  BudgetRelationProps,
   BudgetType,
   BudgetsDirectus,
   ClientDirectus,
@@ -410,6 +411,54 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
   const extra = budget.extraData
   const panelCode = extra.panel_id.code
   const initCode = budgetFormCodes[panelCode as keyof typeof budgetFormCodes]
+  const groupItems = {}
+
+  Object.values(BudgetItem).forEach((label) => {
+    const initCode = `${BUDGET_CODE}${label.trim().toLocaleLowerCase()}`
+    const turnedObj = (obj: BudgetRelationProps) => ({
+      [`${initCode}${FieldsCodeBudgetItems.C}${obj.id}`]: obj.cantidad,
+      [`${initCode}${FieldsCodeBudgetItems.V}${obj.id}`]: obj.valor_unitario,
+      [`${initCode}${FieldsCodeBudgetItems.D}${obj.id}`]: obj.descuento,
+      [`${initCode}${FieldsCodeBudgetItems.VD}${obj.id}`]:
+        obj.valor_con_descuento,
+      [`${initCode}${FieldsCodeBudgetItems.VT}${obj.id}`]: obj.valor_total,
+      [`${initCode}${FieldsCodeBudgetItems.A}${obj.id}`]: obj.aceptado,
+    })
+
+    switch (label) {
+      case BudgetItem.SERVICES: {
+        const services = extra.servicios.map((s) => ({
+          ...turnedObj(s),
+          [`${initCode}${FieldsCodeBudgetItems.L}${s.id}`]: JSON.stringify(
+            s.salas_servicios_id,
+          ),
+        }))
+        Object.assign(groupItems, ...services)
+        break
+      }
+      case BudgetItem.PRODUCTS: {
+        const products = extra.productos.map((p) => ({
+          ...turnedObj(p),
+          [`${initCode}${FieldsCodeBudgetItems.L}${p.id}`]: JSON.stringify(
+            p.productos_id,
+          ),
+        }))
+        Object.assign(groupItems, ...products)
+        break
+      }
+      case BudgetItem.THERAPIES: {
+        const therapies = extra.terapias.map((t) => ({
+          ...turnedObj(t),
+          [`${initCode}${FieldsCodeBudgetItems.L}${t.id}`]: JSON.stringify(
+            t.terapias_salas_servicios_id,
+          ),
+        }))
+        Object.assign(groupItems, ...therapies)
+        break
+      }
+    }
+  })
+
   return {
     presupuesto_planilla: panelCode,
     presupuesto_comercial: extra.comercial.id,
@@ -422,6 +471,7 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
       extra.presupuesto_formas_pago,
     [`${initCode}${BudgetPanelCodes.GENERAL_OBS}`]:
       extra.presupuesto_observaciones,
+    ...groupItems,
   } as BudgetCreateForm
 }
 

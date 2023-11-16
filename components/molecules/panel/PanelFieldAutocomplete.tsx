@@ -1,10 +1,10 @@
 'use client'
 
-import { AutoCompleteValid } from '@components/atoms'
 import {
   AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
 } from 'primereact/autocomplete'
+import { AutoCompleteValid } from '@components/atoms'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -31,9 +31,7 @@ const PanelFieldAutocomplete = ({
 }: Props) => {
   const [suggestions, setSuggestions] = useState<any[]>([])
 
-  const keys = list.length
-    ? Object.keys(list[0]).filter((k) => k !== '__typename')
-    : []
+  const keys = list.length ? Object.keys(list[0]) : []
 
   const getSelectedValue = (item: any) =>
     keys.map((key) => item[key]).join(' - ')
