@@ -91,12 +91,62 @@ export const GET_BUDGETS = gql`
       }
       servicios {
         id
+        cantidad
+        valor_unitario
+        descuento
+        valor_con_descuento
+        valor_total
+        aceptado
+        salas_servicios_id {
+          id
+          salas_id {
+            id
+            nombre
+            color
+          }
+          servicios_id {
+            id
+            nombre
+            precio
+          }
+        }
       }
       terapias {
         id
+        cantidad
+        valor_unitario
+        descuento
+        valor_con_descuento
+        valor_total
+        aceptado
+        terapias_salas_servicios_id {
+          id
+          sesiones
+          terapias_id {
+            id
+            nombre
+            valor
+            descripcion
+            costo
+          }
+        }
       }
       productos {
         id
+        cantidad
+        valor_unitario
+        descuento
+        valor_con_descuento
+        valor_total
+        aceptado
+        productos_id {
+          id
+          nombre
+          valor
+          marca
+          contenido
+          descripcion
+        }
       }
       data_form
       valor_total

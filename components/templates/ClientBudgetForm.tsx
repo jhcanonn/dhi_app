@@ -138,7 +138,11 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
     }
   }
 
-  const handleListChange = (value: number, tag: string, rowId: UUID) => {
+  const handleListChange = (
+    value: number,
+    tag: string,
+    rowId: UUID | number,
+  ) => {
     const cantCode = `${tag}${FieldsCodeBudgetItems.C}${rowId}`
     const valorDctoCode = `${tag}${FieldsCodeBudgetItems.VD}${rowId}`
     const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
@@ -253,7 +257,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
               onListChange={(
                 value: BudgetItemsTherapies,
                 tag: string,
-                rowId: UUID,
+                rowId: UUID | number,
               ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
             />
           )}
@@ -267,7 +271,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
               onListChange={(
                 value: BudgetItemsProducts,
                 tag: string,
-                rowId: UUID,
+                rowId: UUID | number,
               ) => handleListChange(+value.valor, tag, rowId)}
             />
           )}
@@ -283,7 +287,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
               onListChange={(
                 value: BudgetItemsBoxService,
                 tag: string,
-                rowId: UUID,
+                rowId: UUID | number,
               ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
             />
           )}

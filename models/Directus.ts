@@ -342,6 +342,16 @@ export type BudgetItemsDirectus = {
   terapias_salas_servicios: BudgetItemsTherapies[]
 }
 
+export type BudgetRelationProps = {
+  id: number
+  cantidad: number
+  valor_unitario: number
+  descuento: number
+  valor_con_descuento: number
+  valor_total: number
+  aceptado: boolean
+}
+
 export type BudgetExtraData = {
   panel_id: {
     code: string
@@ -349,15 +359,15 @@ export type BudgetExtraData = {
   comercial: {
     id: UUID
   }
-  servicios: {
-    id: number
-  }[]
-  terapias: {
-    id: number
-  }[]
-  productos: {
-    id: number
-  }[]
+  servicios: (BudgetRelationProps & {
+    salas_servicios_id: BudgetItemsBoxService
+  })[]
+  terapias: (BudgetRelationProps & {
+    terapias_salas_servicios_id: BudgetItemsTherapies
+  })[]
+  productos: (BudgetRelationProps & {
+    productos_id: BudgetItemsProducts
+  })[]
 }
 
 export type BudgetsDirectus = {
@@ -374,15 +384,6 @@ export type BudgetsDirectus = {
   estado: string
 } & BudgetExtraData
 
-type BudgetRelationProps = {
-  cantidad: number
-  valor_unitario: number
-  descuento: number
-  valor_con_descuento: number
-  valor_total: number
-  aceptado: boolean
-}
-
 type BudgetCreateRelServices = {
   presupuesto_id: {
     id: UUID
@@ -390,7 +391,7 @@ type BudgetCreateRelServices = {
   salas_servicios_id: {
     id: number
   }
-} & BudgetRelationProps
+} & Omit<BudgetRelationProps, 'id'>
 
 type BudgetCreateRelProducts = {
   presupuesto_id: {
@@ -399,7 +400,7 @@ type BudgetCreateRelProducts = {
   productos_id: {
     id: number
   }
-} & BudgetRelationProps
+} & Omit<BudgetRelationProps, 'id'>
 
 type BudgetCreateRelTherapies = {
   presupuesto_id: {
@@ -408,7 +409,7 @@ type BudgetCreateRelTherapies = {
   terapias_salas_servicios_id: {
     id: number
   }
-} & BudgetRelationProps
+} & Omit<BudgetRelationProps, 'id'>
 
 export type BudgetCreateRelationsDirectus = {
   dataServices: BudgetCreateRelServices[]

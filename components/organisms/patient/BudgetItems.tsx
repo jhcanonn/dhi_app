@@ -29,7 +29,7 @@ type BudgetItemsProps = {
   buttonLabel: string
   list?: any[]
   listGrouped?: ListGroupType[]
-  onListChange: (value: any, tag: string, rowId: UUID) => void
+  onListChange: (value: any, tag: string, rowId: UUID | number) => void
 }
 
 export const getBudgetTotal = (formData: any) =>
@@ -88,14 +88,14 @@ const BudgetItems = ({
   listGrouped,
   onListChange,
 }: BudgetItemsProps) => {
-  const [rowIds, setRowIds] = useState<UUID[]>([])
+  const [rowIds, setRowIds] = useState<(UUID | number)[]>([])
   const [rowAdded, setRowAdded] = useState<boolean>(false)
 
   const { setValue, getValues, unregister } = handleForm
 
   const tag = `${BUDGET_CODE}${legend.trim().toLowerCase()}`
 
-  const handleInputChange = (rowId: UUID) => {
+  const handleInputChange = (rowId: UUID | number) => {
     const valorDctoCode = `${tag}${FieldsCodeBudgetItems.VD}${rowId}`
     const value = getValues(`${tag}${FieldsCodeBudgetItems.V}${rowId}`)
     const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
@@ -120,10 +120,16 @@ const BudgetItems = ({
   }, [rowIds])
 
   useEffect(() => {
+    const groupKeys = Object.keys(getValues()).filter((key) =>
+      key.startsWith(`${tag}_`),
+    )
+    const rowsId = [
+      ...new Set(groupKeys.map((key) => +key.split('_').slice(-1)[0])),
+    ]
+    setRowIds(rowsId)
+
     return () => {
-      Object.keys(getValues())
-        .filter((key) => key.startsWith(`${tag}_`))
-        .forEach((key) => unregister(key))
+      groupKeys.forEach((key) => unregister(key))
       setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
     }
   }, [])
@@ -266,7 +272,7 @@ const BudgetItems = ({
                           setRowIds((prev) => prev.filter((id) => id !== rowId))
                           setRowAdded(false)
                           Object.keys(getValues())
-                            .filter((key) => key.includes(rowId))
+                            .filter((key) => key.includes(rowId + ''))
                             .forEach((key) => unregister(key))
                           setValue(
                             `${BUDGET_CODE}total`,

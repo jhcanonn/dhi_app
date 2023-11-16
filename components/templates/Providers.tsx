@@ -6,15 +6,15 @@ import {
   ClientProvider,
   GlobalProvider,
 } from '@contexts'
-import { CookiesProvider, Cookies } from 'react-cookie'
-import { setContext } from '@apollo/client/link/context'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client'
+import { CookiesProvider, Cookies } from 'react-cookie'
+import { setContext } from '@apollo/client/link/context'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { refreshToken } from '@utils/api'
 
 const authLink = setContext(async (_, { headers }) => {
@@ -33,7 +33,7 @@ const httpLink = createHttpLink({
 
 const directusClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ addTypename: false }),
 })
 
 const httpLinkSystem = createHttpLink({
@@ -42,7 +42,7 @@ const httpLinkSystem = createHttpLink({
 
 export const directusSystemClient = new ApolloClient({
   link: authLink.concat(httpLinkSystem),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ addTypename: false }),
 })
 
 const queryClient = new QueryClient()
