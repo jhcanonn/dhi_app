@@ -106,9 +106,9 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
     }
   }
 
-  const annulDataSheetHandle = (rowData: DataSheet) => {
+  const annulDataSheetHandle = (rowData: DataSheet, tagKey: string) => {
     confirmDialog({
-      tagKey: `annul_${rowData.id}`,
+      tagKey,
       message:
         'La anulación de una atención es irreversible, está seguro(a) que desea seguir?',
       header: 'Confirmación de anulación de atención',
@@ -123,65 +123,68 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
     })
   }
 
-  const optionsBodyTemplate = (rowData: DataSheet) => (
-    <div className='w-full flex gap-2 justify-center'>
-      <ConfirmDialog tagKey={`annul_${rowData.id}`} />
-      {rowData.status === StatusDataSheet.ANNULLED ? (
-        <Tag
-          severity='danger'
-          value='Anulada'
-          className='h-fit px-2 py-1 self-center'
-          rounded
-        />
-      ) : (
-        <>
-          <Button
-            className='text-sm'
-            icon='pi pi-pencil'
-            type='button'
-            severity='success'
-            tooltip='Editar atención'
-            tooltipOptions={{ position: 'bottom' }}
-            onClick={() => {
-              setCurrentRowData(rowData)
-              setVisible(true)
-              collapseAll()
-            }}
-            outlined
-          />
-          <Button
-            className='text-sm'
-            icon='pi pi-trash'
-            type='button'
+  const optionsBodyTemplate = (rowData: DataSheet) => {
+    const tagKey = `annul_${rowData.id}`
+    return (
+      <div key={tagKey} className='w-full flex gap-2 justify-center'>
+        <ConfirmDialog tagKey={tagKey} />
+        {rowData.status === StatusDataSheet.ANNULLED ? (
+          <Tag
             severity='danger'
-            tooltip='Anular atención'
-            tooltipOptions={{ position: 'bottom' }}
-            onClick={() => annulDataSheetHandle(rowData)}
-            outlined
+            value='Anulada'
+            className='h-fit px-2 py-1 self-center'
+            rounded
           />
-          <Button
-            className='text-sm'
-            icon='pi pi-print'
-            type='button'
-            severity='info'
-            tooltip='Imprimir'
-            tooltipOptions={{ position: 'bottom' }}
-            onClick={() =>
-              generatePanelToPDF(
-                panels.find((p) => p.code === rowData.type.code),
-                rowData.data,
-                false,
-                clientInfoToHeaderDataPDFMapper(clientInfo as any, rowData),
-              )
-            }
-            outlined
-          />
-          {/* onClick={() => PanelToPDF(panel, handleForm, false, dataHeader)}*/}
-          {/* <Button onClick={() => HtmlToPDF(refForm.current)} >Imprimir</Button> */}
-        </>
-      )}
-    </div>
-  )
+        ) : (
+          <>
+            <Button
+              className='text-sm'
+              icon='pi pi-pencil'
+              type='button'
+              severity='success'
+              tooltip='Editar atención'
+              tooltipOptions={{ position: 'bottom' }}
+              onClick={() => {
+                setCurrentRowData(rowData)
+                setVisible(true)
+                collapseAll()
+              }}
+              outlined
+            />
+            <Button
+              className='text-sm'
+              icon='pi pi-trash'
+              type='button'
+              severity='danger'
+              tooltip='Anular atención'
+              tooltipOptions={{ position: 'bottom' }}
+              onClick={() => annulDataSheetHandle(rowData, tagKey)}
+              outlined
+            />
+            <Button
+              className='text-sm'
+              icon='pi pi-print'
+              type='button'
+              severity='info'
+              tooltip='Imprimir'
+              tooltipOptions={{ position: 'bottom' }}
+              onClick={() =>
+                generatePanelToPDF(
+                  panels.find((p) => p.code === rowData.type.code),
+                  rowData.data,
+                  false,
+                  clientInfoToHeaderDataPDFMapper(clientInfo as any, rowData),
+                )
+              }
+              outlined
+            />
+            {/* onClick={() => PanelToPDF(panel, handleForm, false, dataHeader)}*/}
+            {/* <Button onClick={() => HtmlToPDF(refForm.current)} >Imprimir</Button> */}
+          </>
+        )}
+      </div>
+    )
+  }
 
   const rowExpansionTemplate = (data: DataSheet) => (
     <RowExpansionDataSheet data={data} />
@@ -268,8 +271,10 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
     }
   }, [dataSheetsData])
 
+  const fetchData = async () => await dataSheetsRefetch({ fichaId })
+
   useEffect(() => {
-    fichaId ? dataSheetsRefetch({ fichaId }) : setDataSheets([])
+    fichaId ? fetchData() : setDataSheets([])
   }, [])
 
   return (

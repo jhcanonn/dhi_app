@@ -2,6 +2,7 @@
 
 import {
   AsideProvider,
+  BudgetProvider,
   CalendarProvider,
   ClientProvider,
   GlobalProvider,
@@ -54,7 +55,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => (
         <GlobalProvider>
           <CalendarProvider>
             <AsideProvider>
-              <ClientProvider>{children}</ClientProvider>
+              <ClientProvider>
+                <BudgetProvider>{children}</BudgetProvider>
+              </ClientProvider>
             </AsideProvider>
           </CalendarProvider>
         </GlobalProvider>

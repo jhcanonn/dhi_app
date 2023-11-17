@@ -162,9 +162,10 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
 
   const confirmDelete = (
     rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
+    tagKey: string,
   ) => {
     confirmDialog({
-      tagKey: `tag_key_${rowData.id}`,
+      tagKey,
       acceptLabel: 'Si',
       rejectLabel: 'No',
       message: `Quieres anular ${rowData.tipo} ?`,
@@ -220,78 +221,81 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
   //rowData: ExamsPrescriptionType
   const actionsBodyTemplate = (
     rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
-  ) => (
-    <>
-      <ConfirmDialog tagKey={`tag_key_${rowData.id}`} />
-      <div className='w-full flex gap-2'>
-        <Button
-          className='text-sm'
-          icon={PrimeIcons.EYE}
-          type='button'
-          outlined
-          tooltip='Ver'
-          tooltipOptions={{ position: 'bottom' }}
-          severity='info'
-          onClick={() => {
-            setTipo(rowData.tipo)
-            setCurrentRowData(rowData)
-            setIsView(true)
-            setIsEdit(false)
-            setVisible(true)
-          }}
-        />
-        {rowData.estado === StatusComplementMedical.ANNULLED ? (
-          <Tag
-            severity='danger'
-            value='Anulada'
-            className='h-fit px-2 py-1 self-center'
-            rounded
+  ) => {
+    const tagKey = `tag_key_${rowData.id}`
+    return (
+      <div key={tagKey}>
+        <ConfirmDialog tagKey={tagKey} />
+        <div className='w-full flex gap-2'>
+          <Button
+            className='text-sm'
+            icon={PrimeIcons.EYE}
+            type='button'
+            outlined
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            severity='info'
+            onClick={() => {
+              setTipo(rowData.tipo)
+              setCurrentRowData(rowData)
+              setIsView(true)
+              setIsEdit(false)
+              setVisible(true)
+            }}
           />
-        ) : (
-          <>
-            <Button
-              className='text-sm'
-              icon={PrimeIcons.USER_EDIT}
-              type='button'
-              outlined
-              severity='success'
-              tooltip='Editar'
-              onClick={() => {
-                setTipo(rowData.tipo)
-                setCurrentRowData(rowData)
-                setIsView(false)
-                setIsEdit(true)
-                setVisible(true)
-              }}
-              tooltipOptions={{ position: 'bottom' }}
-            />
-            <Button
-              className='text-sm'
-              icon={PrimeIcons.TRASH}
-              type='button'
-              outlined
+          {rowData.estado === StatusComplementMedical.ANNULLED ? (
+            <Tag
               severity='danger'
-              tooltip='Anular'
-              onClick={() => confirmDelete(rowData)}
-              tooltipOptions={{ position: 'bottom' }}
+              value='Anulada'
+              className='h-fit px-2 py-1 self-center'
+              rounded
             />
-            <Button
-              className='text-sm'
-              icon='pi pi-print'
-              type='button'
-              severity='info'
-              tooltip='Imprimir'
-              tooltipOptions={{ position: 'bottom' }}
-              outlined
-              onClick={() => {
-                generatePDF(rowData as any)
-              }}
-            ></Button>
-          </>
-        )}
+          ) : (
+            <>
+              <Button
+                className='text-sm'
+                icon={PrimeIcons.USER_EDIT}
+                type='button'
+                outlined
+                severity='success'
+                tooltip='Editar'
+                onClick={() => {
+                  setTipo(rowData.tipo)
+                  setCurrentRowData(rowData)
+                  setIsView(false)
+                  setIsEdit(true)
+                  setVisible(true)
+                }}
+                tooltipOptions={{ position: 'bottom' }}
+              />
+              <Button
+                className='text-sm'
+                icon={PrimeIcons.TRASH}
+                type='button'
+                outlined
+                severity='danger'
+                tooltip='Anular'
+                onClick={() => confirmDelete(rowData, tagKey)}
+                tooltipOptions={{ position: 'bottom' }}
+              />
+              <Button
+                className='text-sm'
+                icon='pi pi-print'
+                type='button'
+                severity='info'
+                tooltip='Imprimir'
+                tooltipOptions={{ position: 'bottom' }}
+                outlined
+                onClick={() => {
+                  generatePDF(rowData as any)
+                }}
+              ></Button>
+            </>
+          )}
+        </div>
       </div>
-    </>
-  )
+    )
+  }
 
   const headerDialog = (
     <h2>

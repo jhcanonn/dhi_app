@@ -7,7 +7,7 @@ import {
 } from '@components/atoms'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
-import { BUDGET_CODE } from '@utils'
+import { BUDGET_CODE, budgetFormCodes, getItemKeys, getRowIds } from '@utils'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { DropdownChangeEvent } from 'primereact/dropdown'
@@ -69,8 +69,12 @@ export const handleAcceptedChange = (
     return acc + accept
   }, 0)
 
+  const initCode =
+    budgetFormCodes[
+      getValues(`${BUDGET_CODE}planilla`) as keyof typeof budgetFormCodes
+    ]
   setValue(
-    getValues(`${BUDGET_CODE}planilla`) + '_' + BudgetPanelCodes.STATE,
+    `${initCode}${BudgetPanelCodes.STATE}`,
     total === 0
       ? BudgetState.NO_ACEPTADO
       : total === acceptedCodes.length
@@ -120,16 +124,9 @@ const BudgetItems = ({
   }, [rowIds])
 
   useEffect(() => {
-    const groupKeys = Object.keys(getValues()).filter((key) =>
-      key.startsWith(`${tag}_`),
-    )
-    const rowsId = [
-      ...new Set(groupKeys.map((key) => +key.split('_').slice(-1)[0])),
-    ]
-    setRowIds(rowsId)
-
+    setRowIds(getRowIds(getValues(), `${tag}_`))
     return () => {
-      groupKeys.forEach((key) => unregister(key))
+      getItemKeys(getValues(), `${tag}_`).forEach((key) => unregister(key))
       setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
     }
   }, [])
@@ -274,10 +271,6 @@ const BudgetItems = ({
                           Object.keys(getValues())
                             .filter((key) => key.includes(rowId + ''))
                             .forEach((key) => unregister(key))
-                          setValue(
-                            `${BUDGET_CODE}total`,
-                            getBudgetTotal(getValues()),
-                          )
                           handleAcceptedChange(handleForm)
                         }}
                         outlined

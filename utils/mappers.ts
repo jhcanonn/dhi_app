@@ -3,7 +3,7 @@ import {
   AppointmentQuery,
   Box,
   BoxDirectus,
-  BudgetCreateForm,
+  BudgetForm,
   BudgetCreateRelationsDirectus,
   BudgetItem,
   BudgetItemsBoxService,
@@ -29,6 +29,7 @@ import {
   Service,
   ServiceDHI,
   StatusDirectus,
+  BudgetEditRelationsDirectus,
 } from '@models'
 import {
   BLOCK_BOX,
@@ -381,15 +382,12 @@ export const budgetServicesMapper = (
   })
 }
 
-export const budgetCreateMapper = (
-  data: BudgetCreateForm,
-  clientId: number | undefined,
-) => {
+const budgetMainData = (data: BudgetForm) => {
   const initCode =
     budgetFormCodes[data.presupuesto_planilla as keyof typeof budgetFormCodes]
+
   return {
     nombre: data[`${initCode}${BudgetPanelCodes.NAME}`],
-    paciente: { id: clientId },
     comercial: { id: data.presupuesto_comercial },
     panel_id: { code: data.presupuesto_planilla },
     data_form: {
@@ -460,6 +458,7 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
   })
 
   return {
+    presupuesto_id: budget.id,
     presupuesto_planilla: panelCode,
     presupuesto_comercial: extra.comercial.id,
     presupuesto_total: budget.value.value,
@@ -472,11 +471,31 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
     [`${initCode}${BudgetPanelCodes.GENERAL_OBS}`]:
       extra.presupuesto_observaciones,
     ...groupItems,
-  } as BudgetCreateForm
+  } as BudgetForm
 }
 
+export const budgetCreateMapper = (
+  data: BudgetForm,
+  clientId: number | undefined,
+) => ({
+  paciente: { id: clientId },
+  ...budgetMainData(data),
+})
+
+export const getItemKeys = (data: Record<string, any>, startWith: string) =>
+  Object.keys(data).filter((key) => key.startsWith(startWith))
+
+export const getRowIds = (data: Record<string, any>, startWith: string) => [
+  ...new Set(
+    getItemKeys(data, startWith).map((key) => {
+      const rowId = key.split('_').slice(-1)[0]
+      return Number.isNaN(+rowId) ? (rowId as UUID) : +rowId
+    }),
+  ),
+]
+
 export const budgetCreateRelationsMapper = (
-  data: BudgetCreateForm,
+  data: BudgetForm,
   budgetId: UUID,
 ) => {
   const relationsData: BudgetCreateRelationsDirectus = {
@@ -487,16 +506,8 @@ export const budgetCreateRelationsMapper = (
 
   Object.values(BudgetItem).forEach((code) => {
     const initCode = `${BUDGET_CODE}${code.trim().toLowerCase()}`
-    const rowsId = [
-      ...new Set(
-        Object.keys(data)
-          .filter((key) => key.startsWith(initCode))
-          .map((key) => key.split('_').slice(-1)[0] as UUID),
-      ),
-    ]
-
-    rowsId.forEach((rowId) => {
-      const itemId: number = JSON.parse(
+    getRowIds(data, `${initCode}_`).forEach((rowId) => {
+      const itemId = +JSON.parse(
         data[`${initCode}${FieldsCodeBudgetItems.L}${rowId}`],
       ).id
       const cantidad = data[`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]
@@ -550,4 +561,78 @@ export const budgetCreateRelationsMapper = (
   })
 
   return relationsData
+}
+
+export const budgetEditMapper = (data: BudgetForm) => {
+  const relations: BudgetEditRelationsDirectus = {
+    servicios: [],
+    productos: [],
+    terapias: [],
+  }
+
+  Object.values(BudgetItem).forEach((code) => {
+    const initCode = `${BUDGET_CODE}${code.trim().toLowerCase()}`
+    getRowIds(data, `${initCode}_`).forEach((rowId) => {
+      const isEdit = typeof rowId === 'number'
+      const itemId = +JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.L}${rowId}`],
+      ).id
+      const cantidad = data[`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]
+      const valor_unitario =
+        data[`${initCode}${FieldsCodeBudgetItems.V}${rowId}`]
+      const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
+      const valor_con_descuento =
+        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+      const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
+      const aceptado = !!data[`${initCode}${FieldsCodeBudgetItems.A}${rowId}`]
+
+      const relatedProps: Omit<BudgetRelationProps, 'id'> = {
+        cantidad,
+        valor_unitario,
+        descuento,
+        valor_con_descuento,
+        valor_total,
+        aceptado,
+      }
+
+      switch (code) {
+        case BudgetItem.PRODUCTS: {
+          relations.productos.push(
+            isEdit
+              ? { id: rowId, ...relatedProps }
+              : {
+                  productos_id: { id: itemId },
+                  presupuesto_id: { id: data.presupuesto_id },
+                  ...relatedProps,
+                },
+          )
+          break
+        }
+        case BudgetItem.SERVICES:
+          relations.servicios.push(
+            isEdit
+              ? { id: rowId, ...relatedProps }
+              : {
+                  salas_servicios_id: { id: itemId },
+                  presupuesto_id: { id: data.presupuesto_id },
+                  ...relatedProps,
+                },
+          )
+          break
+        case BudgetItem.THERAPIES:
+          relations.terapias.push(
+            isEdit
+              ? { id: rowId, ...relatedProps }
+              : {
+                  terapias_salas_servicios_id: { id: itemId },
+                  presupuesto_id: { id: data.presupuesto_id },
+                  ...relatedProps,
+                },
+          )
+          break
+      }
+    })
+  })
+
+  return { ...budgetMainData(data), ...relations }
 }

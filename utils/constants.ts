@@ -23,6 +23,7 @@ export const budgetFormCodes = {
   presupuesto_vacio: 'presupuesto_vacio_',
   presupuesto_barba: 'presupuesto_barba_',
   presupuesto_capilar: 'presupuesto_capilar_',
+  presupuesto_ceja: 'presupuesto_ceja_',
   presupuesto_medicamentos: 'presupuesto_medicamento_',
   presupuesto_micropigmentacion: 'presupuesto_micropigmentacion_',
   presupuesto_terapia_complementaria: 'presupuesto_terapia_complementaria_',
