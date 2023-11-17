@@ -390,7 +390,6 @@ const EditClientExamsPrescription = ({
               itemTemplate={idItemTemplate}
               selectedItemTemplate={seletedItemTemplate}
               onChange={(e: AutoCompleteChangeEvent) => {
-                console.log(e)
                 e.originalEvent?.nativeEvent?.type === 'focusout' &&
                 typeof selectedDiagnostic === 'object'
                   ? setSelectedDiagnostic(e.value ?? selectedDiagnostic)
