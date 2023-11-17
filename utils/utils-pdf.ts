@@ -295,7 +295,13 @@ export const generatePanelToPDF = async (
       ? [72, 30, 72, 140]
       : [72, 240, 72, 140]
 
-    createOpenPDF(headerPdf, pageMargins, content, repeaterHeader)
+    createOpenPDF(
+      headerPdf,
+      pageMargins,
+      content,
+      repeaterHeader,
+      dataHeader.profesionalSignature,
+    )
   }
 }
 
