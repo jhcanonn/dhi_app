@@ -7,7 +7,13 @@ import {
 } from '@components/atoms'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
-import { BUDGET_CODE } from '@utils'
+import {
+  BUDGET_CODE,
+  budgetFormCodes,
+  getItemKeys,
+  getNumberOrUUID,
+  getRowIds,
+} from '@utils'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { DropdownChangeEvent } from 'primereact/dropdown'
@@ -32,7 +38,7 @@ type BudgetItemsProps = {
   onListChange: (value: any, tag: string, rowId: UUID | number) => void
 }
 
-export const getBudgetTotal = (formData: any) =>
+export const getBudgetTotalOnlyAccepted = (formData: any) =>
   Object.entries(formData)
     .filter(([key]) => key.includes(FieldsCodeBudgetItems.A))
     .reduce((acc, [key, accepted]) => {
@@ -43,6 +49,11 @@ export const getBudgetTotal = (formData: any) =>
       const valorTotal = Number(vtCode ? formData[vtCode] : 0)
       return acc + (accepted ? valorTotal : 0)
     }, 0)
+
+export const getBudgetTotal = (formData: any) =>
+  Object.entries(formData)
+    .filter(([key]) => key.includes(FieldsCodeBudgetItems.VT))
+    .reduce((acc, [, value]) => acc + (value ? Number(value) : 0), 0)
 
 const groupedItemTemplate = (option: ListGroupType) => {
   return (
@@ -69,8 +80,12 @@ export const handleAcceptedChange = (
     return acc + accept
   }, 0)
 
+  const initCode =
+    budgetFormCodes[
+      getValues(`${BUDGET_CODE}planilla`) as keyof typeof budgetFormCodes
+    ]
   setValue(
-    getValues(`${BUDGET_CODE}planilla`) + '_' + BudgetPanelCodes.STATE,
+    `${initCode}${BudgetPanelCodes.STATE}`,
     total === 0
       ? BudgetState.NO_ACEPTADO
       : total === acceptedCodes.length
@@ -120,16 +135,9 @@ const BudgetItems = ({
   }, [rowIds])
 
   useEffect(() => {
-    const groupKeys = Object.keys(getValues()).filter((key) =>
-      key.startsWith(`${tag}_`),
-    )
-    const rowsId = [
-      ...new Set(groupKeys.map((key) => +key.split('_').slice(-1)[0])),
-    ]
-    setRowIds(rowsId)
-
+    setRowIds(getRowIds(getValues(), `${tag}_`))
     return () => {
-      groupKeys.forEach((key) => unregister(key))
+      getItemKeys(getValues(), `${tag}_`).forEach((key) => unregister(key))
       setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
     }
   }, [])
@@ -271,13 +279,9 @@ const BudgetItems = ({
                         onClick={() => {
                           setRowIds((prev) => prev.filter((id) => id !== rowId))
                           setRowAdded(false)
-                          Object.keys(getValues())
-                            .filter((key) => key.includes(rowId + ''))
+                          getItemKeys(getValues(), `${tag}_`)
+                            .filter((key) => getNumberOrUUID(key) === rowId)
                             .forEach((key) => unregister(key))
-                          setValue(
-                            `${BUDGET_CODE}total`,
-                            getBudgetTotal(getValues()),
-                          )
                           handleAcceptedChange(handleForm)
                         }}
                         outlined

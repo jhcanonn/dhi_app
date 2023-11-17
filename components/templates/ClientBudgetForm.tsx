@@ -3,7 +3,7 @@
 import { UUID } from 'crypto'
 import { useMutation, useQuery } from '@apollo/client'
 import { DropdownValid, InputNumberValid } from '@components/atoms'
-import { useClientContext, useGlobalContext } from '@contexts'
+import { useBudgetContext, useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -13,13 +13,13 @@ import { Button } from 'primereact/button'
 import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
+import { useGoTo, withToast } from '@hooks'
 import {
   getBudgetTotal,
   handleAcceptedChange,
 } from '@components/organisms/patient/BudgetItems'
-import { useGoTo, withToast } from '@hooks'
 import {
-  BudgetCreateForm,
+  BudgetForm,
   BudgetItem,
   BudgetItemsBoxService,
   BudgetItemsDirectus,
@@ -44,6 +44,8 @@ import {
   budgetCreateMapper,
   budgetCreateRelationsMapper,
   ROLES,
+  BUDGET_EDIT,
+  budgetEditMapper,
 } from '@utils'
 
 type Commercial = {
@@ -52,7 +54,8 @@ type Commercial = {
 }
 
 type BudgetProps = {
-  initialData?: BudgetCreateForm
+  initialData?: BudgetForm
+  onCloseDialog?: (close: boolean) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
 
@@ -61,11 +64,15 @@ const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
     g.agrupadores_code.campos_id.map((c) => c.campos_id),
   ) || []
 
-const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
+const ClientBudgetForm = ({
+  initialData,
+  onCloseDialog,
+  showWarning,
+}: BudgetProps) => {
   const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
   const { clientInfo } = useClientContext()
-  const [loading, setLoading] = useState(false)
+  const { loading, setLoading } = useBudgetContext()
   const [selectedPanel, setSelectedPanel] = useState<PanelsDirectus>()
   const [commercials, setCommercials] = useState<Commercial[]>([])
   const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
@@ -87,6 +94,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
 
   const [budgetCreate] = useMutation(BUDGET_CREATE)
   const [budgetCreateRelations] = useMutation(BUDGET_CREATE_RELATIONS)
+  const [budgetEdit] = useMutation(BUDGET_EDIT)
 
   const budgetPanels = panels
     .filter((p) => p.view_forms.includes(PanelTags.BUDGET))
@@ -101,7 +109,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
 
   const createBudget = async () => {
     setLoading(true)
-    const data = getValues()
+    const data: BudgetForm = getValues()
     const createdBudget: any = await budgetCreate({
       variables: { budgetData: budgetCreateMapper(data, clientInfo?.id) },
     })
@@ -122,9 +130,17 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
 
   const editBudget = async () => {
     setLoading(true)
-    const data = getValues()
-    console.log({ data })
-    setLoading(false)
+    const data: BudgetForm = getValues()
+    const editedBudget: any = await budgetEdit({
+      variables: {
+        budgetId: data.presupuesto_id,
+        budgetData: budgetEditMapper(data),
+      },
+    })
+    if (editedBudget?.data) {
+      setLoading(false)
+      onCloseDialog && onCloseDialog(false)
+    }
   }
 
   const onSubmit = async () => {
@@ -194,6 +210,7 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
         initialData ? initialData[field.codigo] : field.valor_predeterminado,
       ),
     )
+    handleAcceptedChange(handleForm)
   }, [selectedPanel])
 
   return (
@@ -220,7 +237,6 @@ const ClientBudgetForm = ({ initialData, showWarning }: BudgetProps) => {
                 )
                 return budgetPanels.find((bp) => bp.code === e.value)
               })
-              handleAcceptedChange(handleForm)
             }}
             required
           />

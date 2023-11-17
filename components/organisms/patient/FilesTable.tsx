@@ -69,7 +69,7 @@ const FilesTable = ({ onUploadLoading }: Props) => {
   const actionsBodyTemplate = (file: FileType) => {
     const tagKey = `upload_file_${file.id}`
     return (
-      <>
+      <div key={tagKey}>
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex gap-2 justify-center'>
           <Button
@@ -92,7 +92,7 @@ const FilesTable = ({ onUploadLoading }: Props) => {
             onClick={() => confirmDelete(tagKey, file)}
           />
         </section>
-      </>
+      </div>
     )
   }
 

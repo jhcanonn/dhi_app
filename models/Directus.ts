@@ -384,7 +384,7 @@ export type BudgetsDirectus = {
   estado: string
 } & BudgetExtraData
 
-type BudgetCreateRelServices = {
+export type BudgetCreateRelServices = {
   presupuesto_id: {
     id: UUID
   }
@@ -393,7 +393,7 @@ type BudgetCreateRelServices = {
   }
 } & Omit<BudgetRelationProps, 'id'>
 
-type BudgetCreateRelProducts = {
+export type BudgetCreateRelProducts = {
   presupuesto_id: {
     id: UUID
   }
@@ -402,7 +402,7 @@ type BudgetCreateRelProducts = {
   }
 } & Omit<BudgetRelationProps, 'id'>
 
-type BudgetCreateRelTherapies = {
+export type BudgetCreateRelTherapies = {
   presupuesto_id: {
     id: UUID
   }
@@ -417,7 +417,14 @@ export type BudgetCreateRelationsDirectus = {
   dataTherapies: BudgetCreateRelTherapies[]
 }
 
-export type BudgetCreateForm = {
+export type BudgetEditRelationsDirectus = {
+  servicios: (BudgetRelationProps | BudgetCreateRelServices)[]
+  productos: (BudgetRelationProps | BudgetCreateRelProducts)[]
+  terapias: (BudgetRelationProps | BudgetCreateRelTherapies)[]
+}
+
+export type BudgetForm = {
+  presupuesto_id: UUID
   presupuesto_planilla: string
   presupuesto_comercial: UUID
   presupuesto_total: number

@@ -97,11 +97,7 @@
     [&_.p-toast]:sm:max-w-[25rem]
     [&_.pi]:text-[0.8rem];
 
-    @apply [&_.p-dropdown-panel]:z-[2300] 
-    [&_.p-datepicker]:z-[2300] 
-    [&_.p-multiselect-panel]:z-[2300] 
-    [&_.p-autocomplete-panel]:z-[2300] 
-    [&_.p-input-icon-left_input]:pl-10
+    @apply [&_.p-input-icon-left_input]:pl-10
     [&_.p-input-icon-left>i]:mt-[-0.35rem]
     [&_.p-tabmenu-nav]:bg-white
     [&_.p-tabmenu-nav]:border-0

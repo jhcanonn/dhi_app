@@ -367,8 +367,11 @@ const CalendarEditor = ({
     </p>
   )
 
+  const fetchData = async () =>
+    await patientRefetch({ id: eventData.client_id })
+
   useEffect(() => {
-    patientRefetch({ id: eventData.client_id })
+    fetchData()
   }, [])
 
   return (

@@ -64,7 +64,7 @@ const ExtractionDays = ({ handleForm, disabledData }: Props) => {
                 const lastDay = prev[days.length - 1]
                 lastDay !== 1 &&
                   Object.keys(getValues())
-                    .filter((key) => key.includes(`_dia${lastDay}`))
+                    .filter((key) => key.endsWith(`_dia${lastDay}`))
                     .forEach((key) => unregister(key))
                 return lastDay !== 1 ? prev.filter((d) => d !== lastDay) : prev
               })

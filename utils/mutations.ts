@@ -337,3 +337,20 @@ export const BUDGET_CREATE_RELATIONS = gql`
     }
   }
 `
+
+export const BUDGET_EDIT = gql`
+  mutation ($budgetId: ID!, $budgetData: update_presupuesto_input!) {
+    update_presupuesto_item(id: $budgetId, data: $budgetData) {
+      id
+      date_updated
+    }
+  }
+`
+
+export const BUDGET_DELETE = gql`
+  mutation ($budgetId: ID!) {
+    delete_presupuesto_item(id: $budgetId) {
+      id
+    }
+  }
+`

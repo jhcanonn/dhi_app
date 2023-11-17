@@ -125,7 +125,7 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos }: Props) => {
   const captionTemplate = (item: ImageType) => {
     if (!item) item = images[0]
     return (
-      <>
+      <div key={tagKey}>
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex flex-col gap-4 md:flex-row items-center'>
           <div className='grow w-full'>
@@ -143,7 +143,7 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos }: Props) => {
             />
           )}
         </section>
-      </>
+      </div>
     )
   }
 

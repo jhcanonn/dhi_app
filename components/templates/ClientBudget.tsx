@@ -2,6 +2,7 @@
 
 import {
   BUDGET_CODE,
+  BUDGET_DELETE,
   GET_BUDGETS,
   PAGE_PATH,
   budgetInitialDataMapper,
@@ -9,7 +10,7 @@ import {
   parseUrl,
 } from '@utils'
 import ClientBudgetForm from './ClientBudgetForm'
-import { useClientContext } from '@contexts'
+import { useBudgetContext, useClientContext } from '@contexts'
 import { BudgetType } from '@models'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -17,9 +18,9 @@ import { Column } from 'primereact/column'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
-import { useEffect, useState } from 'react'
-import { useGoTo } from '@hooks'
-import { useQuery } from '@apollo/client'
+import { ReactNode, useEffect, useState } from 'react'
+import { useGoTo, withToast } from '@hooks'
+import { useMutation, useQuery } from '@apollo/client'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -35,7 +36,11 @@ const payedBodyTemplate = (budget: BudgetType) => <p>{budget.payed.formated}</p>
 
 const costBodyTemplate = (budget: BudgetType) => <p>{budget.cost.formated}</p>
 
-const footerContent = (setVisible: (v: boolean) => void, formId?: string) => (
+const footerContent = (
+  setVisible: (v: boolean) => void,
+  formId?: string,
+  loading?: boolean,
+) => (
   <div className='flex flex-col md:flex-row gap-2 justify-center'>
     <Button
       type='button'
@@ -51,22 +56,29 @@ const footerContent = (setVisible: (v: boolean) => void, formId?: string) => (
       severity='success'
       className='w-full md:w-fit'
       form={formId}
-      // loading={savingBudget}
+      loading={loading}
     />
   </div>
 )
 
-const ClientBudget = () => {
+type Props = {
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const ClientBudget = ({ showSuccess }: Props) => {
   const [visibleData, setVisibleData] = useState<boolean>(false)
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false)
   const [budgets, setBudgets] = useState<BudgetType[]>([])
   const [currentBudget, setCurrentBudget] = useState<BudgetType | null>(null)
   const { clientInfo } = useClientContext()
+  const { loading } = useBudgetContext()
   const { goToPage } = useGoTo()
 
+  const [budgetDelete] = useMutation(BUDGET_DELETE)
+
   const {
-    data: dataBudges,
-    loading: loadingBudges,
+    data: dataBudgets,
+    loading: loadingBudgets,
     refetch: refetchBudgets,
   } = useQuery(GET_BUDGETS, {
     variables: { patientId: clientInfo?.id },
@@ -79,7 +91,16 @@ const ClientBudget = () => {
   )
 
   const deleteBudget = async (budget: BudgetType) => {
-    console.log({ budget })
+    const deletedBudget: any = await budgetDelete({
+      variables: { budgetId: budget.id },
+    })
+    if (deletedBudget?.data) {
+      await refreshDataTable()
+      showSuccess(
+        'Presupuesto eliminado',
+        'El Presupuesto fue eliminado exitosamente.',
+      )
+    }
   }
 
   const confirmDelete = async (tagKey: string, budget: BudgetType) =>
@@ -100,7 +121,7 @@ const ClientBudget = () => {
   const optionsBodyTemplate = (budget: BudgetType) => {
     const tagKey = `${BUDGET_CODE}item_${budget.id}`
     return (
-      <>
+      <div key={tagKey}>
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex gap-2 justify-center'>
           <Button
@@ -128,7 +149,7 @@ const ClientBudget = () => {
           <Button
             icon='pi pi-trash'
             severity='danger'
-            tooltip='Eliminar archivo'
+            tooltip='Eliminar'
             tooltipOptions={{ position: 'bottom' }}
             outlined
             onClick={() => confirmDelete(tagKey, budget)}
@@ -144,17 +165,20 @@ const ClientBudget = () => {
             outlined
           />
         </section>
-      </>
+      </div>
     )
   }
 
+  const refreshDataTable = async () =>
+    clientInfo && (await refetchBudgets({ patientId: clientInfo.id }))
+
   useEffect(() => {
-    refetchBudgets({ patientId: clientInfo?.id })
+    refreshDataTable()
   }, [])
 
   useEffect(() => {
-    !loadingBudges && setBudgets(budgetsMapper(dataBudges.presupuesto || []))
-  }, [dataBudges])
+    !loadingBudgets && setBudgets(budgetsMapper(dataBudgets.presupuesto || []))
+  }, [dataBudgets])
 
   return (
     <Card className='custom-table-card flex flex-col gap-4'>
@@ -187,13 +211,25 @@ const ClientBudget = () => {
         visible={visibleEdit}
         onHide={() => setVisibleEdit(false)}
         header={headerContent}
-        footer={footerContent(setVisibleEdit, `form_${BUDGET_CODE}create_edit`)}
+        footer={footerContent(
+          setVisibleEdit,
+          `form_${BUDGET_CODE}create_edit`,
+          loading,
+        )}
         className='w-[90vw] max-w-[100rem]'
       >
         <ClientBudgetForm
           initialData={
             currentBudget ? budgetInitialDataMapper(currentBudget) : undefined
           }
+          onCloseDialog={async (close: boolean) => {
+            setVisibleEdit(close)
+            await refreshDataTable()
+            showSuccess(
+              'Presupuesto actualizado',
+              'El Presupuesto fue actualizado exitosamente.',
+            )
+          }}
         />
       </Dialog>
       <DataTable
@@ -205,7 +241,7 @@ const ClientBudget = () => {
         rowsPerPageOptions={[5, 10, 25, 50]}
         tableStyle={{ minWidth: '40rem' }}
         className='custom-table'
-        loading={loadingBudges}
+        loading={loadingBudgets}
         removableSort
         sortField='created_date.timestamp'
         sortOrder={-1}
@@ -286,4 +322,4 @@ const ClientBudget = () => {
   )
 }
 
-export default ClientBudget
+export default withToast(ClientBudget)
