@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react'
 import { useClientContext, useGlobalContext } from '@contexts'
-import { CreatedAttention, DataSheet } from '@models'
+import { CreatedAttention, DataSheet, PanelsDirectus } from '@models'
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { PanelForm } from '@components/molecules'
@@ -10,16 +10,37 @@ import {
   CREATE_ATTENTION,
   DHI_SUCRUSAL,
   PanelTags,
+  TRICOSCOPIA_URL,
   getFormatedDateToEs,
 } from '@utils'
 import { useMutation } from '@apollo/client'
 import moment from 'moment'
 import { withToast } from '@hooks'
+import { Button } from 'primereact/button'
 
 type Props = {
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
   showError: (summary: ReactNode, detail: ReactNode) => void
 }
+
+const accordionTabHeader = (panel: PanelsDirectus) => (
+  <div className='flex align-items-center justify-between w-full'>
+    <p>{panel.nombre}</p>
+    {panel.code === 'calculo_foliculos' && (
+      <Button
+        label='Ir a Tricoscopia'
+        severity='help'
+        outlined
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          window.open(TRICOSCOPIA_URL, '_blank')
+        }}
+        className=''
+      />
+    )}
+  </div>
+)
 
 const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
   const [accordionIndex, setAccordionIndex] = useState<number[]>([])
@@ -99,7 +120,7 @@ const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
         .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
         .sort((a, b) => a.orden - b.orden)
         .map((panel) => (
-          <AccordionTab key={panel.code} header={panel.nombre}>
+          <AccordionTab key={panel.code} header={accordionTabHeader(panel)}>
             <PanelForm
               formId='accordion'
               panel={panel}

@@ -21,6 +21,7 @@ import { Dialog } from 'primereact/dialog'
 import { ReactNode, useEffect, useState } from 'react'
 import { useGoTo, withToast } from '@hooks'
 import { useMutation, useQuery } from '@apollo/client'
+import { PrimeIcons } from 'primereact/api'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -36,8 +37,9 @@ const payedBodyTemplate = (budget: BudgetType) => <p>{budget.payed.formated}</p>
 
 const costBodyTemplate = (budget: BudgetType) => <p>{budget.cost.formated}</p>
 
-const footerContent = (
+const footerDialog = (
   setVisible: (v: boolean) => void,
+  disableData?: boolean,
   formId?: string,
   loading?: boolean,
 ) => (
@@ -50,14 +52,16 @@ const footerContent = (
       className='w-full md:w-fit'
       onClick={() => setVisible(false)}
     />
-    <Button
-      label='Guardar'
-      icon='pi pi-save'
-      severity='success'
-      className='w-full md:w-fit'
-      form={formId}
-      loading={loading}
-    />
+    {!disableData && (
+      <Button
+        label='Guardar'
+        icon='pi pi-save'
+        severity='success'
+        className='w-full md:w-fit'
+        form={formId}
+        loading={loading}
+      />
+    )}
   </div>
 )
 
@@ -66,7 +70,7 @@ type Props = {
 }
 
 const ClientBudget = ({ showSuccess }: Props) => {
-  const [visibleData, setVisibleData] = useState<boolean>(false)
+  const [visibleView, setVisibleView] = useState<boolean>(false)
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false)
   const [budgets, setBudgets] = useState<BudgetType[]>([])
   const [currentBudget, setCurrentBudget] = useState<BudgetType | null>(null)
@@ -84,7 +88,7 @@ const ClientBudget = ({ showSuccess }: Props) => {
     variables: { patientId: clientInfo?.id },
   })
 
-  const headerContent = (
+  const headerDialog = (
     <h2>
       Nombre: <span className='font-normal'>{currentBudget?.name}</span>
     </h2>
@@ -125,43 +129,43 @@ const ClientBudget = ({ showSuccess }: Props) => {
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex gap-2 justify-center'>
           <Button
-            icon='pi pi-pencil'
+            icon={PrimeIcons.EYE}
+            severity='help'
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+            onClick={() => {
+              setVisibleView(true)
+              setCurrentBudget(budget)
+            }}
+          />
+          <Button
+            icon={PrimeIcons.PENCIL}
             severity='success'
             tooltip='Editar'
             tooltipOptions={{ position: 'bottom' }}
-            outlined
             onClick={() => {
               setVisibleEdit(true)
               setCurrentBudget(budget)
             }}
-          />
-          <Button
-            icon='pi pi-file-edit'
-            severity='help'
-            tooltip='Datos'
-            tooltipOptions={{ position: 'bottom' }}
             outlined
-            onClick={() => {
-              setVisibleData(true)
-              setCurrentBudget(budget)
-            }}
           />
           <Button
-            icon='pi pi-trash'
+            icon={PrimeIcons.TRASH}
             severity='danger'
             tooltip='Eliminar'
             tooltipOptions={{ position: 'bottom' }}
-            outlined
             onClick={() => confirmDelete(tagKey, budget)}
+            outlined
           />
           <Button
-            className='text-sm'
-            icon='pi pi-print'
+            icon={PrimeIcons.PRINT}
             type='button'
             severity='info'
             tooltip='Imprimir'
             tooltipOptions={{ position: 'bottom' }}
             onClick={() => console.log('Generate PDF')}
+            className='text-sm'
             outlined
           />
         </section>
@@ -181,38 +185,30 @@ const ClientBudget = ({ showSuccess }: Props) => {
   }, [dataBudgets])
 
   return (
-    <Card className='custom-table-card flex flex-col gap-4'>
-      <Button
-        className='text-sm w-full md:!w-fit min-w-[13rem]'
-        icon='pi pi-plus'
-        label='Crear presupuesto'
-        type='button'
-        severity='success'
-        onClick={() => {
-          clientInfo?.id &&
-            goToPage(
-              parseUrl(PAGE_PATH.clientBudgetCreate, { id: clientInfo.id }),
-            )
-        }}
-        outlined
-      />
+    <>
       <Dialog
         draggable={false}
-        visible={visibleData}
-        onHide={() => setVisibleData(false)}
-        header={headerContent}
-        footer={footerContent(setVisibleData)}
+        visible={visibleView}
+        onHide={() => setVisibleView(false)}
+        header={headerDialog}
+        footer={footerDialog(setVisibleView, true)}
         className='w-[90vw] max-w-[100rem]'
       >
-        <h2>Data budget id: {currentBudget?.id}</h2>
+        <ClientBudgetForm
+          initialData={
+            currentBudget ? budgetInitialDataMapper(currentBudget) : undefined
+          }
+          disabledData
+        />
       </Dialog>
       <Dialog
         draggable={false}
         visible={visibleEdit}
         onHide={() => setVisibleEdit(false)}
-        header={headerContent}
-        footer={footerContent(
+        header={headerDialog}
+        footer={footerDialog(
           setVisibleEdit,
+          false,
           `form_${BUDGET_CODE}create_edit`,
           loading,
         )}
@@ -232,93 +228,109 @@ const ClientBudget = ({ showSuccess }: Props) => {
           }}
         />
       </Dialog>
-      <DataTable
-        value={budgets}
-        emptyMessage='No se encontraron resultados'
-        size='small'
-        paginator
-        rows={5}
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        tableStyle={{ minWidth: '40rem' }}
-        className='custom-table'
-        loading={loadingBudgets}
-        removableSort
-        sortField='created_date.timestamp'
-        sortOrder={-1}
-      >
-        <Column
-          key='created_date'
-          field='created_date.timestamp'
-          header='Fecha Creación'
-          body={createdDateBodyTemplate}
-          style={{ minWidth: '7rem', width: '11rem' }}
-          sortable
+      <Card className='custom-table-card flex flex-col gap-4'>
+        <Button
+          className='text-sm w-full md:!w-fit min-w-[13rem]'
+          icon='pi pi-plus'
+          label='Crear presupuesto'
+          type='button'
+          severity='success'
+          onClick={() => {
+            clientInfo?.id &&
+              goToPage(
+                parseUrl(PAGE_PATH.clientBudgetCreate, { id: clientInfo.id }),
+              )
+          }}
+          outlined
         />
-        <Column
-          key='due_date'
-          field='due_date.timestamp'
-          header='Fecha Vencimiento'
-          body={dueDateBodyTemplate}
-          style={{ minWidth: '7rem', width: '11rem' }}
-          sortable
-        />
-        <Column
-          key='name'
-          field='name'
-          header='Nombre'
-          style={{ minWidth: '11rem', width: '13rem' }}
-          sortable
-        />
-        <Column
-          key='value'
-          field='value.formated'
-          header='Valor'
-          body={valueBodyTemplate}
-          style={{ minWidth: '6rem' }}
-          sortable
-        />
-        <Column
-          key='payed'
-          field='payed.formated'
-          header='Pagado'
-          body={payedBodyTemplate}
-          style={{ minWidth: '6rem' }}
-          sortable
-        />
-        <Column
-          key='state_budget'
-          field='state_budget'
-          header='Estado Presupuesto'
-          sortable
-        />
-        <Column
-          key='state_payed'
-          field='state_payed'
-          header='Estado Pago'
-          sortable
-        />
-        <Column
-          key='state_track'
-          field='state_track'
-          header='Estado Seguimiento'
-          sortable
-        />
-        <Column
-          key='cost'
-          field='cost.formated'
-          header='Costos'
-          body={costBodyTemplate}
-          style={{ minWidth: '6rem' }}
-          sortable
-        />
-        <Column
-          key='options'
-          header='Opciones'
-          align={'center'}
-          body={optionsBodyTemplate}
-        />
-      </DataTable>
-    </Card>
+        <DataTable
+          value={budgets}
+          emptyMessage='No se encontraron resultados'
+          size='small'
+          paginator
+          rows={5}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          tableStyle={{ minWidth: '40rem' }}
+          className='custom-table'
+          loading={loadingBudgets}
+          removableSort
+          sortField='created_date.timestamp'
+          sortOrder={-1}
+        >
+          <Column
+            key='created_date'
+            field='created_date.timestamp'
+            header='Fecha Creación'
+            body={createdDateBodyTemplate}
+            style={{ minWidth: '7rem', width: '11rem' }}
+            sortable
+          />
+          <Column
+            key='due_date'
+            field='due_date.timestamp'
+            header='Fecha Vencimiento'
+            body={dueDateBodyTemplate}
+            style={{ minWidth: '7rem', width: '11rem' }}
+            sortable
+          />
+          <Column
+            key='name'
+            field='name'
+            header='Nombre'
+            style={{ minWidth: '11rem', width: '13rem' }}
+            sortable
+          />
+          <Column
+            key='value'
+            field='value.formated'
+            header='Valor'
+            body={valueBodyTemplate}
+            style={{ minWidth: '6rem' }}
+            sortable
+          />
+          <Column
+            key='payed'
+            field='payed.formated'
+            header='Pagado'
+            body={payedBodyTemplate}
+            style={{ minWidth: '6rem' }}
+            sortable
+          />
+          <Column
+            key='state_budget'
+            field='state_budget'
+            header='Estado Presupuesto'
+            sortable
+          />
+          <Column
+            key='state_payed'
+            field='state_payed'
+            header='Estado Pago'
+            sortable
+          />
+          <Column
+            key='state_track'
+            field='state_track'
+            header='Estado Seguimiento'
+            sortable
+          />
+          <Column
+            key='cost'
+            field='cost.formated'
+            header='Costos'
+            body={costBodyTemplate}
+            style={{ minWidth: '6rem' }}
+            sortable
+          />
+          <Column
+            key='options'
+            header='Opciones'
+            align={'center'}
+            body={optionsBodyTemplate}
+          />
+        </DataTable>
+      </Card>
+    </>
   )
 }
 

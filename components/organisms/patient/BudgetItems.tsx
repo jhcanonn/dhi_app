@@ -15,6 +15,7 @@ import {
   getRowIds,
 } from '@utils'
 import { UUID } from 'crypto'
+import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { Fieldset } from 'primereact/fieldset'
@@ -35,6 +36,7 @@ type BudgetItemsProps = {
   buttonLabel: string
   list?: any[]
   listGrouped?: ListGroupType[]
+  disabledData?: boolean
   onListChange: (value: any, tag: string, rowId: UUID | number) => void
 }
 
@@ -101,6 +103,7 @@ const BudgetItems = ({
   buttonLabel,
   list,
   listGrouped,
+  disabledData,
   onListChange,
 }: BudgetItemsProps) => {
   const [rowIds, setRowIds] = useState<(UUID | number)[]>([])
@@ -144,20 +147,22 @@ const BudgetItems = ({
 
   return (
     <Fieldset legend={legend} className='relative min-w-0'>
-      <Button
-        type='button'
-        icon='pi pi-plus'
-        label={buttonLabel}
-        severity='success'
-        size='small'
-        onClick={() => {
-          const uuid = uuidv4() as UUID
-          setRowIds((prev) => [...prev, uuid])
-          setRowAdded(true)
-        }}
-        className='w-full mb-4 md:w-fit md:mb-0 md:absolute md:right-4 md:top-[-2.1rem] bg-white'
-        outlined
-      />
+      {!disabledData && (
+        <Button
+          type='button'
+          icon='pi pi-plus'
+          label={buttonLabel}
+          severity='success'
+          size='small'
+          onClick={() => {
+            const uuid = uuidv4() as UUID
+            setRowIds((prev) => [...prev, uuid])
+            setRowAdded(true)
+          }}
+          className='w-full mb-4 md:w-fit md:mb-0 md:absolute md:right-4 md:top-[-2.1rem] bg-white'
+          outlined
+        />
+      )}
       {rowIds.length > 0 ? (
         <div className='overflow-auto'>
           <table role='table' className='foliculos-table text-sm min-w-[40rem]'>
@@ -172,7 +177,7 @@ const BudgetItems = ({
                 <th className='min-w-[10rem]'>Valor con descuento</th>
                 <th className='min-w-[10rem]'>Valor total</th>
                 <th className='min-w-[4.5rem]'>Aceptado</th>
-                <th className='rounded-r-md'></th>
+                {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
             <tbody>
@@ -193,10 +198,11 @@ const BudgetItems = ({
                                 groupedItemTemplate(option)
                             : undefined
                         }
-                        required
                         onCustomChange={(e: DropdownChangeEvent) =>
                           onListChange(JSON.parse(e.value), tag, rowId)
                         }
+                        required
+                        disabled={disabledData}
                       />
                     </td>
                     <td className={cx('w-[4.5rem]', { 'pt-2': isFirtsRow })}>
@@ -204,9 +210,10 @@ const BudgetItems = ({
                         handleForm={handleForm}
                         name={`${tag}${FieldsCodeBudgetItems.C}${rowId}`}
                         min={0}
-                        required
                         shortErrorMessage
                         onCustomChange={() => handleInputChange(rowId)}
+                        required
+                        disabled={disabledData}
                       />
                     </td>
                     <td className={cx({ 'pt-2': isFirtsRow })}>
@@ -214,11 +221,11 @@ const BudgetItems = ({
                         handleForm={handleForm}
                         name={`${tag}${FieldsCodeBudgetItems.V}${rowId}`}
                         min={0}
-                        disabled
                         mode={InputNumberMode.CURRENCY}
                         currency='COP'
                         locale='es-CO'
                         useGrouping={true}
+                        disabled
                       />
                     </td>
                     <td className={cx('w-[4.5rem]', { 'pt-2': isFirtsRow })}>
@@ -228,9 +235,10 @@ const BudgetItems = ({
                         min={0}
                         max={100}
                         suffix='%'
-                        required
                         shortErrorMessage
                         onCustomChange={() => handleInputChange(rowId)}
+                        required
+                        disabled={disabledData}
                       />
                     </td>
                     <td className={cx({ 'pt-2': isFirtsRow })}>
@@ -238,11 +246,11 @@ const BudgetItems = ({
                         handleForm={handleForm}
                         name={`${tag}${FieldsCodeBudgetItems.VD}${rowId}`}
                         min={0}
-                        disabled
                         mode={InputNumberMode.CURRENCY}
                         currency='COP'
                         locale='es-CO'
                         useGrouping={true}
+                        disabled
                       />
                     </td>
                     <td className={cx({ 'pt-2': isFirtsRow })}>
@@ -250,11 +258,11 @@ const BudgetItems = ({
                         handleForm={handleForm}
                         name={`${tag}${FieldsCodeBudgetItems.VT}${rowId}`}
                         min={0}
-                        disabled
                         mode={InputNumberMode.CURRENCY}
                         currency='COP'
                         locale='es-CO'
                         useGrouping={true}
+                        disabled
                       />
                     </td>
                     <td className={cx({ 'pt-2': isFirtsRow })}>
@@ -263,31 +271,36 @@ const BudgetItems = ({
                         handleForm={handleForm}
                         className='[&>div]:justify-center'
                         onCustomChange={() => handleAcceptedChange(handleForm)}
+                        disabled={disabledData}
                       />
                     </td>
-                    <td
-                      className={cx('flex flex-col items-center', {
-                        'pt-2': isFirtsRow,
-                      })}
-                    >
-                      <Button
-                        type='button'
-                        icon='pi pi-trash'
-                        severity='danger'
-                        tooltip='Eliminar item'
-                        tooltipOptions={{ position: 'bottom' }}
-                        onClick={() => {
-                          setRowIds((prev) => prev.filter((id) => id !== rowId))
-                          setRowAdded(false)
-                          getItemKeys(getValues(), `${tag}_`)
-                            .filter((key) => getNumberOrUUID(key) === rowId)
-                            .forEach((key) => unregister(key))
-                          handleAcceptedChange(handleForm)
-                        }}
-                        outlined
-                      />
-                      <div className='h-[20px]'></div>
-                    </td>
+                    {!disabledData && (
+                      <td
+                        className={cx('flex flex-col items-center', {
+                          'pt-2': isFirtsRow,
+                        })}
+                      >
+                        <Button
+                          type='button'
+                          icon={PrimeIcons.TRASH}
+                          severity='danger'
+                          tooltip='Eliminar item'
+                          tooltipOptions={{ position: 'bottom' }}
+                          onClick={() => {
+                            setRowIds((prev) =>
+                              prev.filter((id) => id !== rowId),
+                            )
+                            setRowAdded(false)
+                            getItemKeys(getValues(), `${tag}_`)
+                              .filter((key) => getNumberOrUUID(key) === rowId)
+                              .forEach((key) => unregister(key))
+                            handleAcceptedChange(handleForm)
+                          }}
+                          outlined
+                        />
+                        <div className='h-[20px]'></div>
+                      </td>
+                    )}
                   </tr>
                 )
               })}

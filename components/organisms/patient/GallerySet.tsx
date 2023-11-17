@@ -188,7 +188,7 @@ const GallerySet = ({ set, hideDelete, onUpdatePhotos }: Props) => {
         onHide={() => document.body.style.removeProperty('overflow')}
       />
       <Button
-        severity='info'
+        severity='help'
         label='Ver set'
         icon='pi pi-camera'
         size='small'
