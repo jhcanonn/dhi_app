@@ -16,7 +16,7 @@ import {
   InputNumber,
   InputNumberValueChangeEvent,
 } from 'primereact/inputnumber'
-import { AutoComplete } from 'primereact/autocomplete'
+import { AutoComplete, AutoCompleteChangeEvent } from 'primereact/autocomplete'
 import {
   CREATE_MEDICAL_COMPLEMENT,
   LocalStorageTags,
@@ -225,9 +225,11 @@ const EditClientExamsPrescription = ({
   }
 
   const idItemTemplate = (item: any) => (
-    <p className='text-[0.8rem]'>
-      {item.code} - {item.descripcion}
-    </p>
+    <div className='flex align-items-center'>
+      <div>
+        {item.code} - {item.descripcion}
+      </div>
+    </div>
   )
 
   const seletedItemTemplate = (item: any) =>
@@ -387,9 +389,16 @@ const EditClientExamsPrescription = ({
               completeMethod={search}
               itemTemplate={idItemTemplate}
               selectedItemTemplate={seletedItemTemplate}
-              onChange={(e) => setSelectedDiagnostic(e.value)}
+              onChange={(e: AutoCompleteChangeEvent) => {
+                console.log(e)
+                e.originalEvent?.nativeEvent?.type === 'focusout' &&
+                typeof selectedDiagnostic === 'object'
+                  ? setSelectedDiagnostic(e.value ?? selectedDiagnostic)
+                  : setSelectedDiagnostic(e.value)
+              }}
               virtualScrollerOptions={{ itemSize: 38 }}
               disabled={config.isView}
+              forceSelection={true}
             />
             <label htmlFor='acdiagnostic'>Diagnostico</label>
           </span>
