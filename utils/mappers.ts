@@ -485,13 +485,13 @@ export const budgetCreateMapper = (
 export const getItemKeys = (data: Record<string, any>, startWith: string) =>
   Object.keys(data).filter((key) => key.startsWith(startWith))
 
+export const getNumberOrUUID = (key: string) => {
+  const rowId = key.split('_').slice(-1)[0]
+  return Number.isNaN(+rowId) ? (rowId as UUID) : +rowId
+}
+
 export const getRowIds = (data: Record<string, any>, startWith: string) => [
-  ...new Set(
-    getItemKeys(data, startWith).map((key) => {
-      const rowId = key.split('_').slice(-1)[0]
-      return Number.isNaN(+rowId) ? (rowId as UUID) : +rowId
-    }),
-  ),
+  ...new Set(getItemKeys(data, startWith).map(getNumberOrUUID)),
 ]
 
 export const budgetCreateRelationsMapper = (
