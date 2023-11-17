@@ -13,6 +13,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { useClientInfo, useDirectusFiles, usePatchPatient } from '@hooks'
 import { UUID } from 'crypto'
 import moment from 'moment'
+import { PrimeIcons } from 'primereact/api'
 
 type FileType = Pick<GalleryType, 'id' | 'date' | 'user'> & {
   tag: string
@@ -73,8 +74,8 @@ const FilesTable = ({ onUploadLoading }: Props) => {
         <ConfirmDialog tagKey={tagKey} />
         <section className='flex gap-2 justify-center'>
           <Button
-            icon='pi pi-eye'
-            severity='info'
+            icon={PrimeIcons.EYE}
+            severity='help'
             tooltip='Ver archivo'
             tooltipOptions={{ position: 'bottom' }}
             outlined
@@ -84,7 +85,7 @@ const FilesTable = ({ onUploadLoading }: Props) => {
             }}
           />
           <Button
-            icon='pi pi-trash'
+            icon={PrimeIcons.TRASH}
             severity='danger'
             tooltip='Eliminar archivo'
             tooltipOptions={{ position: 'bottom' }}

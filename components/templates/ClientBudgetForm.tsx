@@ -55,6 +55,7 @@ type Commercial = {
 
 type BudgetProps = {
   initialData?: BudgetForm
+  disabledData?: boolean
   onCloseDialog?: (close: boolean) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
@@ -66,6 +67,7 @@ const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
 
 const ClientBudgetForm = ({
   initialData,
+  disabledData,
   onCloseDialog,
   showWarning,
 }: BudgetProps) => {
@@ -239,6 +241,7 @@ const ClientBudgetForm = ({
               })
             }}
             required
+            disabled={disabledData}
           />
           <DropdownValid
             name={`${BUDGET_CODE}comercial`}
@@ -246,18 +249,19 @@ const ClientBudgetForm = ({
             handleForm={handleForm}
             list={commercials}
             required
+            disabled={disabledData}
           />
           <InputNumberValid
             handleForm={handleForm}
             label='Total'
             name={`${BUDGET_CODE}total`}
             min={0}
-            disabled
             mode={InputNumberMode.CURRENCY}
             currency='COP'
             locale='es-CO'
             useGrouping={true}
             className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
+            disabled
           />
         </div>
         <div className='flex flex-col gap-4'>
@@ -275,6 +279,7 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
+              disabledData={disabledData}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.PRODUCTS) && (
@@ -289,6 +294,7 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.valor, tag, rowId)}
+              disabledData={disabledData}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.SERVICES) && (
@@ -305,6 +311,7 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
+              disabledData={disabledData}
             />
           )}
         </div>
@@ -315,6 +322,7 @@ const ClientBudgetForm = ({
               panel={selectedPanel}
               handleFormExternal={handleForm}
               hideSubmitButton
+              disabledData={disabledData}
             />
           ) : (
             <div className='flex justify-center'>

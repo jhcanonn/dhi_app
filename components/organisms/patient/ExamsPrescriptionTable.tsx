@@ -234,7 +234,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
             outlined
             tooltip='Ver'
             tooltipOptions={{ position: 'bottom' }}
-            severity='info'
+            severity='help'
             onClick={() => {
               setTipo(rowData.tipo)
               setCurrentRowData(rowData)
@@ -254,7 +254,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
             <>
               <Button
                 className='text-sm'
-                icon={PrimeIcons.USER_EDIT}
+                icon={PrimeIcons.PENCIL}
                 type='button'
                 outlined
                 severity='success'
@@ -280,7 +280,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
               />
               <Button
                 className='text-sm'
-                icon='pi pi-print'
+                icon={PrimeIcons.PRINT}
                 type='button'
                 severity='info'
                 tooltip='Imprimir'

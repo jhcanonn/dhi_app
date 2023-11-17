@@ -17,7 +17,7 @@ import {
   StatusDataSheet,
   UpdatedAttention,
 } from '@models'
-import { FilterMatchMode } from 'primereact/api'
+import { FilterMatchMode, PrimeIcons } from 'primereact/api'
 import {
   GET_DATASHEETS_BY_ID,
   UPDATE_ATTENTION,
@@ -139,10 +139,10 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
           <>
             <Button
               className='text-sm'
-              icon='pi pi-pencil'
+              icon={PrimeIcons.PENCIL}
               type='button'
               severity='success'
-              tooltip='Editar atención'
+              tooltip='Editar'
               tooltipOptions={{ position: 'bottom' }}
               onClick={() => {
                 setCurrentRowData(rowData)
@@ -153,17 +153,17 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
             />
             <Button
               className='text-sm'
-              icon='pi pi-trash'
+              icon={PrimeIcons.TRASH}
               type='button'
               severity='danger'
-              tooltip='Anular atención'
+              tooltip='Anular'
               tooltipOptions={{ position: 'bottom' }}
               onClick={() => annulDataSheetHandle(rowData, tagKey)}
               outlined
             />
             <Button
               className='text-sm'
-              icon='pi pi-print'
+              icon={PrimeIcons.PRINT}
               type='button'
               severity='info'
               tooltip='Imprimir'
