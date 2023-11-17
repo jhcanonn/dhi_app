@@ -24,7 +24,7 @@ type Props = {
 }
 
 const accordionTabHeader = (panel: PanelsDirectus) => (
-  <div className='flex align-items-center justify-between w-full'>
+  <div className='flex flex-wrap gap-3 align-items-center justify-between'>
     <p>{panel.nombre}</p>
     {panel.code === 'calculo_foliculos' && (
       <Button
@@ -36,7 +36,7 @@ const accordionTabHeader = (panel: PanelsDirectus) => (
           e.stopPropagation()
           window.open(TRICOSCOPIA_URL, '_blank')
         }}
-        className=''
+        className='w-full md:w-auto'
       />
     )}
   </div>
@@ -120,7 +120,11 @@ const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
         .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
         .sort((a, b) => a.orden - b.orden)
         .map((panel) => (
-          <AccordionTab key={panel.code} header={accordionTabHeader(panel)}>
+          <AccordionTab
+            key={panel.code}
+            header={accordionTabHeader(panel)}
+            className='[&_.p-accordion-header-text]:w-full'
+          >
             <PanelForm
               formId='accordion'
               panel={panel}
