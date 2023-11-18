@@ -65,6 +65,49 @@ export const GET_USER_ME = gql`
   }
 `
 
+export const GET_SCHEDULES = gql`
+  query ($patientId: GraphQLStringOrFloat) {
+    citas(filter: { paciente: { id: { _eq: $patientId } } }) {
+      id
+      inicio
+      fin
+      comentario
+      estado {
+        id
+        nombre
+        color
+      }
+      estado_pago {
+        id
+        code
+        nombre
+      }
+      profesional {
+        id
+        identificacion
+        nombre
+      }
+      servicios {
+        id
+        salas_servicios_id {
+          id
+          salas_id {
+            id
+            nombre
+            color
+          }
+          servicios_id {
+            id
+            nombre
+            precio
+          }
+        }
+      }
+      date_created
+    }
+  }
+`
+
 export const GET_COMMERCIALS = gql`
   query ($roleId: String) {
     users(

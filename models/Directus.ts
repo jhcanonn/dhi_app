@@ -471,3 +471,36 @@ export enum FieldTypeDirectus {
   PHONE = 'phone',
   AUTOCOMPLETE = 'autocomplete',
 }
+
+export type SchedulesServices = {
+  id: number
+  salas_servicios_id: BudgetItemsBoxService
+}
+
+export type SchedulesState = {
+  id: number
+  nombre: string
+  color: string
+}
+
+export type PaymentsState = {
+  id: number
+  code: string
+  nombre: string
+}
+
+export type SchedulesDirectus = {
+  id: number
+  inicio: string
+  fin: string
+  comentario: string
+  estado: SchedulesState
+  estado_pago: PaymentsState
+  profesional: {
+    id: number
+    identificacion: string
+    nombre: string
+  }
+  servicios: SchedulesServices[]
+  date_created: string
+}

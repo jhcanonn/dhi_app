@@ -354,3 +354,11 @@ export const BUDGET_DELETE = gql`
     }
   }
 `
+
+export const SCHEDULE_DELETE = gql`
+  mutation ($scheduleId: ID!) {
+    delete_citas_item(id: $scheduleId) {
+      id
+    }
+  }
+`

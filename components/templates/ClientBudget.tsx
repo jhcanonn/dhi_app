@@ -324,7 +324,7 @@ const ClientBudget = ({ showSuccess }: Props) => {
           />
           <Column
             key='options'
-            header='Opciones'
+            header='Acciones'
             align={'center'}
             body={optionsBodyTemplate}
           />

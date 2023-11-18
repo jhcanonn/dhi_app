@@ -226,9 +226,9 @@ const EditClientExamsPrescription = ({
 
   const idItemTemplate = (item: any) => (
     <div className='flex align-items-center'>
-      <div>
+      <p className='text-[0.8rem]'>
         {item.code} - {item.descripcion}
-      </div>
+      </p>
     </div>
   )
 
