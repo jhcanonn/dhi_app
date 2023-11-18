@@ -32,6 +32,8 @@ import {
   BudgetEditRelationsDirectus,
   SchedulesDirectus,
   ScheduleType,
+  BudgetStateDirectus,
+  DropdownOption,
 } from '@models'
 import {
   BLOCK_BOX,
@@ -370,6 +372,15 @@ export const budgetsMapper = (budgets: BudgetsDirectus[]) =>
       },
     } as BudgetType
   })
+
+export const budgetStateMapper = (states: BudgetStateDirectus[]) =>
+  states.map(
+    (state) =>
+      ({
+        name: state.nombre,
+        value: JSON.stringify(state),
+      }) as DropdownOption,
+  )
 
 export const budgetTherapiesMapper = (items: BudgetItemsTherapies[]) =>
   items.map((item) => ({

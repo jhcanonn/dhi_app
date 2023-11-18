@@ -17,6 +17,7 @@ import {
   CLIENT_PAGE_TAB,
   GET_CLIENT_BY_ID,
   PAGE_PATH,
+  getCurrencyCOP,
   parseUrl,
   toTitleCase,
 } from '@utils'
@@ -93,6 +94,13 @@ const ClientLayout = ({ children, params }: Props) => {
               toTitleCase(data.pacientes_by_id.full_name)
             )}
           </h2>
+          <Button
+            label={`NP:1, Deuda: ${getCurrencyCOP(0)}`}
+            type='button'
+            severity='danger'
+            onClick={() => goToPage(PAGE_PATH.finance)}
+            className='px-4 py-1 font-bold text-md'
+          />
           <Button
             label={'Pagar'}
             type='button'

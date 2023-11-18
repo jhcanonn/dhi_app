@@ -6,12 +6,18 @@ import {
   GET_BUDGETS,
   PAGE_PATH,
   budgetInitialDataMapper,
+  budgetStateMapper,
   budgetsMapper,
   parseUrl,
 } from '@utils'
+import {
+  BudgetStateDirectus,
+  BudgetType,
+  DropdownOption,
+  PayedState,
+} from '@models'
 import ClientBudgetForm from './ClientBudgetForm'
 import { useBudgetContext, useClientContext } from '@contexts'
-import { BudgetType } from '@models'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -22,6 +28,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useGoTo, withToast } from '@hooks'
 import { useMutation, useQuery } from '@apollo/client'
 import { PrimeIcons } from 'primereact/api'
+import { BudgetStateTag } from '@components/molecules'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -65,6 +72,12 @@ const footerDialog = (
   </div>
 )
 
+const findBudgetState = (budgetState: DropdownOption[], findCode: string) =>
+  budgetState.find((bs) => {
+    const bsInfo = JSON.parse(bs.value) as BudgetStateDirectus
+    return bsInfo.codigo === findCode
+  })
+
 type Props = {
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
 }
@@ -73,6 +86,10 @@ const ClientBudget = ({ showSuccess }: Props) => {
   const [visibleView, setVisibleView] = useState<boolean>(false)
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false)
   const [budgets, setBudgets] = useState<BudgetType[]>([])
+  const [budgetState, setBudgetState] = useState<DropdownOption[]>([])
+  const [budgetPaymentState, setBudgetPaymentState] = useState<
+    DropdownOption[]
+  >([])
   const [currentBudget, setCurrentBudget] = useState<BudgetType | null>(null)
   const { clientInfo } = useClientContext()
   const { loading } = useBudgetContext()
@@ -92,6 +109,19 @@ const ClientBudget = ({ showSuccess }: Props) => {
     <h2>
       Nombre: <span className='font-normal'>{currentBudget?.name}</span>
     </h2>
+  )
+
+  const stateBudgetBodyTemplate = (budget: BudgetType) => (
+    <BudgetStateTag state={findBudgetState(budgetState, budget.state_budget)} />
+  )
+
+  const statePayedBodyTemplate = (budget: BudgetType) => (
+    <BudgetStateTag
+      state={findBudgetState(
+        budgetPaymentState,
+        budget.state_payed || PayedState.NO_PAGADO,
+      )}
+    />
   )
 
   const deleteBudget = async (budget: BudgetType) => {
@@ -181,7 +211,13 @@ const ClientBudget = ({ showSuccess }: Props) => {
   }, [])
 
   useEffect(() => {
-    !loadingBudgets && setBudgets(budgetsMapper(dataBudgets.presupuesto || []))
+    if (!loadingBudgets) {
+      setBudgets(budgetsMapper(dataBudgets.presupuesto || []))
+      setBudgetState(budgetStateMapper(dataBudgets.presupuesto_estado || []))
+      setBudgetPaymentState(
+        budgetStateMapper(dataBudgets.presupuesto_estado_pago || []),
+      )
+    }
   }, [dataBudgets])
 
   return (
@@ -300,12 +336,16 @@ const ClientBudget = ({ showSuccess }: Props) => {
             key='state_budget'
             field='state_budget'
             header='Estado Presupuesto'
+            body={stateBudgetBodyTemplate}
+            style={{ minWidth: '10rem' }}
             sortable
           />
           <Column
             key='state_payed'
             field='state_payed'
             header='Estado Pago'
+            body={statePayedBodyTemplate}
+            style={{ minWidth: '10rem' }}
             sortable
           />
           <Column

@@ -196,6 +196,47 @@ export const GET_BUDGETS = gql`
       date_created
       estado
     }
+    presupuesto_estado(
+      filter: { status: { _eq: "published" } }
+      sort: ["sort"]
+    ) {
+      id
+      codigo
+      nombre
+      color
+    }
+    presupuesto_estado_pago(
+      filter: { status: { _eq: "published" } }
+      sort: ["sort"]
+    ) {
+      id
+      codigo
+      nombre
+      color
+    }
+  }
+`
+
+export const GET_BUDGET_STATES = gql`
+  query {
+    presupuesto_estado(
+      filter: { status: { _eq: "published" } }
+      sort: ["sort"]
+    ) {
+      id
+      codigo
+      nombre
+      color
+    }
+    presupuesto_estado_pago(
+      filter: { status: { _eq: "published" } }
+      sort: ["sort"]
+    ) {
+      id
+      codigo
+      nombre
+      color
+    }
   }
 `
 

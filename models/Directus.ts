@@ -430,6 +430,13 @@ export type BudgetForm = {
   presupuesto_total: number
 } & Record<string, any>
 
+export type BudgetStateDirectus = {
+  id: number
+  codigo: string
+  nombre: string
+  color: string
+}
+
 export enum BudgetItem {
   SERVICES = 'Servicios',
   PRODUCTS = 'Productos',
@@ -441,6 +448,13 @@ export enum BudgetState {
   ACEPTADO_PARCIAL = 'aceptado_parcial',
   NO_ACEPTADO = 'no_aceptado',
   DECLINADO = 'declinado',
+}
+
+export enum PayedState {
+  PAGADO = 'pagado',
+  PAGO_PARCIAL = 'pago_parcial',
+  CON_DEUDA = 'con_deuda',
+  NO_PAGADO = 'no_pagado',
 }
 
 export enum BudgetPanelCodes {
