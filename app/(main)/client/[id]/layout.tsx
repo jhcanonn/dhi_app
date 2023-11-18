@@ -98,7 +98,7 @@ const ClientLayout = ({ children, params }: Props) => {
             type='button'
             severity='success'
             rounded
-            onClick={() => goToPage(PAGE_PATH.finance)}
+            onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
             className='px-4 py-1 font-bold text-md'
           />
         </div>
