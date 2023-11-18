@@ -274,7 +274,7 @@ export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
 
 export const clientInfoToHeaderDataPDFMapper = (
   client: ClientDirectus,
-  rowData: DataSheet,
+  dataProfesional: DataSheet | any,
 ): IDataHeader => {
   const birthDate = client?.fecha_nacimiento
     ? moment(client?.fecha_nacimiento).toDate()
@@ -290,9 +290,9 @@ export const clientInfoToHeaderDataPDFMapper = (
     clienteEdad: age ? `${age?.anios} años, ${age?.meses} meses` : '',
     clienteNumDoc: `${client.tipo_documento} ${client.documento}`,
     ClienteDireccion: direccion,
-    profesionalName: rowData?.professional,
-    profesionalNumDoc: rowData?.professionalDocument,
-    profesionalSignature: rowData?.profesionalFirma?.id,
+    profesionalName: dataProfesional?.professional,
+    profesionalNumDoc: dataProfesional?.professionalDocument,
+    profesionalSignature: dataProfesional?.profesionalFirma?.id,
     direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
 }

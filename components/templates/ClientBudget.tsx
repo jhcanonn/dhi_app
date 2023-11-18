@@ -8,6 +8,7 @@ import {
   budgetInitialDataMapper,
   budgetStateMapper,
   budgetsMapper,
+  clientInfoToHeaderDataPDFMapper,
   parseUrl,
 } from '@utils'
 import {
@@ -29,6 +30,7 @@ import { useGoTo, withToast } from '@hooks'
 import { useMutation, useQuery } from '@apollo/client'
 import { PrimeIcons } from 'primereact/api'
 import { BudgetStateTag } from '@components/molecules'
+import { generateBudgetToPDF } from '@utils/utils-pdf'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -104,6 +106,15 @@ const ClientBudget = ({ showSuccess }: Props) => {
   } = useQuery(GET_BUDGETS, {
     variables: { patientId: clientInfo?.id },
   })
+
+  const generatePDF = (budget: BudgetType) => {
+    console.log(budget)
+    generateBudgetToPDF(
+      budget,
+      false,
+      clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+    )
+  }
 
   const headerDialog = (
     <h2>
@@ -194,7 +205,7 @@ const ClientBudget = ({ showSuccess }: Props) => {
             severity='info'
             tooltip='Imprimir'
             tooltipOptions={{ position: 'bottom' }}
-            onClick={() => console.log('Generate PDF')}
+            onClick={() => generatePDF(budget)}
             className='text-sm'
             outlined
           />
