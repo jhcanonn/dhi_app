@@ -112,7 +112,7 @@
     [&_.p-checkbox]:items-center
     [&_.p-disabled]:opacity-80
     [&_.p-component]:disabled:opacity-80
-    [&_.css-zw3mfo-MuiModal-root-MuiDialog-root]:z-[999] #{!important};
+    [&_.MuiDialog-root]:z-[999] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,
