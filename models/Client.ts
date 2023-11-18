@@ -1,6 +1,6 @@
 import { UUID } from 'crypto'
 import { Country, IdType } from './Calendar'
-import { BudgetExtraData, ProfileAvatar } from './Directus'
+import { BudgetExtraData, ProfileAvatar, SchedulesServices } from './Directus'
 
 export type DhiPatient = {
   avatar?: ProfileAvatar[]
@@ -121,7 +121,7 @@ export type UpdatedAttention = {
   status: StatusDataSheet
 }
 
-export type DataSheetType = {
+export type OptionType = {
   code: string
   name: string
 }
@@ -153,6 +153,19 @@ export type BudgetType = {
     presupuesto_formas_pago: string
     presupuesto_observaciones: string
   }
+}
+
+export type ScheduleType = {
+  id: number
+  date: DataTableDate
+  init_time: string
+  end_time: string
+  comment: string
+  schedule_state: OptionType & { color: string }
+  payment_state: OptionType
+  professional: string
+  sucursal: string
+  services: SchedulesServices[]
 }
 
 export enum StatusDataSheet {
@@ -187,7 +200,7 @@ export enum FieldsCodeBudgetItems {
 export type DataSheet = {
   id: UUID
   status?: StatusDataSheet
-  type: DataSheetType
+  type: OptionType
   date: DataTableDate
   professional: string
   professionalDocument: string
