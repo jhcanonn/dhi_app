@@ -96,7 +96,7 @@ const Aside = () => {
       icon: PrimeIcons.COG,
       command: () => {
         toggleVisible()
-        goToPage(PAGE_PATH.settings)
+        window.open(process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL, '_blank')
       },
     },
   ]
