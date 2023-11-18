@@ -80,14 +80,14 @@ const Aside = () => {
         goToPage(PAGE_PATH.crm)
       },
     },
-    {
-      label: 'Finanzas',
-      icon: PrimeIcons.DOLLAR,
-      command: () => {
-        toggleVisible()
-        goToPage(PAGE_PATH.finance)
-      },
-    },
+    // {
+    //   label: 'Finanzas',
+    //   icon: PrimeIcons.DOLLAR,
+    //   command: () => {
+    //     toggleVisible()
+    //     goToPage(PAGE_PATH.finance)
+    //   },
+    // },
     {
       separator: true,
     },

@@ -121,8 +121,8 @@ const ClientFinance = () => {
   return (
     <>
       <Card className='custom-table-card flex flex-col gap-4'>
-        <div className='flex flex-row justify-between'>
-          <h2 className='flex-grow'>
+        <div className='flex flex-col gap-4 md:flex-row flex-wrap justify-between'>
+          <div className='w-full md:!w-[20rem]'>
             <span className='p-float-label'>
               <MultiSelect
                 id='ms-methods'
@@ -135,11 +135,8 @@ const ClientFinance = () => {
               />
               <label htmlFor='ms-methods'>Formas de pago</label>
             </span>
-          </h2>
-
-          <div className='flex-grow'></div>
-
-          <h2 className='flex-grow'>
+          </div>
+          <div className='w-full md:!w-[20rem]'>
             <span className='p-float-label'>
               <InputNumber
                 id='total-sale-input'
@@ -148,14 +145,14 @@ const ClientFinance = () => {
                 currency='COP'
                 locale='es-CO'
                 useGrouping={true}
-                className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
+                className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem] [&_input]:w-full'
                 value={totalSale}
                 onValueChange={(e) => setTotalSale(e.value)}
                 disabled
               />
               <label htmlFor='total-sale-input'>Total a pagar</label>
             </span>
-          </h2>
+          </div>
         </div>
         <Divider
           align='center'
