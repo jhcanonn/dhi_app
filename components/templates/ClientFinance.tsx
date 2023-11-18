@@ -1,6 +1,11 @@
 'use client'
 
-import { GET_BUDGETS, budgetInitialDataMapper, budgetsMapper } from '@utils'
+import {
+  GET_BUDGETS,
+  budgetInitialDataMapper,
+  budgetsMapper,
+  errorMessages,
+} from '@utils'
 import ClientBudgetForm from './ClientBudgetForm'
 import { useClientContext } from '@contexts'
 import { BudgetType, FieldsCodeBudgetItems } from '@models'
@@ -22,8 +27,8 @@ import { InputNumber } from 'primereact/inputnumber'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { Nullable } from 'primereact/ts-helpers'
 import { Divider } from 'primereact/divider'
-import { MultiSelect } from 'primereact/multiselect'
 import { useQuery } from '@apollo/client'
+import { Dropdown } from 'primereact/dropdown'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -124,14 +129,18 @@ const ClientFinance = () => {
         <div className='flex flex-col gap-4 md:flex-row flex-wrap justify-between'>
           <div className='w-full md:!w-[20rem]'>
             <span className='p-float-label'>
-              <MultiSelect
+              <Dropdown
                 id='ms-methods'
                 value={selectedPaymentMethods}
                 onChange={(e) => setSelectedPaymentMethods(e.value)}
                 options={paymentMethods}
                 optionLabel='name'
+                filter
+                placeholder='Seleccione una forma de pago'
                 className='!text-[1rem]'
                 panelClassName='[&_input]:!text-[1rem]'
+                emptyMessage={errorMessages.noBoxes}
+                emptyFilterMessage={errorMessages.noExists}
               />
               <label htmlFor='ms-methods'>Formas de pago</label>
             </span>
@@ -148,7 +157,6 @@ const ClientFinance = () => {
                 className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem] [&_input]:w-full'
                 value={totalSale}
                 onValueChange={(e) => setTotalSale(e.value)}
-                disabled
               />
               <label htmlFor='total-sale-input'>Total a pagar</label>
             </span>
