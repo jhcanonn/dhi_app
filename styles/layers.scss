@@ -89,7 +89,6 @@
     [&_.p-inputswitch_.p-inputswitch-slider:before]:mt-[-0.45rem]
     [&_.css-12rl710-MuiPaper-root-MuiDialog-paper]:bg-transparent
     [&_.css-m9glnp-MuiPaper-root-MuiDialog-paper]:bg-transparent
-    [&_.css-zw3mfo-MuiModal-root-MuiDialog-root]:z-[999]
     [&_.p-confirm-dialog]:md:w-fit
     [&_.p-confirm-dialog]:w-[90%]
     [&_.p-confirm-dialog_.p-dialog-footer_button]:md:w-auto
@@ -112,7 +111,8 @@
     [&_.p-checkbox-box]:h-[17px]
     [&_.p-checkbox]:items-center
     [&_.p-disabled]:opacity-80
-    [&_.p-component]:disabled:opacity-80 #{!important};
+    [&_.p-component]:disabled:opacity-80
+    [&_.css-zw3mfo-MuiModal-root-MuiDialog-root]:z-[999] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,
