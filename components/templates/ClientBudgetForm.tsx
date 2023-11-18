@@ -226,48 +226,50 @@ const ClientBudgetForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
       >
-        <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
-          <DropdownValid
-            name={codePlanilla}
-            label='Planilla'
-            handleForm={handleForm}
-            list={budgetPanels.map((bp) => ({
-              name: bp.nombre,
-              value: bp.code,
-            }))}
-            onCustomChange={(e) => {
-              setSelectedPanel((prev) => {
-                getSelectedPanelFields(prev).forEach((field) =>
-                  unregister(field.codigo),
-                )
-                return budgetPanels.find((bp) => bp.code === e.value)
-              })
-              handleAcceptedChange(handleForm)
-            }}
-            required
-            disabled={!!initialData || disabledData}
-          />
-          <DropdownValid
-            name={`${BUDGET_CODE}comercial`}
-            label='Comercial'
-            handleForm={handleForm}
-            list={commercials}
-            required
-            disabled={disabledData}
-          />
-          <InputNumberValid
-            handleForm={handleForm}
-            label='Total'
-            name={`${BUDGET_CODE}total`}
-            min={0}
-            mode={InputNumberMode.CURRENCY}
-            currency='COP'
-            locale='es-CO'
-            useGrouping={true}
-            className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
-            disabled
-          />
-        </div>
+        {!paymentForm && (
+          <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
+            <DropdownValid
+              name={codePlanilla}
+              label='Planilla'
+              handleForm={handleForm}
+              list={budgetPanels.map((bp) => ({
+                name: bp.nombre,
+                value: bp.code,
+              }))}
+              onCustomChange={(e) => {
+                setSelectedPanel((prev) => {
+                  getSelectedPanelFields(prev).forEach((field) =>
+                    unregister(field.codigo),
+                  )
+                  return budgetPanels.find((bp) => bp.code === e.value)
+                })
+                handleAcceptedChange(handleForm)
+              }}
+              required
+              disabled={!!initialData || disabledData}
+            />
+            <DropdownValid
+              name={`${BUDGET_CODE}comercial`}
+              label='Comercial'
+              handleForm={handleForm}
+              list={commercials}
+              required
+              disabled={disabledData}
+            />
+            <InputNumberValid
+              handleForm={handleForm}
+              label='Total'
+              name={`${BUDGET_CODE}total`}
+              min={0}
+              mode={InputNumberMode.CURRENCY}
+              currency='COP'
+              locale='es-CO'
+              useGrouping={true}
+              className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
+              disabled
+            />
+          </div>
+        )}
         <div className='flex flex-col gap-4'>
           {selectedPanel?.budget_items.includes(BudgetItem.THERAPIES) && (
             <BudgetItems
