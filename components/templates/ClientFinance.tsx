@@ -88,7 +88,6 @@ const ClientFinance = () => {
   }, [budgets])
 
   const onPaymentChange = (handleForm: UseFormReturn<any, any, undefined>) => {
-    console.log(handleForm.getValues())
     const values = handleForm.getValues()
     const keyEvent = `${values['tag']}${FieldsCodeBudgetItems.P}${values['rowId']}`
     const vtCode = Object.keys(values).find((key) =>
@@ -103,19 +102,14 @@ const ClientFinance = () => {
     setTotalSale(totalSaleChange)
   }
 
-  const rowExpansionTemplate = (data: BudgetType) => {
-    return (
-      <>
-        {console.log(data.extraData)}
-        <ClientBudgetForm
-          initialData={data ? budgetInitialDataMapper(data) : undefined}
-          paymentForm
-          disabledData
-          onPaymentChange={onPaymentChange}
-        />
-      </>
-    )
-  }
+  const rowExpansionTemplate = (data: BudgetType) => (
+    <ClientBudgetForm
+      initialData={data ? budgetInitialDataMapper(data) : undefined}
+      paymentForm
+      disabledData
+      onPaymentChange={onPaymentChange}
+    />
+  )
 
   const expandAll = () => {
     const _expandedRows: DataTableExpandedRows = {}
