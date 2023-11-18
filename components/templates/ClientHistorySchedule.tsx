@@ -1,10 +1,5 @@
 'use client'
 
-import { useMutation, useQuery } from '@apollo/client'
-import { EventStateItemColor } from '@components/molecules'
-import { useClientContext } from '@contexts'
-import { withToast } from '@hooks'
-import { OptionType, ScheduleType } from '@models'
 import {
   GET_SCHEDULES,
   SCHEDULE_DELETE,
@@ -12,6 +7,11 @@ import {
   removeDuplicates,
   schedulesMapper,
 } from '@utils'
+import { useMutation, useQuery } from '@apollo/client'
+import { EventStateItemColor } from '@components/molecules'
+import { useClientContext } from '@contexts'
+import { withToast } from '@hooks'
+import { OptionType, ScheduleType } from '@models'
 import { FilterMatchMode, PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
