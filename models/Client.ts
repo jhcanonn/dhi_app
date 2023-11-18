@@ -126,6 +126,11 @@ export type OptionType = {
   name: string
 }
 
+export type DropdownOption = {
+  name: string
+  value: string
+}
+
 export type DataTableCurrency = {
   value: number
   formated: string
