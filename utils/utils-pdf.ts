@@ -1,4 +1,4 @@
-import { FieldTypeDirectus, PanelsDirectus } from '@models'
+import { BudgetType, FieldTypeDirectus, PanelsDirectus } from '@models'
 import {
   Content,
   DynamicContent,
@@ -91,7 +91,11 @@ const headerDataAndLogoDHI = (
           {
             stack: [
               { text: dataHeader.profesionalName, bold: true },
-              `Identificación: ${dataHeader.profesionalNumDoc}`,
+              `${
+                dataHeader.profesionalNumDoc
+                  ? 'Identificación: ' + dataHeader.profesionalNumDoc
+                  : ''
+              }`,
               dataHeader.direccionOficina,
             ],
             alignment: 'right',
@@ -391,6 +395,192 @@ export const generatePrescriptionToPDF = async (
   }
 }
 
+export const generateBudgetToPDF = async (
+  panel: BudgetType | undefined,
+  repeaterHeader: boolean,
+  dataHeader: IDataHeader,
+) => {
+  if (panel) {
+    const marginHeader: Margins = repeaterHeader ? [72, 30] : [0, 0, 0, 10]
+    const headerPdf = headerDataAndLogoDHI(marginHeader, dataHeader)
+
+    const productosBody = panel.extraData.productos.map((p) => [
+      {
+        text: p.productos_id.nombre,
+        border: [false, false, false, false],
+      },
+      {
+        text: p.cantidad,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_unitario,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.descuento,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_total,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+    ])
+
+    const serviciosBody = panel.extraData.servicios.map((p) => [
+      {
+        text: p.salas_servicios_id.servicios_id.nombre,
+        border: [false, false, false, false],
+      },
+      {
+        text: p.cantidad,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_unitario,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.descuento,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_total,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+    ])
+
+    const terapiasBody = panel.extraData.terapias.map((p) => [
+      {
+        text: p.terapias_salas_servicios_id.terapias_id.nombre,
+        border: [false, false, false, false],
+      },
+      {
+        text: p.cantidad,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_unitario,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.descuento,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+      {
+        text: p.valor_total,
+        alignment: 'right',
+        border: [false, false, false, false],
+      },
+    ])
+
+    const content: any = [
+      {
+        text: 'Presupuesto',
+        style: 'subheader',
+      },
+      {
+        style: 'tableExample',
+        table: {
+          headerRows: 1,
+          widths: ['45%', '15%', '15%', '10%', '15%'],
+          heights: [10],
+          body: [
+            [
+              {
+                text: 'Detalle',
+                style: 'tableHeader',
+              },
+              {
+                text: 'Cantidad',
+                style: 'tableHeader',
+              },
+              {
+                text: 'Unidad',
+                style: 'tableHeader',
+              },
+              {
+                text: 'Dcto',
+                style: 'tableHeader',
+              },
+              {
+                text: 'Total',
+                style: 'tableHeader',
+              },
+            ],
+            ...productosBody,
+            ...serviciosBody,
+            ...terapiasBody,
+          ],
+        },
+      },
+      {
+        table: {
+          widths: ['80%', '20%'],
+          body: [
+            [
+              { text: 'Total a pagar', border: [false, true, false, false] },
+              {
+                text: panel.value.formated,
+                noWrap: true,
+                alignment: 'right',
+                border: [false, true, false, false],
+              },
+            ],
+          ],
+        },
+      },
+      {
+        margin: [0, 10],
+        text: 'Formas de pago',
+        bold: true,
+      },
+      {
+        text: panel.extraData.presupuesto_formas_pago,
+      },
+      {
+        margin: [0, 10],
+        text: 'Incluye',
+        bold: true,
+      },
+      {
+        text: panel.extraData.presupuesto_incluye,
+      },
+      {
+        margin: [0, 10],
+        text: 'Observaciones',
+        bold: true,
+      },
+      {
+        text: panel.extraData.presupuesto_observaciones,
+      },
+    ]
+
+    const pageMargins: Margins = !repeaterHeader
+      ? [72, 30, 72, 140]
+      : [72, 240, 72, 140]
+
+    createOpenPDF(
+      headerPdf,
+      pageMargins,
+      content,
+      repeaterHeader,
+      dataHeader.profesionalSignature,
+    )
+  }
+}
+
 const fetchAndConvert = async (
   url: string,
 ): Promise<string | ArrayBuffer | null> => {
@@ -477,6 +667,17 @@ const createOpenPDF = async (
       header: {
         bold: true,
         fontSize: 15,
+      },
+      subheader: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+
+      tableHeader: {
+        bold: true,
+        fontSize: 13,
+        color: 'black',
       },
     },
   }
