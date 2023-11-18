@@ -111,7 +111,8 @@
     [&_.p-checkbox-box]:h-[17px]
     [&_.p-checkbox]:items-center
     [&_.p-disabled]:opacity-80
-    [&_.p-component]:disabled:opacity-80 #{!important};
+    [&_.p-component]:disabled:opacity-80
+    [&_.MuiDialog-root]:z-[999] #{!important};
 
     .p-float-label input:focus ~ label,
     .p-float-label input:-webkit-autofill ~ label,

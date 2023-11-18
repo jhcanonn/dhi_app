@@ -368,7 +368,7 @@ const CalendarEditor = ({
   )
 
   const fetchData = async () =>
-    await patientRefetch({ id: eventData.client_id })
+    eventData?.client_id && (await patientRefetch({ id: eventData.client_id }))
 
   useEffect(() => {
     fetchData()

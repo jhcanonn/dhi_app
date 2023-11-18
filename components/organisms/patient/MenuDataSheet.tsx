@@ -13,7 +13,7 @@ import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect'
 import {
   DataSheet,
   DataSheetDirectus,
-  DataSheetType,
+  OptionType,
   StatusDataSheet,
   UpdatedAttention,
 } from '@models'
@@ -52,7 +52,7 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
     DataTableExpandedRows | DataTableValueArray | undefined
   >(undefined)
   const [filters, setFilters] = useState<DataTableFilterMeta>(defaultFilters)
-  const [dataSheetTypes, setDataSheetTypes] = useState<DataSheetType[]>([])
+  const [dataSheetTypes, setDataSheetTypes] = useState<OptionType[]>([])
   const [updateAttention] = useMutation(UPDATE_ATTENTION)
 
   const {
@@ -196,16 +196,14 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
 
   const typeBodyTemplate = (rowData: DataSheet) => <p>{rowData.type.name}</p>
 
-  const typesItemTemplate = (option: DataSheetType) => <p>{option.name}</p>
+  const typesItemTemplate = (option: OptionType) => <p>{option.name}</p>
 
   const typesFilterTemplate = (options: ColumnFilterElementTemplateOptions) => (
     <MultiSelect
       value={options.value}
       options={dataSheetTypes}
       itemTemplate={typesItemTemplate}
-      onChange={(e: MultiSelectChangeEvent) => {
-        return options.filterCallback(e.value)
-      }}
+      onChange={(e: MultiSelectChangeEvent) => options.filterCallback(e.value)}
       optionLabel='name'
       placeholder='Seleccionar'
       className='p-column-filter'

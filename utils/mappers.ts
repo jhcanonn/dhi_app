@@ -30,11 +30,14 @@ import {
   ServiceDHI,
   StatusDirectus,
   BudgetEditRelationsDirectus,
+  SchedulesDirectus,
+  ScheduleType,
 } from '@models'
 import {
   BLOCK_BOX,
   BLOCK_SERVICE,
   BUDGET_CODE,
+  DHI_SUCRUSAL,
   budgetFormCodes,
 } from './constants'
 import moment from 'moment'
@@ -291,6 +294,34 @@ export const clientInfoToHeaderDataPDFMapper = (
     direccionOficina: 'AV CALLE 127 No. 14 - 54 OFICINA 616',
   }
 }
+
+export const schedulesMapper = (schedules: SchedulesDirectus[]) =>
+  schedules.map(
+    (s) =>
+      ({
+        id: s.id,
+        date: {
+          date: moment(s.inicio).toDate(),
+          timestamp: moment(s.inicio).valueOf(),
+          formated: getFormatedDateToEs(s.inicio, 'ddd ll'),
+        },
+        init_time: getFormatedDateToEs(s.inicio, 'hh:mm A'),
+        end_time: getFormatedDateToEs(s.fin, 'hh:mm A'),
+        comment: s.comentario,
+        schedule_state: {
+          code: s.estado.id + '',
+          name: s.estado.nombre,
+          color: s.estado.color,
+        },
+        payment_state: {
+          code: s.estado_pago.code,
+          name: s.estado_pago.nombre,
+        },
+        professional: s.profesional.nombre,
+        sucursal: DHI_SUCRUSAL,
+        services: s.servicios,
+      }) as ScheduleType,
+  )
 
 export const budgetsMapper = (budgets: BudgetsDirectus[]) =>
   budgets.map((b) => {
