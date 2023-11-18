@@ -12,6 +12,7 @@ import {
   IRecetaType,
 } from '@components/organisms/patient/ExamsPrescriptionTable'
 import { generateURLAssetsWithToken } from './url-access-token'
+import { getCurrencyCOP } from './helpers'
 ;(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs
 
 export interface IDataHeader {
@@ -425,7 +426,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_total,
+        text: getCurrencyCOP(p.valor_total),
         alignment: 'right',
         border: [false, false, false, false],
       },
@@ -452,7 +453,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_total,
+        text: getCurrencyCOP(p.valor_total),
         alignment: 'right',
         border: [false, false, false, false],
       },
@@ -479,7 +480,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_total,
+        text: getCurrencyCOP(p.valor_total),
         alignment: 'right',
         border: [false, false, false, false],
       },
