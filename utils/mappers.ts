@@ -452,6 +452,7 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
         obj.valor_con_descuento,
       [`${initCode}${FieldsCodeBudgetItems.VT}${obj.id}`]: obj.valor_total,
       [`${initCode}${FieldsCodeBudgetItems.A}${obj.id}`]: obj.aceptado,
+      [`${initCode}${FieldsCodeBudgetItems.P}${obj.id}`]: false,
     })
 
     switch (label) {

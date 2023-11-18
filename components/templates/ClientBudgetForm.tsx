@@ -6,7 +6,7 @@ import { DropdownValid, InputNumberValid } from '@components/atoms'
 import { useBudgetContext, useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { UseFormReturn, useForm } from 'react-hook-form'
 import { directusSystemClient } from './Providers'
 import { BudgetItems } from '@components/organisms'
 import { Button } from 'primereact/button'
@@ -56,8 +56,10 @@ type Commercial = {
 type BudgetProps = {
   initialData?: BudgetForm
   disabledData?: boolean
+  paymentForm?: boolean
   onCloseDialog?: (close: boolean) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
+  onPaymentChange?: (handleForm: UseFormReturn<any, any, undefined>) => void
 }
 
 const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
@@ -68,8 +70,10 @@ const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
 const ClientBudgetForm = ({
   initialData,
   disabledData,
+  paymentForm,
   onCloseDialog,
   showWarning,
+  onPaymentChange,
 }: BudgetProps) => {
   const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
@@ -222,48 +226,50 @@ const ClientBudgetForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
       >
-        <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
-          <DropdownValid
-            name={codePlanilla}
-            label='Planilla'
-            handleForm={handleForm}
-            list={budgetPanels.map((bp) => ({
-              name: bp.nombre,
-              value: bp.code,
-            }))}
-            onCustomChange={(e) => {
-              setSelectedPanel((prev) => {
-                getSelectedPanelFields(prev).forEach((field) =>
-                  unregister(field.codigo),
-                )
-                return budgetPanels.find((bp) => bp.code === e.value)
-              })
-              handleAcceptedChange(handleForm)
-            }}
-            required
-            disabled={!!initialData || disabledData}
-          />
-          <DropdownValid
-            name={`${BUDGET_CODE}comercial`}
-            label='Comercial'
-            handleForm={handleForm}
-            list={commercials}
-            required
-            disabled={disabledData}
-          />
-          <InputNumberValid
-            handleForm={handleForm}
-            label='Total'
-            name={`${BUDGET_CODE}total`}
-            min={0}
-            mode={InputNumberMode.CURRENCY}
-            currency='COP'
-            locale='es-CO'
-            useGrouping={true}
-            className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
-            disabled
-          />
-        </div>
+        {!paymentForm && (
+          <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
+            <DropdownValid
+              name={codePlanilla}
+              label='Planilla'
+              handleForm={handleForm}
+              list={budgetPanels.map((bp) => ({
+                name: bp.nombre,
+                value: bp.code,
+              }))}
+              onCustomChange={(e) => {
+                setSelectedPanel((prev) => {
+                  getSelectedPanelFields(prev).forEach((field) =>
+                    unregister(field.codigo),
+                  )
+                  return budgetPanels.find((bp) => bp.code === e.value)
+                })
+                handleAcceptedChange(handleForm)
+              }}
+              required
+              disabled={!!initialData || disabledData}
+            />
+            <DropdownValid
+              name={`${BUDGET_CODE}comercial`}
+              label='Comercial'
+              handleForm={handleForm}
+              list={commercials}
+              required
+              disabled={disabledData}
+            />
+            <InputNumberValid
+              handleForm={handleForm}
+              label='Total'
+              name={`${BUDGET_CODE}total`}
+              min={0}
+              mode={InputNumberMode.CURRENCY}
+              currency='COP'
+              locale='es-CO'
+              useGrouping={true}
+              className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
+              disabled
+            />
+          </div>
+        )}
         <div className='flex flex-col gap-4'>
           {selectedPanel?.budget_items.includes(BudgetItem.THERAPIES) && (
             <BudgetItems
@@ -279,7 +285,9 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
+              onPaymentChange={onPaymentChange}
               disabledData={disabledData}
+              paymentForm={paymentForm}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.PRODUCTS) && (
@@ -294,7 +302,9 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.valor, tag, rowId)}
+              onPaymentChange={onPaymentChange}
               disabledData={disabledData}
+              paymentForm={paymentForm}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.SERVICES) && (
@@ -311,25 +321,29 @@ const ClientBudgetForm = ({
                 tag: string,
                 rowId: UUID | number,
               ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
+              onPaymentChange={onPaymentChange}
               disabledData={disabledData}
+              paymentForm={paymentForm}
             />
           )}
         </div>
-        <div className='mt-4'>
-          {selectedPanel ? (
-            <PanelForm
-              formId={`${BUDGET_CODE}general`}
-              panel={selectedPanel}
-              handleFormExternal={handleForm}
-              hideSubmitButton
-              disabledData={disabledData}
-            />
-          ) : (
-            <div className='flex justify-center'>
-              <ProgressSpinner />
-            </div>
-          )}
-        </div>
+        {!paymentForm && (
+          <div className='mt-4'>
+            {selectedPanel ? (
+              <PanelForm
+                formId={`${BUDGET_CODE}general`}
+                panel={selectedPanel}
+                handleFormExternal={handleForm}
+                hideSubmitButton
+                disabledData={disabledData}
+              />
+            ) : (
+              <div className='flex justify-center'>
+                <ProgressSpinner />
+              </div>
+            )}
+          </div>
+        )}
         {!initialData && (
           <div className='flex flex-col md:flex-row gap-2 justify-center mt-3'>
             <Button

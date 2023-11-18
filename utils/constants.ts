@@ -65,7 +65,7 @@ export const PAGE_PATH = {
   clientBudgetCreate: '/client/{id}/budget/create',
   gallery: '/client/gallery',
   crm: '/crm',
-  finance: '/finance',
+  finance: '/client/{id}/finance',
   statistics: '/statistics',
   settings: '/settings',
 }

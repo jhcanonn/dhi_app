@@ -19,6 +19,7 @@ import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { Fieldset } from 'primereact/fieldset'
+import { InputSwitchChangeEvent } from 'primereact/inputswitch'
 import { classNames as cx } from 'primereact/utils'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -37,7 +38,9 @@ type BudgetItemsProps = {
   list?: any[]
   listGrouped?: ListGroupType[]
   disabledData?: boolean
+  paymentForm?: boolean
   onListChange: (value: any, tag: string, rowId: UUID | number) => void
+  onPaymentChange?: (handleForm: UseFormReturn<any, any, undefined>) => void
 }
 
 export const getBudgetTotalOnlyAccepted = (formData: any) =>
@@ -91,8 +94,8 @@ export const handleAcceptedChange = (
     total === 0
       ? BudgetState.NO_ACEPTADO
       : total === acceptedCodes.length
-      ? BudgetState.ACEPTADO
-      : BudgetState.ACEPTADO_PARCIAL,
+        ? BudgetState.ACEPTADO
+        : BudgetState.ACEPTADO_PARCIAL,
   )
   setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
 }
@@ -104,7 +107,9 @@ const BudgetItems = ({
   list,
   listGrouped,
   disabledData,
+  paymentForm,
   onListChange,
+  onPaymentChange,
 }: BudgetItemsProps) => {
   const [rowIds, setRowIds] = useState<(UUID | number)[]>([])
   const [rowAdded, setRowAdded] = useState<boolean>(false)
@@ -177,6 +182,7 @@ const BudgetItems = ({
                 <th className='min-w-[10rem]'>Valor con descuento</th>
                 <th className='min-w-[10rem]'>Valor total</th>
                 <th className='min-w-[4.5rem]'>Aceptado</th>
+                {paymentForm && <th className='rounded-r-md'>Venta</th>}
                 {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
@@ -274,6 +280,26 @@ const BudgetItems = ({
                         disabled={disabledData}
                       />
                     </td>
+                    {paymentForm && (
+                      <td className={cx({ 'pt-2': isFirtsRow })}>
+                        <InputSwitchValid
+                          name={`${tag}${FieldsCodeBudgetItems.P}${rowId}`}
+                          handleForm={handleForm}
+                          className='[&>div]:justify-center'
+                          onCustomChange={(e: InputSwitchChangeEvent) => {
+                            if (onPaymentChange) {
+                              setValue('rowId', rowId)
+                              setValue('tag', tag)
+                              setValue(
+                                `${tag}${FieldsCodeBudgetItems.P}${rowId}`,
+                                e.value,
+                              )
+                              onPaymentChange(handleForm)
+                            }
+                          }}
+                        />
+                      </td>
+                    )}
                     {!disabledData && (
                       <td
                         className={cx('flex flex-col items-center', {
