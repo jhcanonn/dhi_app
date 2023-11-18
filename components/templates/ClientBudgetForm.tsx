@@ -212,7 +212,6 @@ const ClientBudgetForm = ({
         initialData ? initialData[field.codigo] : field.valor_predeterminado,
       ),
     )
-    handleAcceptedChange(handleForm)
   }, [selectedPanel])
 
   return (
@@ -239,9 +238,10 @@ const ClientBudgetForm = ({
                 )
                 return budgetPanels.find((bp) => bp.code === e.value)
               })
+              handleAcceptedChange(handleForm)
             }}
             required
-            disabled={disabledData}
+            disabled={!!initialData || disabledData}
           />
           <DropdownValid
             name={`${BUDGET_CODE}comercial`}
