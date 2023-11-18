@@ -98,14 +98,13 @@ const ClientLayout = ({ children, params }: Props) => {
             label={`NP:1, Deuda: ${getCurrencyCOP(0)}`}
             type='button'
             severity='danger'
-            onClick={() => goToPage(PAGE_PATH.finance)}
+            onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
             className='px-4 py-1 font-bold text-md'
           />
           <Button
             label={'Pagar'}
             type='button'
             severity='success'
-            rounded
             onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
             className='px-4 py-1 font-bold text-md'
           />
