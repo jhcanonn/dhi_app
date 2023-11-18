@@ -2,9 +2,12 @@
 
 import {
   GET_BUDGETS,
+  PAGE_PATH,
   budgetInitialDataMapper,
   budgetsMapper,
   errorMessages,
+  getCurrencyCOP,
+  parseUrl,
 } from '@utils'
 import ClientBudgetForm from './ClientBudgetForm'
 import { useClientContext } from '@contexts'
@@ -19,8 +22,8 @@ import {
   DataTableValueArray,
 } from 'primereact/datatable'
 // import { Dialog } from 'primereact/dialog'
-import { useEffect, useState } from 'react'
-import { withToast } from '@hooks'
+import { ReactNode, useEffect, useState } from 'react'
+import { useGoTo, withToast } from '@hooks'
 //import { useMutation, useQuery } from '@apollo/client'
 import { UseFormReturn } from 'react-hook-form'
 import { InputNumber } from 'primereact/inputnumber'
@@ -29,6 +32,7 @@ import { Nullable } from 'primereact/ts-helpers'
 import { Divider } from 'primereact/divider'
 import { useQuery } from '@apollo/client'
 import { Dropdown } from 'primereact/dropdown'
+import { Button } from 'primereact/button'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -53,7 +57,12 @@ const paymentMethods = [
   { name: 'Crédito Domicilio', code: 'credito domicilio' },
 ]
 
-const ClientFinance = () => {
+type Props = {
+  showSuccess: (summary: ReactNode, detail: ReactNode) => void
+  showWarning: (summary: ReactNode, detail: ReactNode) => void
+}
+
+const ClientFinance = ({ showSuccess, showWarning }: Props) => {
   const [budgets, setBudgets] = useState<BudgetType[]>([])
   const [totalSale, setTotalSale] = useState<Nullable<number>>(0)
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<[]>([])
@@ -61,6 +70,7 @@ const ClientFinance = () => {
     DataTableExpandedRows | DataTableValueArray | undefined
   >(undefined)
   const { clientInfo } = useClientContext()
+  const { goToPage } = useGoTo()
 
   const {
     data: dataBudgets,
@@ -121,7 +131,7 @@ const ClientFinance = () => {
     <>
       <Card className='custom-table-card flex flex-col gap-4'>
         <div className='flex flex-col gap-4 md:flex-row flex-wrap justify-between'>
-          <div className='w-full md:!w-[20rem]'>
+          <div className='w-full md:!w-[15rem] lg:!w-[20rem]'>
             <span className='p-float-label'>
               <Dropdown
                 id='ms-methods'
@@ -139,21 +149,45 @@ const ClientFinance = () => {
               <label htmlFor='ms-methods'>Formas de pago</label>
             </span>
           </div>
-          <div className='w-full md:!w-[20rem]'>
-            <span className='p-float-label'>
-              <InputNumber
-                id='total-sale-input'
-                min={0}
-                mode={InputNumberMode.CURRENCY}
-                currency='COP'
-                locale='es-CO'
-                useGrouping={true}
-                className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem] [&_input]:w-full'
-                value={totalSale}
-                onValueChange={(e) => setTotalSale(e.value)}
-              />
-              <label htmlFor='total-sale-input'>Total a pagar</label>
-            </span>
+          <div className='flex flex-wrap gap-2 w-full py-0 md:!w-[25rem]'>
+            <div className='flex-grow'>
+              <span className='p-float-label'>
+                <InputNumber
+                  id='total-sale-input'
+                  min={0}
+                  mode={InputNumberMode.CURRENCY}
+                  currency='COP'
+                  locale='es-CO'
+                  useGrouping={true}
+                  className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem] [&_input]:w-full'
+                  value={totalSale}
+                  onValueChange={(e) => setTotalSale(e.value)}
+                />
+                <label htmlFor='total-sale-input'>Total a pagar</label>
+              </span>
+            </div>
+            <Button
+              label={'Pagar'}
+              type='button'
+              severity='success'
+              onClick={() => {
+                if (totalSale && totalSale > 0) {
+                  showSuccess(
+                    `Total: ${getCurrencyCOP(totalSale)}`,
+                    'El pago fue realizado exitosamente, revise su factura en Siigo.',
+                  )
+                  setTimeout(() => {
+                    clientInfo?.id &&
+                      goToPage(
+                        parseUrl(PAGE_PATH.clientBudget, { id: clientInfo.id }),
+                      )
+                  }, 1500)
+                } else {
+                  showWarning(`Total: $0,00`, 'El monto a pagar es $0,00')
+                }
+              }}
+              className='px-4 py-1 font-bold text-md w-full md:w-auto'
+            />
           </div>
         </div>
         <Divider

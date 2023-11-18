@@ -101,13 +101,15 @@ const ClientLayout = ({ children, params }: Props) => {
             onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
             className='px-4 py-1 font-bold text-md'
           />
-          <Button
-            label={'Pagar'}
-            type='button'
-            severity='success'
-            onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
-            className='px-4 py-1 font-bold text-md'
-          />
+          {lastItem !== 'finance' && (
+            <Button
+              label={'Pagar'}
+              type='button'
+              severity='success'
+              onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
+              className='px-4 py-1 font-bold text-md'
+            />
+          )}
         </div>
         <section className='my-4'>{children}</section>
       </section>
