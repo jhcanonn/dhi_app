@@ -107,15 +107,6 @@ const ClientBudget = ({ showSuccess }: Props) => {
     variables: { patientId: clientInfo?.id },
   })
 
-  const generatePDF = (budget: BudgetType) => {
-    console.log(budget)
-    generateBudgetToPDF(
-      budget,
-      false,
-      clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
-    )
-  }
-
   const headerDialog = (
     <h2>
       Nombre: <span className='font-normal'>{currentBudget?.name}</span>
@@ -205,7 +196,13 @@ const ClientBudget = ({ showSuccess }: Props) => {
             severity='info'
             tooltip='Imprimir'
             tooltipOptions={{ position: 'bottom' }}
-            onClick={() => generatePDF(budget)}
+            onClick={() =>
+              generateBudgetToPDF(
+                budget,
+                false,
+                clientInfoToHeaderDataPDFMapper(clientInfo as any, {} as any),
+              )
+            }
             className='text-sm'
             outlined
           />
