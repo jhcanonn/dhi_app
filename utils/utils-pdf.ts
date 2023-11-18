@@ -416,7 +416,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_unitario,
+        text: getCurrencyCOP(p.valor_unitario),
         alignment: 'right',
         border: [false, false, false, false],
       },
@@ -443,7 +443,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_unitario,
+        text: getCurrencyCOP(p.valor_unitario),
         alignment: 'right',
         border: [false, false, false, false],
       },
@@ -470,7 +470,7 @@ export const generateBudgetToPDF = async (
         border: [false, false, false, false],
       },
       {
-        text: p.valor_unitario,
+        text: getCurrencyCOP(p.valor_unitario),
         alignment: 'right',
         border: [false, false, false, false],
       },
