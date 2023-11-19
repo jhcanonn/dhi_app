@@ -2,9 +2,17 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+const {
+  PHASE_PRODUCTION_BUILD,
+  PHASE_PRODUCTION_SERVER,
+  PHASE_DEVELOPMENT_SERVER,
+} = require('next/constants')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  distDir: '.next-temp',
+  transpilePackages: ['pdfmake', 'lodash-es'],
   images: {
     remotePatterns: [
       {
@@ -30,4 +38,20 @@ const nextConfig = {
   },
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+module.exports = (phase) => {
+  console.log(phase)
+  let distDir = ''
+  if (phase == PHASE_PRODUCTION_BUILD) {
+    distDir = '.next-temp'
+  } else if (
+    phase == PHASE_PRODUCTION_SERVER ||
+    phase == PHASE_DEVELOPMENT_SERVER
+  ) {
+    distDir = '.next'
+  }
+
+  return withBundleAnalyzer({
+    ...nextConfig,
+    distDir,
+  })
+}

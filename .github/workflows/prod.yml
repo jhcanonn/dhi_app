@@ -33,7 +33,5 @@ jobs:
             npm install -g n
             n install lts
             n lts
-            npm install --force
-            npm run build
-            systemctl restart pm2-root
+            npm run production-build
             sudo systemctl restart nginx
