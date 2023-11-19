@@ -34,4 +34,5 @@ jobs:
             n install lts
             n lts
             npm run production-build
+            sudo systemctl restart pm2-root
             sudo systemctl restart nginx
