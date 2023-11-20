@@ -1,9 +1,15 @@
 'use client'
 
 import {
+  BUDGET_CODE,
   GET_BUDGETS,
+  GET_BUDGET_ITEMS,
   PAGE_PATH,
   budgetInitialDataMapper,
+  budgetProductsMapper,
+  budgetServicesMapper,
+  budgetStateMapper,
+  budgetTherapiesMapper,
   budgetsMapper,
   errorMessages,
   getCurrencyCOP,
@@ -11,7 +17,18 @@ import {
 } from '@utils'
 import ClientBudgetForm from './ClientBudgetForm'
 import { useClientContext } from '@contexts'
-import { BudgetType, FieldsCodeBudgetItems } from '@models'
+import {
+  BudgetItem,
+  BudgetItemsBoxService,
+  BudgetItemsDirectus,
+  BudgetItemsProducts,
+  BudgetItemsTherapies,
+  BudgetStateDirectus,
+  BudgetType,
+  DropdownOption,
+  FieldsCodeBudgetItems,
+  PayedState,
+} from '@models'
 // import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -25,7 +42,7 @@ import {
 import { ReactNode, useEffect, useState } from 'react'
 import { useGoTo, withToast } from '@hooks'
 //import { useMutation, useQuery } from '@apollo/client'
-import { UseFormReturn } from 'react-hook-form'
+import { UseFormReturn, useForm } from 'react-hook-form'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { Nullable } from 'primereact/ts-helpers'
@@ -33,6 +50,10 @@ import { Divider } from 'primereact/divider'
 import { useQuery } from '@apollo/client'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
+import { BudgetItems } from '@components/organisms'
+import { UUID } from 'crypto'
+import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
+import { BudgetStateTag } from '@components/molecules'
 
 const createdDateBodyTemplate = (budget: BudgetType) => (
   <p>{budget.created_date.formated}</p>
@@ -45,8 +66,6 @@ const dueDateBodyTemplate = (budget: BudgetType) => (
 const valueBodyTemplate = (budget: BudgetType) => <p>{budget.value.formated}</p>
 
 const payedBodyTemplate = (budget: BudgetType) => <p>{budget.payed.formated}</p>
-
-const costBodyTemplate = (budget: BudgetType) => <p>{budget.cost.formated}</p>
 
 const paymentMethods = [
   { name: 'Efectivo', code: 'efectivo' },
@@ -62,15 +81,31 @@ type Props = {
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
 
+const findBudgetState = (budgetState: DropdownOption[], findCode: string) =>
+  budgetState.find((bs) => {
+    const bsInfo = JSON.parse(bs.value) as BudgetStateDirectus
+    return bsInfo.codigo === findCode
+  })
+
 const ClientFinance = ({ showSuccess, showWarning }: Props) => {
+  const [budgetState, setBudgetState] = useState<DropdownOption[]>([])
+  const [budgetPaymentState, setBudgetPaymentState] = useState<
+    DropdownOption[]
+  >([])
   const [budgets, setBudgets] = useState<BudgetType[]>([])
   const [totalSale, setTotalSale] = useState<Nullable<number>>(0)
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<[]>([])
   const [expandedRows, setExpandedRows] = useState<
     DataTableExpandedRows | DataTableValueArray | undefined
   >(undefined)
+  const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
+    null,
+  )
   const { clientInfo } = useClientContext()
   const { goToPage } = useGoTo()
+
+  const handleForm = useForm({})
+  const { setValue, getValues } = handleForm
 
   const {
     data: dataBudgets,
@@ -80,8 +115,24 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
     variables: { patientId: clientInfo?.id },
   })
 
+  const { data: dataBudgetItems, loading: loadingBudgetItems } =
+    useQuery(GET_BUDGET_ITEMS)
+
   const refreshDataTable = async () =>
     clientInfo && (await refetchBudgets({ patientId: clientInfo.id }))
+
+  const stateBudgetBodyTemplate = (budget: BudgetType) => (
+    <BudgetStateTag state={findBudgetState(budgetState, budget.state_budget)} />
+  )
+
+  const statePayedBodyTemplate = (budget: BudgetType) => (
+    <BudgetStateTag
+      state={findBudgetState(
+        budgetPaymentState,
+        budget.state_payed || PayedState.NO_PAGADO,
+      )}
+    />
+  )
 
   useEffect(() => {
     refreshDataTable()
@@ -94,8 +145,18 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
   }, [dataBudgets])
 
   useEffect(() => {
-    expandAll()
-  }, [budgets])
+    !loadingBudgetItems && setBudgetItems(dataBudgetItems)
+  }, [dataBudgetItems])
+
+  useEffect(() => {
+    if (!loadingBudgets) {
+      setBudgets(budgetsMapper(dataBudgets.presupuesto || []))
+      setBudgetState(budgetStateMapper(dataBudgets.presupuesto_estado || []))
+      setBudgetPaymentState(
+        budgetStateMapper(dataBudgets.presupuesto_estado_pago || []),
+      )
+    }
+  }, [dataBudgets])
 
   const onPaymentChange = (handleForm: UseFormReturn<any, any, undefined>) => {
     const values = handleForm.getValues()
@@ -112,6 +173,25 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
     setTotalSale(totalSaleChange)
   }
 
+  const handleListChange = (
+    value: number,
+    tag: string,
+    rowId: UUID | number,
+  ) => {
+    const cantCode = `${tag}${FieldsCodeBudgetItems.C}${rowId}`
+    const valorDctoCode = `${tag}${FieldsCodeBudgetItems.VD}${rowId}`
+    const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
+
+    getValues(cantCode) === 0 && setValue(cantCode, 1)
+    setValue(`${tag}${FieldsCodeBudgetItems.V}${rowId}`, value)
+    setValue(valorDctoCode, value * (1 - dcto / 100))
+    setValue(
+      `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
+      getValues(cantCode) * getValues(valorDctoCode),
+    )
+    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+  }
+
   const rowExpansionTemplate = (data: BudgetType) => (
     <ClientBudgetForm
       initialData={data ? budgetInitialDataMapper(data) : undefined}
@@ -121,17 +201,17 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
     />
   )
 
-  const expandAll = () => {
+  /*const expandAll = () => {
     const _expandedRows: DataTableExpandedRows = {}
     budgets.forEach((ds) => (_expandedRows[`${ds.id}`] = true))
     setExpandedRows(_expandedRows)
-  }
+  }*/
 
   return (
     <>
       <Card className='custom-table-card flex flex-col gap-4'>
         <div className='flex flex-col gap-4 md:flex-row flex-wrap justify-between'>
-          <div className='w-full md:!w-[15rem] lg:!w-[20rem]'>
+          <div className='w-full md:!w-[20rem] lg:!w-[25rem]'>
             <span className='p-float-label'>
               <Dropdown
                 id='ms-methods'
@@ -140,6 +220,7 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
                 options={paymentMethods}
                 optionLabel='name'
                 filter
+                multiple
                 placeholder='Seleccione una forma de pago'
                 className='!text-[1rem]'
                 panelClassName='[&_input]:!text-[1rem]'
@@ -256,29 +337,66 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
             key='state_budget'
             field='state_budget'
             header='Estado Presupuesto'
+            body={stateBudgetBodyTemplate}
+            style={{ minWidth: '10rem' }}
             sortable
           />
           <Column
             key='state_payed'
             field='state_payed'
             header='Estado Pago'
-            sortable
-          />
-          <Column
-            key='state_track'
-            field='state_track'
-            header='Estado Seguimiento'
-            sortable
-          />
-          <Column
-            key='cost'
-            field='cost.formated'
-            header='Costos'
-            body={costBodyTemplate}
-            style={{ minWidth: '6rem' }}
+            body={statePayedBodyTemplate}
+            style={{ minWidth: '10rem' }}
             sortable
           />
         </DataTable>
+        <div className='flex flex-col gap-4'>
+          <BudgetItems
+            key={`${BUDGET_CODE}therapies_items`}
+            handleForm={handleForm}
+            legend={BudgetItem.THERAPIES}
+            buttonLabel='Agregar terapia'
+            list={budgetTherapiesMapper(
+              budgetItems?.terapias_salas_servicios || [],
+            )}
+            onListChange={(
+              value: BudgetItemsTherapies,
+              tag: string,
+              rowId: UUID | number,
+            ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
+            onPaymentChange={onPaymentChange}
+          />
+
+          <BudgetItems
+            key={`${BUDGET_CODE}products_items`}
+            handleForm={handleForm}
+            legend={BudgetItem.PRODUCTS}
+            buttonLabel='Agregar producto'
+            list={budgetProductsMapper(budgetItems?.productos || [])}
+            onListChange={(
+              value: BudgetItemsProducts,
+              tag: string,
+              rowId: UUID | number,
+            ) => handleListChange(+value.valor, tag, rowId)}
+            onPaymentChange={onPaymentChange}
+          />
+
+          <BudgetItems
+            key={`${BUDGET_CODE}services_items`}
+            handleForm={handleForm}
+            legend={BudgetItem.SERVICES}
+            buttonLabel='Agregar servcio'
+            listGrouped={budgetServicesMapper(
+              budgetItems?.salas_servicios || [],
+            )}
+            onListChange={(
+              value: BudgetItemsBoxService,
+              tag: string,
+              rowId: UUID | number,
+            ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
+            onPaymentChange={onPaymentChange}
+          />
+        </div>
       </Card>
     </>
   )
