@@ -1,5 +1,14 @@
 'use client'
 
+import {
+  CLIENT_PAGE_CRUD,
+  CLIENT_PAGE_TAB,
+  GET_CLIENT_BY_ID,
+  PAGE_PATH,
+  getCurrencyCOP,
+  parseUrl,
+  toTitleCase,
+} from '@utils'
 import { useQuery } from '@apollo/client'
 import { useClientContext } from '@contexts'
 import { ClientDirectus } from '@models'
@@ -12,15 +21,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { ScrollTop } from 'primereact/scrolltop'
 import { useGoTo } from '@hooks'
-import {
-  CLIENT_PAGE_CRUD,
-  CLIENT_PAGE_TAB,
-  GET_CLIENT_BY_ID,
-  PAGE_PATH,
-  getCurrencyCOP,
-  parseUrl,
-  toTitleCase,
-} from '@utils'
+import { ExtraDataDetail } from '@components/organisms'
 
 type Props = {
   children: React.ReactNode
@@ -38,7 +39,7 @@ const ClientLayout = ({ children, params }: Props) => {
   const tabIndex = CLIENT_PAGE_TAB.indexOf(lastItem) + 1
 
   const [activeIndex, setActiveIndex] = useState<number>(tabIndex)
-  const { setClientInfo, setLoadingInfo } = useClientContext()
+  const { clientInfo, setClientInfo, setLoadingInfo } = useClientContext()
   const { goToPage } = useGoTo()
 
   const { data, loading } = useQuery(GET_CLIENT_BY_ID, { variables: { id } })
@@ -111,6 +112,7 @@ const ClientLayout = ({ children, params }: Props) => {
             />
           )}
         </div>
+        {activeIndex !== 0 && <ExtraDataDetail clientInfo={clientInfo} />}
         <section className='my-4'>{children}</section>
       </section>
       <ScrollTop />
