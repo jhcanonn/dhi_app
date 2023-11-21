@@ -42,13 +42,13 @@ import {
   DHI_SUCRUSAL,
   budgetFormCodes,
 } from './constants'
-import moment from 'moment'
-import { idTypes } from './settings'
 import {
   calcularEdadConMeses,
   getCurrencyCOP,
   getFormatedDateToEs,
 } from './helpers'
+import moment from 'moment'
+import { idTypes } from './settings'
 import { IDataHeader } from './utils-pdf'
 import { ListGroupType } from '@components/organisms/patient/BudgetItems'
 import { UUID } from 'crypto'
@@ -272,22 +272,23 @@ export const dhiDataSheetMapper = (dataSheet: DataSheetDirectus) =>
     data: dataSheet.valores,
   }) as DataSheet
 
+export const getAge = (fecha: string | undefined) => {
+  const birthDate = fecha ? moment(fecha).toDate() : null
+  const age = birthDate ? calcularEdadConMeses(birthDate) : null
+  return age ? `${age?.anios} años, ${age?.meses} meses` : ''
+}
+
 export const clientInfoToHeaderDataPDFMapper = (
   client: ClientDirectus,
   dataProfesional: DataSheet | any,
 ): IDataHeader => {
-  const birthDate = client?.fecha_nacimiento
-    ? moment(client?.fecha_nacimiento).toDate()
-    : null
-  const age = birthDate ? calcularEdadConMeses(birthDate) : null
-
   const direccion = client?.datos_extra
     ? (client?.datos_extra as any)?.direccion ?? ''
     : ''
 
   return {
     clienteName: client.full_name,
-    clienteEdad: age ? `${age?.anios} años, ${age?.meses} meses` : '',
+    clienteEdad: getAge(client?.fecha_nacimiento),
     clienteNumDoc: `${client.tipo_documento} ${client.documento}`,
     ClienteDireccion: direccion,
     profesionalName: dataProfesional?.professional,

@@ -160,6 +160,31 @@ export type BudgetType = {
   }
 }
 
+export type PatientExtraData = {
+  patient_extra_identidad_de_genero: string
+  patient_extra_fecha_exp_documento: string
+  patient_extra_lugar_exp_doc: string
+  patient_extra_edad: string
+  patient_extra_pertencia_etnica: string
+  patient_extra_extranjero: string
+  patient_extra_ocupacion: string
+  patient_extra_asegurador: string
+  patient_extra_pais_origen: string
+  patient_extra_departamento_residencia: string
+  patient_extra_municipio: string
+  patient_extra_zona_paciente: string
+  patient_extra_direccion: string
+  patient_extra_acompanante_paciente: string
+  patient_extra_responsable_paciente: string
+  patient_extra_acudiente_telefono: string
+  patient_extra_comentario: string
+  patient_extra_excepto_de_reponsabilidad_civil: string
+  patient_extra_regimen: string
+  patient_extra_comercial_que_lo_vendio: string
+  patient_extra_medico_que_atiende: string
+  patient_extra_estado_tratamiento: string
+}
+
 export type ScheduleType = {
   id: number
   date: DataTableDate

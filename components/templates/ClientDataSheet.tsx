@@ -1,21 +1,21 @@
 'use client'
 
+import {
+  DataSheetAccordion,
+  MenuDataSheet,
+  MenuExamsPrescription,
+  MenuFiles,
+  MenuImages,
+  UploadProfileImage,
+} from '@components/organisms'
+import ComingSoon from './ComingSoon'
 import { useState } from 'react'
 import { Card } from 'primereact/card'
 import { TabMenu } from 'primereact/tabmenu'
 import { MenuItem } from 'primereact/menuitem'
 import { PrimeIcons } from 'primereact/api'
-import {
-  DataSheetAccordion,
-  MenuDataSheet,
-  MenuFiles,
-  MenuImages,
-  UploadProfileImage,
-} from '@components/organisms'
 import { useClientContext } from '@contexts'
 import { Divider } from 'primereact/divider'
-import ComingSoon from './ComingSoon'
-import MenuExamsPrescription from '@components/organisms/patient/MenuExamsPrescription'
 
 const ClientDataSheet = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
@@ -73,7 +73,6 @@ const ClientDataSheet = () => {
             <UploadProfileImage clientInfo={clientInfo} />
           </div>
         </div>
-
         {menuSwitch(activeIndex)}
       </Card>
       <Divider align='center' className='[&_.p-divider-content]:bg-transparent'>
