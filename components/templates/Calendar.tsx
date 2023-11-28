@@ -191,6 +191,7 @@ const Calendar = ({ cookies, showError }: Props) => {
   const fetchAppointments = async () => {
     const start = startDate?.toISOString()
     const end = endDate?.toISOString()
+    if (!start || !end) return
     calendarRef.current?.scheduler.handleState(true, 'loading')
     const res = await appointmentRefetch({ start, end })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
@@ -224,7 +225,7 @@ const Calendar = ({ cookies, showError }: Props) => {
         setEvents((preEvents) => [...preEvents, currentEvent])
       } catch (error: any) {
         calendarRef.current?.scheduler.confirmEvent(eventCopy, 'edit')
-        showError(error.response.data.status, error.response.data.message)
+        showError(error?.response?.data?.status, error?.response?.data?.message)
       } finally {
         calendarRef.current?.scheduler.handleState(false, 'loading')
       }

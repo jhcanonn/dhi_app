@@ -181,7 +181,7 @@ const CalendarEditor = ({
       setEvents((preEvents) => [...preEvents, data])
       scheduler.close()
     } catch (error: any) {
-      showError(error.response.data.status, error.response.data.message)
+      showError(error?.response?.data?.status, error?.response?.data?.message)
     } finally {
       scheduler.loading(false)
     }
@@ -211,7 +211,7 @@ const CalendarEditor = ({
       setEvents((preEvents) => [...preEvents, data])
       scheduler.close()
     } catch (error: any) {
-      showError(error.response.data.status, error.response.data.message)
+      showError(error?.response?.data?.status, error?.response?.data?.message)
     } finally {
       scheduler.loading(false)
     }
@@ -646,7 +646,7 @@ const CalendarEditor = ({
           )}
           {!isOldDate && (
             <>
-              {!event && !desabledFields && (
+              {!event && !desabledFields && !blocked && (
                 <ToggleButton
                   checked={showDataExtra}
                   onLabel='Eliminar datos extra'

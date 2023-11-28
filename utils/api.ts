@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie'
-import { DHI_SESSION, REQUEST_ATTEMPT_NUMBER, errorCodes } from './constants'
+import { DHI_SESSION, REQUEST_ATTEMPT_NUMBER } from './constants'
 import { AuthLogin } from '@models'
 import { expiresCookie } from './helpers'
 import { AppointmentDirectus, Country, Holiday } from '@models'
@@ -47,7 +47,7 @@ export const createAppointment = async (
   token: string | null,
 ) => {
   const res = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment`,
+    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/appointment`,
     payload,
     {
       headers: {
@@ -63,7 +63,7 @@ export const createBlock = async (
   token: string | null,
 ) => {
   const res = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment/block`,
+    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/appointment/block`,
     payload,
     {
       headers: {
@@ -80,7 +80,7 @@ export const editAppointment = async (
   token: string | null,
 ) => {
   const res = await axios.put(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/appointment/${eventId}`,
+    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/appointment/${eventId}`,
     payload,
     {
       headers: {
@@ -89,21 +89,6 @@ export const editAppointment = async (
     },
   )
   return res.data?.data
-}
-
-export const fetchVerifyToken = async (token: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rest/app/validate-token`,
-    {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: token,
-      },
-    },
-  )
-  return await response.json()
 }
 
 export const fetch_retry = async (
@@ -154,22 +139,17 @@ export const refreshToken = async (cookies: Cookies) => {
   }
 
   try {
-    const { status } = await fetchVerifyToken(access_token)
-    if (status === errorCodes.ERR_JWT_EXPIRED) {
-      console.info('Refreshing token...')
-      const response: AuthLogin = await fetchRefreshToken(session.refresh_token)
-      if (response) {
-        cookies.set(DHI_SESSION, response, {
-          path: '/',
-          expires: expiresCookie(),
-        })
-        newToken = response.access_token
-        console.info('Refresh token DONE!')
-      } else {
-        cookies.remove(DHI_SESSION)
-      }
+    console.info('Refreshing token...')
+    const response: AuthLogin = await fetchRefreshToken(session.refresh_token)
+    if (response) {
+      cookies.set(DHI_SESSION, response, {
+        path: '/',
+        expires: expiresCookie(),
+      })
+      newToken = response.access_token
+      console.info('Refresh token DONE!')
     } else {
-      newToken = access_token
+      cookies.remove(DHI_SESSION)
     }
   } catch (error: any) {
     console.error(error)
