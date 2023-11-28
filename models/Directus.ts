@@ -301,6 +301,57 @@ export type CommercialDirectus = {
   email: string
 }
 
+export type InvoiceTypesDirectus = {
+  code: string
+  name: string
+  type: string
+  description: string
+  consecutive: number
+  electronic_type: string
+}
+
+export type InvoicePaymentWaysDirectus = {
+  id: number
+  name: string
+  type: string
+}
+
+export type InvoiceItemsTaxesDirectus = {
+  id: number
+  name: string
+  type: string
+  percentage: number
+}
+
+export type InvoicePriceDirectus = {
+  position: number
+  name: string
+  value: number
+}
+
+type InvoiceItemsPricesDirectus = {
+  currency_code: string
+  price_list: InvoicePriceDirectus[]
+}
+
+export type InvoiceItemsDirectus = {
+  id: UUID
+  code: string
+  name: string
+  type: string
+  description: string
+  taxes: InvoiceItemsTaxesDirectus[]
+  tax_included: boolean
+  prices: InvoiceItemsPricesDirectus[]
+}
+
+export type InvoicesDirectus = {
+  siigo_voucher_types: InvoiceTypesDirectus[]
+  siigo_payment_types: InvoicePaymentWaysDirectus[]
+  siigo_services: InvoiceItemsDirectus[]
+  siigo_productos: InvoiceItemsDirectus[]
+}
+
 export type BudgetItemsBoxService = {
   id: number
   salas_id: {

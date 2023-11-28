@@ -221,11 +221,19 @@ export enum FieldsCodeBudgetItems {
   L = '_list_',
   C = '_cantidad_',
   V = '_valor_',
+  VU = '_valor_unitario_',
   D = '_dcto_',
-  VD = '_valor_con_dcto_',
+  I = '_impuestos_',
+  VI = '_valor_impuesto_',
+  VD = '_valor_dcto_',
+  VCD = '_valor_con_dcto_',
   VT = '_valor_total_',
   A = '_aceptado_',
-  P = '_en_venta_',
+}
+
+export enum FieldsPaymentWayItems {
+  L = '_list_',
+  V = '_valor_',
 }
 
 export type DataSheet = {

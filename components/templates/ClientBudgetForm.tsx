@@ -6,7 +6,7 @@ import { DropdownValid, InputNumberValid } from '@components/atoms'
 import { useBudgetContext, useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
-import { UseFormReturn, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { directusSystemClient } from './Providers'
 import { BudgetItems } from '@components/organisms'
 import { Button } from 'primereact/button'
@@ -14,10 +14,7 @@ import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { useGoTo, withToast } from '@hooks'
-import {
-  getBudgetTotal,
-  handleAcceptedChange,
-} from '@components/organisms/patient/BudgetItems'
+import { handleAcceptedChange } from '@components/organisms/patient/BudgetItems'
 import {
   BudgetForm,
   BudgetItem,
@@ -56,10 +53,8 @@ type Commercial = {
 type BudgetProps = {
   initialData?: BudgetForm
   disabledData?: boolean
-  paymentForm?: boolean
   onCloseDialog?: (close: boolean) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
-  onPaymentChange?: (handleForm: UseFormReturn<any, any, undefined>) => void
 }
 
 const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
@@ -70,10 +65,8 @@ const getSelectedPanelFields = (selectedPanel: PanelsDirectus | undefined) =>
 const ClientBudgetForm = ({
   initialData,
   disabledData,
-  paymentForm,
   onCloseDialog,
   showWarning,
-  onPaymentChange,
 }: BudgetProps) => {
   const { goToPage } = useGoTo()
   const { panels } = useGlobalContext()
@@ -165,18 +158,7 @@ const ClientBudgetForm = ({
     tag: string,
     rowId: UUID | number,
   ) => {
-    const cantCode = `${tag}${FieldsCodeBudgetItems.C}${rowId}`
-    const valorDctoCode = `${tag}${FieldsCodeBudgetItems.VD}${rowId}`
-    const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
-
-    getValues(cantCode) === 0 && setValue(cantCode, 1)
     setValue(`${tag}${FieldsCodeBudgetItems.V}${rowId}`, value)
-    setValue(valorDctoCode, value * (1 - dcto / 100))
-    setValue(
-      `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
-      getValues(cantCode) * getValues(valorDctoCode),
-    )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
   }
 
   useEffect(() => {
@@ -226,124 +208,111 @@ const ClientBudgetForm = ({
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
       >
-        {!paymentForm && (
-          <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
-            <DropdownValid
-              name={codePlanilla}
-              label='Planilla'
-              handleForm={handleForm}
-              list={budgetPanels.map((bp) => ({
-                name: bp.nombre,
-                value: bp.code,
-              }))}
-              onCustomChange={(e) => {
-                setSelectedPanel((prev) => {
-                  getSelectedPanelFields(prev).forEach((field) =>
-                    unregister(field.codigo),
-                  )
-                  return budgetPanels.find((bp) => bp.code === e.value)
-                })
-                handleAcceptedChange(handleForm)
-              }}
-              required
-              disabled={!!initialData || disabledData}
-            />
-            <DropdownValid
-              name={`${BUDGET_CODE}comercial`}
-              label='Comercial'
-              handleForm={handleForm}
-              list={commercials}
-              required
-              disabled={disabledData}
-            />
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Total'
-              name={`${BUDGET_CODE}total`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='[&_input]:font-bold [&_input]:text-center [&_input]:!text-[1rem]'
-              disabled
-            />
-          </div>
-        )}
+        <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
+          <DropdownValid
+            name={codePlanilla}
+            label='Planilla'
+            handleForm={handleForm}
+            list={budgetPanels.map((bp) => ({
+              name: bp.nombre,
+              value: bp.code,
+            }))}
+            onCustomChange={(e) => {
+              setSelectedPanel((prev) => {
+                getSelectedPanelFields(prev).forEach((field) =>
+                  unregister(field.codigo),
+                )
+                return budgetPanels.find((bp) => bp.code === e.value)
+              })
+              handleAcceptedChange(handleForm, BUDGET_CODE)
+            }}
+            required
+            disabled={!!initialData || disabledData}
+          />
+          <DropdownValid
+            name={`${BUDGET_CODE}comercial`}
+            label='Comercial'
+            handleForm={handleForm}
+            list={commercials}
+            required
+            disabled={disabledData}
+          />
+          <InputNumberValid
+            handleForm={handleForm}
+            label='Total'
+            name={`${BUDGET_CODE}total`}
+            min={0}
+            mode={InputNumberMode.CURRENCY}
+            currency='COP'
+            locale='es-CO'
+            useGrouping={true}
+            className='[&_input]:font-bold [&_input]:text-center [&_label]:font-bold [&_label]:!text-[1rem] [&_input]:!text-[1rem]'
+            disabled
+          />
+        </div>
         <div className='flex flex-col gap-4'>
           {selectedPanel?.budget_items.includes(BudgetItem.THERAPIES) && (
             <BudgetItems
               key={`${BUDGET_CODE}therapies_items`}
               handleForm={handleForm}
+              fieldsStartCode={BUDGET_CODE}
               legend={BudgetItem.THERAPIES}
               buttonLabel='Agregar terapia'
               list={budgetTherapiesMapper(
                 budgetItems?.terapias_salas_servicios || [],
               )}
-              onListChange={(
-                value: BudgetItemsTherapies,
-                tag: string,
-                rowId: UUID | number,
-              ) => handleListChange(+value.terapias_id.valor, tag, rowId)}
-              onPaymentChange={onPaymentChange}
+              onListChange={(value: BudgetItemsTherapies, tag, rowId) =>
+                handleListChange(+value.terapias_id.valor, tag, rowId)
+              }
               disabledData={disabledData}
-              paymentForm={paymentForm}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.PRODUCTS) && (
             <BudgetItems
               key={`${BUDGET_CODE}products_items`}
               handleForm={handleForm}
+              fieldsStartCode={BUDGET_CODE}
               legend={BudgetItem.PRODUCTS}
               buttonLabel='Agregar producto'
               list={budgetProductsMapper(budgetItems?.productos || [])}
-              onListChange={(
-                value: BudgetItemsProducts,
-                tag: string,
-                rowId: UUID | number,
-              ) => handleListChange(+value.valor, tag, rowId)}
-              onPaymentChange={onPaymentChange}
+              onListChange={(value: BudgetItemsProducts, tag, rowId) =>
+                handleListChange(+value.valor, tag, rowId)
+              }
               disabledData={disabledData}
-              paymentForm={paymentForm}
             />
           )}
           {selectedPanel?.budget_items.includes(BudgetItem.SERVICES) && (
             <BudgetItems
               key={`${BUDGET_CODE}services_items`}
               handleForm={handleForm}
+              fieldsStartCode={BUDGET_CODE}
               legend={BudgetItem.SERVICES}
               buttonLabel='Agregar servcio'
               listGrouped={budgetServicesMapper(
                 budgetItems?.salas_servicios || [],
               )}
-              onListChange={(
-                value: BudgetItemsBoxService,
-                tag: string,
-                rowId: UUID | number,
-              ) => handleListChange(+value.servicios_id.precio, tag, rowId)}
-              onPaymentChange={onPaymentChange}
+              onListChange={(value: BudgetItemsBoxService, tag, rowId) =>
+                handleListChange(+value.servicios_id.precio, tag, rowId)
+              }
               disabledData={disabledData}
-              paymentForm={paymentForm}
             />
           )}
         </div>
-        {!paymentForm && (
-          <div className='mt-4'>
-            {selectedPanel ? (
-              <PanelForm
-                formId={`${BUDGET_CODE}general`}
-                panel={selectedPanel}
-                handleFormExternal={handleForm}
-                hideSubmitButton
-                disabledData={disabledData}
-              />
-            ) : (
-              <div className='flex justify-center'>
-                <ProgressSpinner />
-              </div>
-            )}
-          </div>
-        )}
+        <div className='mt-4'>
+          {selectedPanel ? (
+            <PanelForm
+              formId={`${BUDGET_CODE}general`}
+              panel={selectedPanel}
+              handleFormExternal={handleForm}
+              hideSubmitButton
+              disabledData={disabledData}
+            />
+          ) : (
+            <div className='flex justify-center'>
+              <ProgressSpinner />
+            </div>
+          )}
+        </div>
         {!initialData && (
           <div className='flex flex-col md:flex-row gap-2 justify-center mt-3'>
             <Button

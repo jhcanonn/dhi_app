@@ -565,6 +565,7 @@ export const GET_APPOINTMENTS = gql`
     }
   }
 `
+
 export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
   query ($fichaId: GraphQLStringOrFloat) {
     plantillas(filter: { estado: { _eq: "published" } }) {
@@ -670,6 +671,48 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
       nombre
       receta
       diagnostico
+    }
+  }
+`
+
+export const GET_INVOICES = gql`
+  query {
+    siigo_voucher_types(filter: { active: { _eq: true } }) {
+      code
+      name
+      type
+      description
+      consecutive
+      electronic_type
+    }
+    siigo_payment_types(filter: { active: { _eq: true } }) {
+      id
+      name
+      type
+    }
+    siigo_services: productos_siigo(
+      filter: { active: { _eq: true }, type: { _eq: "Service" } }
+    ) {
+      id
+      code
+      name
+      type
+      description
+      taxes
+      tax_included
+      prices
+    }
+    siigo_productos: productos_siigo(
+      filter: { active: { _eq: true }, type: { _eq: "Product" } }
+    ) {
+      id
+      code
+      name
+      type
+      description
+      taxes
+      tax_included
+      prices
     }
   }
 `
