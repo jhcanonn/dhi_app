@@ -1,7 +1,7 @@
-import { DHI_SESSION, PAGE_PATH, errorCodes, expiresCookie } from '@utils'
+import { DHI_SESSION, PAGE_PATH, expiresCookie } from '@utils'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { fetchVerifyToken, fetchRefreshToken } from '@utils/api'
+import { fetchRefreshToken } from '@utils/api'
 
 export async function middleware(req: NextRequest) {
   const hasSession = req.cookies.has(DHI_SESSION)
@@ -16,23 +16,30 @@ export async function middleware(req: NextRequest) {
   const access_token = sessionInfo.access_token
 
   try {
-    const { status } = await fetchVerifyToken(access_token)
-    if (status === errorCodes.ERR_JWT_EXPIRED) {
-      const response = await fetchRefreshToken(sessionInfo.refresh_token)
-      if (response) {
-        console.info('Refreshing token...')
-        const res = NextResponse.next()
-        res.cookies.set(DHI_SESSION, JSON.stringify(response), {
-          path: '/',
-          expires: expiresCookie(),
-        })
-        console.info('Refresh token DONE!')
-        return res
-      } else {
-        return NextResponse.redirect(new URL(PAGE_PATH.login, req.url))
-      }
+    if (
+      access_token &&
+      access_token.split('.').length > 1 &&
+      JSON.parse(Buffer.from(access_token.split('.')[1], 'base64').toString())
+        .exp *
+        1000 >
+        Date.now()
+    ) {
+      return NextResponse.next()
     }
-    return NextResponse.next()
+
+    const response = await fetchRefreshToken(sessionInfo.refresh_token)
+    if (response) {
+      console.info('Refreshing token...')
+      const res = NextResponse.next()
+      res.cookies.set(DHI_SESSION, JSON.stringify(response), {
+        path: '/',
+        expires: expiresCookie(),
+      })
+      console.info('Refresh token DONE!')
+      return res
+    } else {
+      return NextResponse.redirect(new URL(PAGE_PATH.login, req.url))
+    }
   } catch (error: any) {
     console.error(error)
     return NextResponse.redirect(new URL(PAGE_PATH.login, req.url))

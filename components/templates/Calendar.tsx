@@ -224,7 +224,7 @@ const Calendar = ({ cookies, showError }: Props) => {
         setEvents((preEvents) => [...preEvents, currentEvent])
       } catch (error: any) {
         calendarRef.current?.scheduler.confirmEvent(eventCopy, 'edit')
-        showError(error.response.data.status, error.response.data.message)
+        showError(error?.response?.data?.status, error?.response?.data?.message)
       } finally {
         calendarRef.current?.scheduler.handleState(false, 'loading')
       }
