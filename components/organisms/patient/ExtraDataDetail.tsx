@@ -5,8 +5,8 @@ import { Card } from 'primereact/card'
 import { getAge, getFormatedDateToEs } from '@utils'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
-import { ClientDirectus, PatientExtraData } from '@models'
-import { useEffect, useState } from 'react'
+import { ClientDirectus } from '@models'
+import { useState } from 'react'
 import { PrimeIcons } from 'primereact/api'
 
 type Props = {
@@ -15,7 +15,6 @@ type Props = {
 
 const ExtraDataDetail = ({ clientInfo }: Props) => {
   const [visibleExtraData, setVisibleExtraData] = useState<boolean>(false)
-  const [extraData, setExtraData] = useState<PatientExtraData | null>(null)
 
   const footerExtraDataDialog = (
     <div className='flex flex-col md:flex-row gap-2 justify-center'>
@@ -29,13 +28,6 @@ const ExtraDataDetail = ({ clientInfo }: Props) => {
       />
     </div>
   )
-
-  useEffect(() => {
-    if (clientInfo?.datos_extra) {
-      const extraData: PatientExtraData = clientInfo.datos_extra as any
-      setExtraData(extraData)
-    }
-  }, [clientInfo])
 
   return (
     <>
@@ -54,7 +46,7 @@ const ExtraDataDetail = ({ clientInfo }: Props) => {
         <ExtraData clientInfo={clientInfo} hideHeader large />
       </Dialog>
       <Card className='custom-table-card mb-4'>
-        <section className='!grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-y-1 h-fit'>
+        <section className='!grid grid-cols-[1fr_1.5fr] md:grid-cols-[1fr_2fr_1fr_1.5fr] lg:grid-cols-[0.5fr_1fr_0.5fr_1.5fr_1fr_1fr] gap-y-1 h-fit'>
           <Th>Identificación:</Th>
           <Tr>{clientInfo?.documento}</Tr>
           <Th>Edad:</Th>
@@ -65,10 +57,15 @@ const ExtraDataDetail = ({ clientInfo }: Props) => {
               ? getFormatedDateToEs(clientInfo.fecha_nacimiento, 'ddd LL')
               : ''}
           </Tr>
-          <Th>Dirección:</Th>
-          <Tr>{extraData?.patient_extra_direccion}</Tr>
-          <Th>Municipio:</Th>
-          <Tr>{extraData?.patient_extra_municipio}</Tr>
+          <Th>Email:</Th>
+          <Tr>{clientInfo?.correo}</Tr>
+          <Th>Teléfono(s):</Th>
+          <Tr>
+            {clientInfo?.indicativo} {clientInfo?.telefono}{' '}
+            {clientInfo?.telefono_2
+              ? `/ ${clientInfo?.indicativo_2} ${clientInfo?.telefono_2}`
+              : ''}
+          </Tr>
           <Th>Datos extra:</Th>
           <Tr>
             <Button

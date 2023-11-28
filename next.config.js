@@ -39,7 +39,6 @@ const nextConfig = {
 }
 
 module.exports = (phase) => {
-  console.log(phase)
   let distDir = ''
   if (phase == PHASE_PRODUCTION_BUILD) {
     distDir = '.next-temp'

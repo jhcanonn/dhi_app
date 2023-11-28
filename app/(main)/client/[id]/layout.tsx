@@ -112,7 +112,9 @@ const ClientLayout = ({ children, params }: Props) => {
             />
           )}
         </div>
-        {activeIndex !== 0 && <ExtraDataDetail clientInfo={clientInfo} />}
+        {(activeIndex !== 0 || lastItem === 'finance') && (
+          <ExtraDataDetail clientInfo={clientInfo} />
+        )}
         <section className='my-4'>{children}</section>
       </section>
       <ScrollTop />

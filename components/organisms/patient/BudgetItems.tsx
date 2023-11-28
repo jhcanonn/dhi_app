@@ -1,46 +1,19 @@
 'use client'
 
-import {
-  DropdownValid,
-  InputNumberValid,
-  InputSwitchValid,
-} from '@components/atoms'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
-import {
-  BUDGET_CODE,
-  budgetFormCodes,
-  getItemKeys,
-  getNumberOrUUID,
-  getRowIds,
-} from '@utils'
 import { UUID } from 'crypto'
-import { PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
-import { DropdownChangeEvent } from 'primereact/dropdown'
 import { Fieldset } from 'primereact/fieldset'
-import { InputSwitchChangeEvent } from 'primereact/inputswitch'
-import { classNames as cx } from 'primereact/utils'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
+import { BudgetItemsTr } from '@components/molecules'
+import { budgetFormCodes, getItemKeys, getRowIds } from '@utils'
+import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
 
 export type ListGroupType = {
   label: string
   color: string
   items: any[]
-}
-
-type BudgetItemsProps = {
-  handleForm: UseFormReturn<any, any, undefined>
-  legend: string
-  buttonLabel: string
-  list?: any[]
-  listGrouped?: ListGroupType[]
-  disabledData?: boolean
-  paymentForm?: boolean
-  onListChange: (value: any, tag: string, rowId: UUID | number) => void
-  onPaymentChange?: (handleForm: UseFormReturn<any, any, undefined>) => void
 }
 
 export const getBudgetTotalOnlyAccepted = (formData: any) =>
@@ -60,20 +33,9 @@ export const getBudgetTotal = (formData: any) =>
     .filter(([key]) => key.includes(FieldsCodeBudgetItems.VT))
     .reduce((acc, [, value]) => acc + (value ? Number(value) : 0), 0)
 
-const groupedItemTemplate = (option: ListGroupType) => {
-  return (
-    <div className='flex gap-2 align-items-center'>
-      <div
-        className='rounded-md !w-4 !h-4'
-        style={{ backgroundColor: option.color }}
-      ></div>
-      <p className='text-[1rem]'>{option.label}</p>
-    </div>
-  )
-}
-
 export const handleAcceptedChange = (
   handleForm: UseFormReturn<any, any, undefined>,
+  fieldsStartCode: string,
 ) => {
   const { setValue, getValues } = handleForm
 
@@ -87,7 +49,7 @@ export const handleAcceptedChange = (
 
   const initCode =
     budgetFormCodes[
-      getValues(`${BUDGET_CODE}planilla`) as keyof typeof budgetFormCodes
+      getValues(`${fieldsStartCode}planilla`) as keyof typeof budgetFormCodes
     ]
   setValue(
     `${initCode}${BudgetPanelCodes.STATE}`,
@@ -97,48 +59,60 @@ export const handleAcceptedChange = (
         ? BudgetState.ACEPTADO
         : BudgetState.ACEPTADO_PARCIAL,
   )
-  setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+  setValue(`${fieldsStartCode}total`, getBudgetTotal(getValues()))
+}
+
+type BudgetItemsProps = {
+  handleForm: UseFormReturn<any, any, undefined>
+  fieldsStartCode: string
+  legend: string
+  buttonLabel: string
+  list?: any[]
+  listGrouped?: ListGroupType[]
+  disabledData?: boolean
+  invoiceForm?: boolean
+  onListChange?: (value: any, tag: string, rowId: UUID | number) => void
 }
 
 const BudgetItems = ({
   handleForm,
+  fieldsStartCode,
   legend,
   buttonLabel,
   list,
   listGrouped,
   disabledData,
-  paymentForm,
+  invoiceForm,
   onListChange,
-  onPaymentChange,
 }: BudgetItemsProps) => {
   const [rowIds, setRowIds] = useState<(UUID | number)[]>([])
   const [rowAdded, setRowAdded] = useState<boolean>(false)
 
   const { setValue, getValues, unregister } = handleForm
 
-  const tag = `${BUDGET_CODE}${legend.trim().toLowerCase()}`
-
-  const handleInputChange = (rowId: UUID | number) => {
-    const valorDctoCode = `${tag}${FieldsCodeBudgetItems.VD}${rowId}`
-    const value = getValues(`${tag}${FieldsCodeBudgetItems.V}${rowId}`)
-    const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
-    const catidad = getValues(`${tag}${FieldsCodeBudgetItems.C}${rowId}`)
-    setValue(valorDctoCode, value * (1 - dcto / 100))
-    setValue(
-      `${tag}${FieldsCodeBudgetItems.VT}${rowId}`,
-      catidad * getValues(valorDctoCode),
-    )
-    setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
-  }
+  const tag = `${fieldsStartCode}${legend.trim().toLowerCase()}`
 
   useEffect(() => {
     if (rowAdded && rowIds.length > 0) {
       const id = rowIds[rowIds.length - 1]
-      Object.values(FieldsCodeBudgetItems).forEach((code) =>
-        setValue(`${tag}${code}${id}`, 0),
-      )
+      Object.values(FieldsCodeBudgetItems).forEach((code) => {
+        let skip = false
+        if (invoiceForm) {
+          skip = [FieldsCodeBudgetItems.V, FieldsCodeBudgetItems.A].includes(
+            code,
+          )
+        } else {
+          skip = [
+            FieldsCodeBudgetItems.VU,
+            FieldsCodeBudgetItems.I,
+            FieldsCodeBudgetItems.VI,
+            FieldsCodeBudgetItems.VD,
+          ].includes(code)
+        }
+        !skip && setValue(`${tag}${code}${id}`, 0)
+      })
       setValue(`${tag}${FieldsCodeBudgetItems.L}${id}`, undefined)
-      handleAcceptedChange(handleForm)
+      !invoiceForm && handleAcceptedChange(handleForm, fieldsStartCode)
     }
   }, [rowIds])
 
@@ -146,7 +120,8 @@ const BudgetItems = ({
     setRowIds(getRowIds(getValues(), `${tag}_`))
     return () => {
       getItemKeys(getValues(), `${tag}_`).forEach((key) => unregister(key))
-      setValue(`${BUDGET_CODE}total`, getBudgetTotal(getValues()))
+      !invoiceForm &&
+        setValue(`${fieldsStartCode}total`, getBudgetTotal(getValues()))
     }
   }, [])
 
@@ -177,159 +152,39 @@ const BudgetItems = ({
                   {legend}
                 </th>
                 <th className='min-w-[4.5rem]'>Cant.</th>
-                <th className='min-w-[10rem]'>Valor</th>
+                {invoiceForm ? (
+                  <th className='min-w-[12rem]'>Valor unitario</th>
+                ) : (
+                  <th className='min-w-[10rem]'>Valor</th>
+                )}
                 <th className='min-w-[4.5rem]'>% Dcto.</th>
-                <th className='min-w-[10rem]'>Valor con descuento</th>
+                {!invoiceForm && (
+                  <th className='min-w-[10rem]'>Valor con descuento</th>
+                )}
+                {invoiceForm && <th className='min-w-[12rem]'>Impuestos</th>}
                 <th className='min-w-[10rem]'>Valor total</th>
-                <th className='min-w-[4.5rem]'>Aceptado</th>
-                {paymentForm && <th className='rounded-r-md'>Venta</th>}
+                {!invoiceForm && <th className='min-w-[4.5rem]'>Aceptado</th>}
                 {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
             <tbody>
-              {rowIds.map((rowId) => {
-                const isFirtsRow = rowIds.indexOf(rowId) === 0
-                return (
-                  <tr key={`${tag}_${rowId}`}>
-                    <td
-                      className={cx('max-w-[4.5rem]', { 'pt-2': isFirtsRow })}
-                    >
-                      <DropdownValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.L}${rowId}`}
-                        list={(listGrouped ?? list) || []}
-                        groupedItemTemplate={
-                          listGrouped
-                            ? (option: ListGroupType) =>
-                                groupedItemTemplate(option)
-                            : undefined
-                        }
-                        onCustomChange={(e: DropdownChangeEvent) =>
-                          onListChange(JSON.parse(e.value), tag, rowId)
-                        }
-                        required
-                        disabled={disabledData}
-                      />
-                    </td>
-                    <td className={cx('w-[4.5rem]', { 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.C}${rowId}`}
-                        min={0}
-                        shortErrorMessage
-                        onCustomChange={() => handleInputChange(rowId)}
-                        required
-                        disabled={disabledData}
-                      />
-                    </td>
-                    <td className={cx({ 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.V}${rowId}`}
-                        min={0}
-                        mode={InputNumberMode.CURRENCY}
-                        currency='COP'
-                        locale='es-CO'
-                        useGrouping={true}
-                        disabled
-                      />
-                    </td>
-                    <td className={cx('w-[4.5rem]', { 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.D}${rowId}`}
-                        min={0}
-                        max={100}
-                        suffix='%'
-                        shortErrorMessage
-                        onCustomChange={() => handleInputChange(rowId)}
-                        required
-                        disabled={disabledData}
-                      />
-                    </td>
-                    <td className={cx({ 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.VD}${rowId}`}
-                        min={0}
-                        mode={InputNumberMode.CURRENCY}
-                        currency='COP'
-                        locale='es-CO'
-                        useGrouping={true}
-                        disabled
-                      />
-                    </td>
-                    <td className={cx({ 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsCodeBudgetItems.VT}${rowId}`}
-                        min={0}
-                        mode={InputNumberMode.CURRENCY}
-                        currency='COP'
-                        locale='es-CO'
-                        useGrouping={true}
-                        disabled
-                      />
-                    </td>
-                    <td className={cx({ 'pt-2': isFirtsRow })}>
-                      <InputSwitchValid
-                        name={`${tag}${FieldsCodeBudgetItems.A}${rowId}`}
-                        handleForm={handleForm}
-                        className='[&>div]:justify-center'
-                        onCustomChange={() => handleAcceptedChange(handleForm)}
-                        disabled={disabledData}
-                      />
-                    </td>
-                    {paymentForm && (
-                      <td className={cx({ 'pt-2': isFirtsRow })}>
-                        <InputSwitchValid
-                          name={`${tag}${FieldsCodeBudgetItems.P}${rowId}`}
-                          handleForm={handleForm}
-                          className='[&>div]:justify-center'
-                          onCustomChange={(e: InputSwitchChangeEvent) => {
-                            if (onPaymentChange) {
-                              setValue('rowId', rowId)
-                              setValue('tag', tag)
-                              setValue(
-                                `${tag}${FieldsCodeBudgetItems.P}${rowId}`,
-                                e.value,
-                              )
-                              onPaymentChange(handleForm)
-                            }
-                          }}
-                        />
-                      </td>
-                    )}
-                    {!disabledData && (
-                      <td
-                        className={cx('flex flex-col items-center', {
-                          'pt-2': isFirtsRow,
-                        })}
-                      >
-                        <Button
-                          type='button'
-                          icon={PrimeIcons.TRASH}
-                          severity='danger'
-                          tooltip='Eliminar item'
-                          tooltipOptions={{ position: 'bottom' }}
-                          onClick={() => {
-                            setRowIds((prev) =>
-                              prev.filter((id) => id !== rowId),
-                            )
-                            setRowAdded(false)
-                            getItemKeys(getValues(), `${tag}_`)
-                              .filter((key) => getNumberOrUUID(key) === rowId)
-                              .forEach((key) => unregister(key))
-                            handleAcceptedChange(handleForm)
-                          }}
-                          outlined
-                        />
-                        <div className='h-[20px]'></div>
-                      </td>
-                    )}
-                  </tr>
-                )
-              })}
+              {rowIds.map((rowId) => (
+                <BudgetItemsTr
+                  key={`${tag}_${rowId}`}
+                  handleForm={handleForm}
+                  fieldsStartCode={fieldsStartCode}
+                  rowIds={rowIds}
+                  rowId={rowId}
+                  tag={tag}
+                  list={list}
+                  listGrouped={listGrouped}
+                  disabledData={disabledData}
+                  invoiceForm={invoiceForm}
+                  setRowIds={setRowIds}
+                  setRowAdded={setRowAdded}
+                  onListChange={onListChange}
+                />
+              ))}
             </tbody>
           </table>
         </div>

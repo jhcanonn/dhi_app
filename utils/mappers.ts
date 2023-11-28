@@ -34,6 +34,9 @@ import {
   ScheduleType,
   BudgetStateDirectus,
   DropdownOption,
+  InvoiceTypesDirectus,
+  InvoiceItemsDirectus,
+  InvoicePaymentWaysDirectus,
 } from '@models'
 import {
   BLOCK_BOX,
@@ -384,16 +387,69 @@ export const budgetStateMapper = (states: BudgetStateDirectus[]) =>
   )
 
 export const budgetTherapiesMapper = (items: BudgetItemsTherapies[]) =>
-  items.map((item) => ({
-    name: item.terapias_id.nombre,
-    value: JSON.stringify(item),
-  }))
+  items.map(
+    (item) =>
+      ({
+        name: item.terapias_id.nombre,
+        value: JSON.stringify(item),
+      }) as DropdownOption,
+  )
 
 export const budgetProductsMapper = (items: BudgetItemsProducts[]) =>
-  items.map((item) => ({
-    name: item.nombre,
-    value: JSON.stringify(item),
-  }))
+  items.map(
+    (item) =>
+      ({
+        name: item.nombre,
+        value: JSON.stringify(item),
+      }) as DropdownOption,
+  )
+
+export const invoicePaymentWaysMapper = (items: InvoicePaymentWaysDirectus[]) =>
+  items.map(
+    (item) =>
+      ({
+        name: item.name,
+        value: JSON.stringify(item),
+      }) as DropdownOption,
+  )
+
+export const invoiceTypesMapper = (items: InvoiceTypesDirectus[]) =>
+  items.map(
+    (item) =>
+      ({
+        name: `${item.type} - ${item.code} - ${item.name}`,
+        value: JSON.stringify(item),
+      }) as DropdownOption,
+  )
+
+export const invoiceItemsMapper = (items: InvoiceItemsDirectus[]) =>
+  items.map(
+    (item) =>
+      ({
+        name: `${item.code} - ${item.name}`,
+        value: JSON.stringify(item),
+      }) as DropdownOption,
+  )
+
+export const invoicePriceListMapper = (item: InvoiceItemsDirectus) => {
+  const prices = item.prices?.find((price) => price.currency_code === 'COP')
+  return prices?.price_list.map(
+    (price) =>
+      ({
+        name: getCurrencyCOP(price.value),
+        value: JSON.stringify(price),
+      }) as DropdownOption,
+  )
+}
+
+export const invoiceTaxListMapper = (item: InvoiceItemsDirectus) =>
+  item.taxes?.map(
+    (tax) =>
+      ({
+        name: tax.name,
+        value: JSON.stringify(tax),
+      }) as DropdownOption,
+  )
 
 export const budgetServicesMapper = (
   items: BudgetItemsBoxService[],
@@ -460,11 +516,10 @@ export const budgetInitialDataMapper = (budget: BudgetType) => {
       [`${initCode}${FieldsCodeBudgetItems.C}${obj.id}`]: obj.cantidad,
       [`${initCode}${FieldsCodeBudgetItems.V}${obj.id}`]: obj.valor_unitario,
       [`${initCode}${FieldsCodeBudgetItems.D}${obj.id}`]: obj.descuento,
-      [`${initCode}${FieldsCodeBudgetItems.VD}${obj.id}`]:
+      [`${initCode}${FieldsCodeBudgetItems.VCD}${obj.id}`]:
         obj.valor_con_descuento,
       [`${initCode}${FieldsCodeBudgetItems.VT}${obj.id}`]: obj.valor_total,
       [`${initCode}${FieldsCodeBudgetItems.A}${obj.id}`]: obj.aceptado,
-      [`${initCode}${FieldsCodeBudgetItems.P}${obj.id}`]: false,
     })
 
     switch (label) {
@@ -559,7 +614,7 @@ export const budgetCreateRelationsMapper = (
         data[`${initCode}${FieldsCodeBudgetItems.V}${rowId}`]
       const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
       const valor_con_descuento =
-        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+        data[`${initCode}${FieldsCodeBudgetItems.VCD}${rowId}`]
       const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
       const aceptado = !!data[`${initCode}${FieldsCodeBudgetItems.A}${rowId}`]
 
@@ -626,7 +681,7 @@ export const budgetEditMapper = (data: BudgetForm) => {
         data[`${initCode}${FieldsCodeBudgetItems.V}${rowId}`]
       const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
       const valor_con_descuento =
-        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+        data[`${initCode}${FieldsCodeBudgetItems.VCD}${rowId}`]
       const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
       const aceptado = !!data[`${initCode}${FieldsCodeBudgetItems.A}${rowId}`]
 
