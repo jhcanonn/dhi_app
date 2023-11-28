@@ -191,6 +191,7 @@ const Calendar = ({ cookies, showError }: Props) => {
   const fetchAppointments = async () => {
     const start = startDate?.toISOString()
     const end = endDate?.toISOString()
+    if (!start || !end) return
     calendarRef.current?.scheduler.handleState(true, 'loading')
     const res = await appointmentRefetch({ start, end })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
