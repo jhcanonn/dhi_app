@@ -78,6 +78,11 @@ const ClientLayout = ({ children, params }: Props) => {
     },
   ]
 
+  const goToFinance = () => {
+    setActiveIndex(CLIENT_PAGE_TAB.findIndex((item) => item === 'finance') + 1)
+    goToPage(parseUrl(PAGE_PATH.finance, { id }))
+  }
+
   useEffect(() => {
     !loading && setClientInfo(data.pacientes_by_id as ClientDirectus)
     setLoadingInfo(loading)
@@ -104,7 +109,7 @@ const ClientLayout = ({ children, params }: Props) => {
             label={`NP:1, Deuda: ${getCurrencyCOP(0)}`}
             type='button'
             severity='danger'
-            onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
+            onClick={goToFinance}
             className='px-4 py-1 font-bold text-md'
           />
           {lastItem !== 'finance' && (
@@ -112,12 +117,14 @@ const ClientLayout = ({ children, params }: Props) => {
               label={'Pagar'}
               type='button'
               severity='success'
-              onClick={() => goToPage(parseUrl(PAGE_PATH.finance, { id }))}
+              onClick={goToFinance}
               className='px-4 py-1 font-bold text-md'
             />
           )}
         </div>
-        {activeIndex !== 0 && <ExtraDataDetail clientInfo={clientInfo} />}
+        {(activeIndex !== 0 || lastItem === 'finance') && (
+          <ExtraDataDetail clientInfo={clientInfo} />
+        )}
         <section className='my-4'>{children}</section>
       </section>
       <ScrollTop />
