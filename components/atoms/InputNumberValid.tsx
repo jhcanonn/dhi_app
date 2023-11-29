@@ -88,11 +88,11 @@ const InputNumberValid = <T extends FieldValues>({
             onChange(e.value)
             onCustomChange && onCustomChange(e)
           },
-          inputClassName: cx({ 'p-invalid': error }),
           useGrouping: useGrouping ?? false,
           mode,
           disabled,
           className: "[&_[type='button']]:bg-defaultBlue [&_input]:w-full",
+          inputClassName: cx({ 'p-invalid text-[#dc3545]': error }),
           suffix,
           minFractionDigits:
             mode === InputNumberMode.DECIMAL

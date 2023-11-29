@@ -39,7 +39,10 @@ export const getInvoiceTotalValorUnitario = (formData: any) =>
       return acc + (valueInfo.value ? Number(valueInfo.value) : 0)
     }, 0)
 
-export const getInvoiceTotal = (formData: any, code: FieldsCodeBudgetItems) =>
+export const getInvoiceTotal = (
+  formData: any,
+  code: FieldsCodeBudgetItems | string,
+) =>
   Object.entries(formData)
     .filter(([key]) => key.includes(code))
     .reduce((acc, [, value]) => acc + (value ? Number(value) : 0), 0)
@@ -53,24 +56,25 @@ export const calcInvoiceValues = (
   const { setValue, getValues } = handleForm
   const cantidad = getValues(`${tag}${FieldsCodeBudgetItems.C}${rowId}`)
   const dcto = getValues(`${tag}${FieldsCodeBudgetItems.D}${rowId}`)
+  const impuesto = getValues(`${tag}${FieldsCodeBudgetItems.I}${rowId}`)
+  const valorUnitario = getValues(`${tag}${FieldsCodeBudgetItems.VU}${rowId}`)
   const valorConDctoCode = `${tag}${FieldsCodeBudgetItems.VCD}${rowId}`
   const valorTotalCode = `${tag}${FieldsCodeBudgetItems.VT}${rowId}`
   const valorImpuestoCode = `${tag}${FieldsCodeBudgetItems.VI}${rowId}`
 
-  const taxInfo = JSON.parse(
-    getValues(`${tag}${FieldsCodeBudgetItems.I}${rowId}`),
-  ) as InvoiceItemsTaxesDirectus
-  const priceInfo = JSON.parse(
-    getValues(`${tag}${FieldsCodeBudgetItems.VU}${rowId}`),
-  ) as InvoicePriceDirectus
-  setValue(
-    `${tag}${FieldsCodeBudgetItems.VD}${rowId}`,
-    priceInfo.value * (dcto / 100),
-  )
-  setValue(valorConDctoCode, priceInfo.value * (1 - dcto / 100))
+  const taxInfo = impuesto
+    ? (JSON.parse(impuesto) as InvoiceItemsTaxesDirectus)
+    : undefined
+  const priceInfo = valorUnitario
+    ? (JSON.parse(valorUnitario) as InvoicePriceDirectus)
+    : undefined
+  const price = priceInfo ? priceInfo.value : 0
+
+  setValue(`${tag}${FieldsCodeBudgetItems.VD}${rowId}`, price * (dcto / 100))
+  setValue(valorConDctoCode, price * (1 - dcto / 100))
   setValue(
     valorImpuestoCode,
-    getValues(valorConDctoCode) * (taxInfo.percentage / 100),
+    getValues(valorConDctoCode) * ((taxInfo ? taxInfo.percentage : 0) / 100),
   )
   setValue(
     valorTotalCode,

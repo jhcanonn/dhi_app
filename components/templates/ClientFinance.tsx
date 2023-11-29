@@ -29,6 +29,7 @@ import { BudgetItems, PaymentWayItems } from '@components/organisms'
 import { Button } from 'primereact/button'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { useClientContext } from '@contexts'
+import { validTotals } from '@components/organisms/patient/PaymentWayItems'
 
 type Props = {
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
@@ -59,7 +60,10 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
 
   const onSubmit = () => {
     setLoading(true)
-    console.log({ data: getValues(), showSuccess, showWarning })
+    const saveData = validTotals(handleForm, showWarning, true)
+    if (saveData) {
+      console.log({ data: getValues(), showSuccess, showWarning })
+    }
     setLoading(false)
   }
 
