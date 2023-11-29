@@ -689,6 +689,7 @@ export const GET_INVOICES = gql`
       id
       name
       type
+      due_date
     }
     siigo_services: productos_siigo(
       filter: { active: { _eq: true }, type: { _eq: "Service" } }

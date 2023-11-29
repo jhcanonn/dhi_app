@@ -314,6 +314,7 @@ export type InvoicePaymentWaysDirectus = {
   id: number
   name: string
   type: string
+  due_date: boolean
 }
 
 export type InvoiceItemsTaxesDirectus = {

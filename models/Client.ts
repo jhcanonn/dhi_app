@@ -251,3 +251,8 @@ export type DataSheet = {
   sucursal: string
   data: JSON
 }
+
+export type Commercial = {
+  name: string
+  value: UUID
+}
