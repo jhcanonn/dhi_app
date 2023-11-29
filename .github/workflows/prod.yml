@@ -35,5 +35,5 @@ jobs:
             n install lts
             n lts
             npm run production-build
-            pm2 restart front-app
+            pm2 restart front-app --update-env
             sudo systemctl restart nginx
