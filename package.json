@@ -18,7 +18,7 @@
     "clean-temp": "rm -rf .next-temp node_modules",
     "clean": "rm -rf .next",
     "move-build": "mv .next-temp .next",
-    "production-build": "npm run clean-temp && npm install && npm run build && npm run clean && npm run move-build && npm start"
+    "production-build": "npm run clean-temp && npm install && npm run build && npm run clean && npm run move-build"
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
