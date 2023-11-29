@@ -303,7 +303,9 @@ const BudgetItemsTr = ({
               getItemKeys(getValues(), `${tag}_`)
                 .filter((key) => getNumberOrUUID(key) === rowId)
                 .forEach((key) => unregister(key))
-              !invoiceForm && handleAcceptedChange(handleForm, fieldsStartCode)
+              invoiceForm
+                ? handleInputChange(rowId)
+                : handleAcceptedChange(handleForm, fieldsStartCode)
             }}
             outlined
           />
