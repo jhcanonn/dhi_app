@@ -16,9 +16,8 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: process.env.NEXT_PUBLIC_DIRECTUS_PROTOCOL,
-        hostname: process.env.NEXT_PUBLIC_DIRECTUS_HOST,
-        port: process.env.NEXT_PUBLIC_DIRECTUS_PORT,
+        protocol: 'https',
+        hostname: 'dhicolombia.net',
         pathname: '/assets/**',
       },
       {
