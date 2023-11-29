@@ -12,10 +12,10 @@ jobs:
     environment: Production
     env:
       NEXT_PUBLIC_DIRECTUS_PROTOCOL: ${{ vars.DIRECTUS_PROTOCOL }}
-      NEXT_PUBLIC_DIRECTUS_HOST: ${{ vars.DIRECTUS_HOST }}
-      NEXT_PUBLIC_DIRECTUS_BASE_URL: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}
-      NEXT_PUBLIC_DIRECTUS_GRAPHQL: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}/graphql
-      NEXT_PUBLIC_DIRECTUS_GRAPHQL_SYSTEM: ${{ vars.DIRECTUS_PROTOCOL }}://${{ vars.DIRECTUS_HOST }}/graphql/system
+      NEXT_PUBLIC_DIRECTUS_HOST: gradeco.dhicolombia.net
+      NEXT_PUBLIC_DIRECTUS_BASE_URL: ${{ vars.DIRECTUS_PROTOCOL }}://gradeco.dhicolombia.net
+      NEXT_PUBLIC_DIRECTUS_GRAPHQL: ${{ vars.DIRECTUS_PROTOCOL }}://gradeco.dhicolombia.net/graphql
+      NEXT_PUBLIC_DIRECTUS_GRAPHQL_SYSTEM: ${{ vars.DIRECTUS_PROTOCOL }}://gradeco.dhicolombia.net/graphql/system
       NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
       NEXT_PUBLIC_COOKIE_EXPIRE_DAYS: ${{ vars.COOKIE_EXPIRE_DAYS }}
     steps:
