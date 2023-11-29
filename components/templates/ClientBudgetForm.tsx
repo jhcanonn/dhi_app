@@ -7,13 +7,12 @@ import { useBudgetContext, useClientContext, useGlobalContext } from '@contexts'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { directusSystemClient } from './Providers'
 import { BudgetItems } from '@components/organisms'
 import { Button } from 'primereact/button'
 import { PanelForm } from '@components/molecules'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { useGoTo, withToast } from '@hooks'
+import { useGetCommercials, useGoTo, withToast } from '@hooks'
 import { handleAcceptedChange } from '@components/organisms/patient/BudgetItems'
 import {
   BudgetForm,
@@ -24,12 +23,10 @@ import {
   BudgetItemsTherapies,
   FieldsCodeBudgetItems,
   PanelsDirectus,
-  CommercialDirectus,
 } from '@models'
 import {
   BUDGET_CODE,
   GET_BUDGET_ITEMS,
-  GET_COMMERCIALS,
   PAGE_PATH,
   PanelTags,
   budgetServicesMapper,
@@ -40,15 +37,9 @@ import {
   BUDGET_CREATE_RELATIONS,
   budgetCreateMapper,
   budgetCreateRelationsMapper,
-  ROLES,
   BUDGET_EDIT,
   budgetEditMapper,
 } from '@utils'
-
-type Commercial = {
-  name: string
-  value: UUID
-}
 
 type BudgetProps = {
   initialData?: BudgetForm
@@ -72,20 +63,10 @@ const ClientBudgetForm = ({
   const { panels } = useGlobalContext()
   const { clientInfo } = useClientContext()
   const { loading, setLoading } = useBudgetContext()
+  const { commercials } = useGetCommercials()
   const [selectedPanel, setSelectedPanel] = useState<PanelsDirectus>()
-  const [commercials, setCommercials] = useState<Commercial[]>([])
   const [budgetItems, setBudgetItems] = useState<BudgetItemsDirectus | null>(
     null,
-  )
-
-  const { data: dataCommercials, loading: loadingCommercials } = useQuery(
-    GET_COMMERCIALS,
-    {
-      client: directusSystemClient,
-      variables: {
-        roleId: ROLES.dhi_comercial,
-      },
-    },
   )
 
   const { data: dataBudgetItems, loading: loadingBudgetItems } =
@@ -160,18 +141,6 @@ const ClientBudgetForm = ({
   ) => {
     setValue(`${tag}${FieldsCodeBudgetItems.V}${rowId}`, value)
   }
-
-  useEffect(() => {
-    if (!loadingCommercials) {
-      const commercials: CommercialDirectus[] = dataCommercials.users
-      setCommercials(
-        commercials.map((comm) => ({
-          name: `${comm.first_name} ${comm.last_name}`.trim(),
-          value: comm.id as UUID,
-        })),
-      )
-    }
-  }, [dataCommercials])
 
   useEffect(() => {
     !loadingBudgetItems && setBudgetItems(dataBudgetItems)

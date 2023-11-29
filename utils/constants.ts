@@ -44,6 +44,7 @@ export const CLIENT_PAGE_TAB = [
   'dataSheet',
   'gallery',
   'budget',
+  'finance',
 ]
 
 export const CLIENT_PAGE_CRUD = ['create', 'read', 'update', 'delete']

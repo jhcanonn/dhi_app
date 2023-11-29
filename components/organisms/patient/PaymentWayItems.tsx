@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  FINANCE_CODE,
-  PAYMENT_WAY_CODE,
-  getItemKeys,
-  getNumberOrUUID,
-} from '@utils'
+import { FINANCE_CODE, PAYMENT_WAY_CODE } from '@utils'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { Fieldset } from 'primereact/fieldset'
@@ -13,13 +8,9 @@ import { ReactNode, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
 import { FieldsPaymentWayItems } from '@models'
-import { DropdownValid, InputNumberValid } from '@components/atoms'
-import { classNames as cx } from 'primereact/utils'
-import { DropdownChangeEvent } from 'primereact/dropdown'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { PrimeIcons } from 'primereact/api'
 import { withToast } from '@hooks'
 import { getInvoiceTotal } from '@components/molecules/patient/dataCalc'
+import PaymentWayTr from '@components/molecules/patient/PaymentWayTr'
 
 const sumPreviousPaymentWays = (data: Record<string, any>, rowId: string) =>
   Object.entries(data)
@@ -30,17 +21,8 @@ const sumPreviousPaymentWays = (data: Record<string, any>, rowId: string) =>
     )
     .reduce((acc, [, value]) => acc + (value ? Number(value) : 0), 0)
 
-type PaymentWayItemsProps = {
-  handleForm: UseFormReturn<any, any, undefined>
-  legend: string
-  buttonLabel: string
-  list?: any[]
-  disabledData?: boolean
-  onListChange?: (value: any, tag: string, rowId: UUID | number) => void
-  showWarning: (summary: ReactNode, detail: ReactNode) => void
-}
-
-const getLastRowId = (rowIds: (UUID | number)[]) => rowIds[rowIds.length - 1]
+export const getLastRowId = (rowIds: (UUID | number)[]) =>
+  rowIds[rowIds.length - 1]
 
 export const validTotals = (
   handleForm: UseFormReturn<any, any, undefined>,
@@ -55,20 +37,33 @@ export const validTotals = (
   if (isPayButton ? totalFDP !== totalNeto : totalFDP > totalNeto) {
     valid = false
     showWarning(
-      'Información',
+      'Totales diferentes',
       'Total formas de pago y Total neto deben coincidir',
     )
   }
   if (totalNeto === 0) {
     valid = false
-    showWarning('Información', 'Total Neto debe ser mayor a $0,00')
+    showWarning(
+      'Agregar Producto o Servicio',
+      'Total Neto debe ser mayor a $0,00',
+    )
   }
   if (totalNeto !== 0 && !isPayButton && totalFDP === totalNeto) {
     valid = false
-    showWarning('Información', 'Ya alcanzo el valor de Total Neto')
+    showWarning('Ya puede pagar', 'Ya alcanzo el valor de Total Neto')
   }
 
   return valid
+}
+
+type PaymentWayItemsProps = {
+  handleForm: UseFormReturn<any, any, undefined>
+  legend: string
+  buttonLabel: string
+  list?: any[]
+  disabledData?: boolean
+  onListChange?: (value: any, tag: string, rowId: UUID | number) => void
+  showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
 
 const PaymentWayItems = ({
@@ -84,7 +79,7 @@ const PaymentWayItems = ({
   const [rowAdded, setRowAdded] = useState<boolean>(false)
   const [restPayment, setRestPayment] = useState<number>(0)
 
-  const { setValue, getValues, unregister, trigger } = handleForm
+  const { setValue, getValues, trigger } = handleForm
 
   const tag = `${FINANCE_CODE}${PAYMENT_WAY_CODE}`
   const valueFDPCodes = `${PAYMENT_WAY_CODE}${FieldsPaymentWayItems.V}`
@@ -148,88 +143,26 @@ const PaymentWayItems = ({
                 <th className='h-[2.3rem] min-w-[15rem] rounded-l-md'>
                   {legend}
                 </th>
+                <th className='min-w-[10rem]' />
                 <th className='min-w-[10rem]'>Valor</th>
                 {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
             <tbody>
-              {rowIds.map((rowId) => {
-                const isFirtsRow = rowIds.indexOf(rowId) === 0
-                const valueCode = `${tag}${FieldsPaymentWayItems.V}${rowId}`
-                return (
-                  <tr key={`${tag}_${rowId}`}>
-                    <td
-                      className={cx('max-w-[4.5rem]', { 'pt-2': isFirtsRow })}
-                    >
-                      <DropdownValid
-                        handleForm={handleForm}
-                        name={`${tag}${FieldsPaymentWayItems.L}${rowId}`}
-                        list={list || []}
-                        onCustomChange={(e: DropdownChangeEvent) => {
-                          const value = JSON.parse(e.value)
-                          onListChange && onListChange(value, tag, rowId)
-                        }}
-                        required
-                        disabled={disabledData}
-                      />
-                    </td>
-                    <td className={cx({ 'pt-2': isFirtsRow })}>
-                      <InputNumberValid
-                        handleForm={handleForm}
-                        name={valueCode}
-                        min={0}
-                        mode={InputNumberMode.CURRENCY}
-                        currency='COP'
-                        locale='es-CO'
-                        useGrouping={true}
-                        className='[&_input]:text-right'
-                        required
-                        validate={(value) => value !== 0}
-                        onCustomChange={() => {
-                          trigger(valueCode)
-                          setValue(
-                            totalFDPCode,
-                            getInvoiceTotal(getValues(), valueFDPCodes),
-                          )
-                        }}
-                        disabled={
-                          disabledData || getLastRowId(rowIds) !== rowId
-                        }
-                      />
-                    </td>
-                    {!disabledData && (
-                      <td
-                        className={cx('flex flex-col items-center', {
-                          'pt-2': isFirtsRow,
-                        })}
-                      >
-                        <Button
-                          type='button'
-                          icon={PrimeIcons.TRASH}
-                          severity='danger'
-                          tooltip='Eliminar item'
-                          tooltipOptions={{ position: 'bottom' }}
-                          onClick={() => {
-                            setRowIds((prev) =>
-                              prev.filter((id) => id !== rowId),
-                            )
-                            setRowAdded(false)
-                            getItemKeys(getValues(), `${tag}_`)
-                              .filter((key) => getNumberOrUUID(key) === rowId)
-                              .forEach((key) => unregister(key))
-                            setValue(
-                              totalFDPCode,
-                              getInvoiceTotal(getValues(), valueFDPCodes),
-                            )
-                          }}
-                          outlined
-                        />
-                        <div className='h-[20px]'></div>
-                      </td>
-                    )}
-                  </tr>
-                )
-              })}
+              {rowIds.map((rowId) => (
+                <PaymentWayTr
+                  key={`${tag}_${rowId}`}
+                  handleForm={handleForm}
+                  tag={tag}
+                  rowId={rowId}
+                  rowIds={rowIds}
+                  setRowIds={setRowIds}
+                  setRowAdded={setRowAdded}
+                  list={list}
+                  disabledData={disabledData}
+                  onListChange={onListChange}
+                />
+              ))}
             </tbody>
           </table>
         </div>

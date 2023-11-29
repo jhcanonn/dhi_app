@@ -21,7 +21,7 @@ import {
 import moment from 'moment'
 import { BudgetItem, InvoicesDirectus } from '@models'
 import { useQuery } from '@apollo/client'
-import { useGoTo, withToast } from '@hooks'
+import { useGetCommercials, useGoTo, withToast } from '@hooks'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -40,6 +40,7 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
   const [loading, setLoading] = useState(false)
   const [invoices, setInvoices] = useState<InvoicesDirectus | null>(null)
   const { clientInfo } = useClientContext()
+  const { commercials } = useGetCommercials()
   const { goToPage } = useGoTo()
 
   const { data: dataInvoices, loading: loadingInvoices } =
@@ -79,7 +80,7 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
         onSubmit={handleSubmit(onSubmit)}
         className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
       >
-        <div className='!grid grid-cols-1 md:grid-cols-3 gap-x-4 px-2 pt-2'>
+        <div className='!grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-4 px-2 pt-2'>
           <DropdownValid
             name={`${FINANCE_CODE}type`}
             handleForm={handleForm}
@@ -93,6 +94,13 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
             label='Fecha de creación'
             showIcon={false}
             disabled
+          />
+          <DropdownValid
+            name={`${FINANCE_CODE}comercial`}
+            label='Comercial'
+            handleForm={handleForm}
+            list={commercials}
+            required
           />
           <InputTextValid
             name={`${FINANCE_CODE}sucursal`}
