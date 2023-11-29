@@ -27,6 +27,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script_stop: true
+          envs: NEXT_PUBLIC_DIRECTUS_PROTOCOL, NEXT_PUBLIC_DIRECTUS_HOST, NEXT_PUBLIC_DIRECTUS_BASE_URL, NEXT_PUBLIC_DIRECTUS_GRAPHQL, NEXT_PUBLIC_DIRECTUS_GRAPHQL_SYSTEM, NEXT_PUBLIC_API_BASE_URL, NEXT_PUBLIC_COOKIE_EXPIRE_DAYS
           script: |
             cd /home/dhi/dhi_app/
             git pull
