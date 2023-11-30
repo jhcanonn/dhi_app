@@ -2,7 +2,7 @@
 
 import { useClientContext } from '@contexts'
 import { DataTable } from 'primereact/datatable'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import {
   ANULLED_MEDICAL_COMPLEMENT,
   GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID,
@@ -152,6 +152,10 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
     ITemplatesExamsPrescriptionType | IClientExamsPrescriptionType | null
   >(null)
 
+  const [medicalSupplements, setMedicalSupplements] = useState<
+    IClientExamsPrescriptionType[]
+  >([])
+
   const [isView, setIsView] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const [tipo, setTipo] = useState<string>('')
@@ -159,6 +163,12 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
   const dateBodyTemplate = (rowData: IClientExamsPrescriptionType) => {
     return getFormatedDateToEs(rowData.date_created, 'LL hh:mm A')
   }
+
+  useEffect(() => {
+    if (dataRecipesExams) {
+      setMedicalSupplements(dataRecipesExams.complementos_medicos ?? [])
+    }
+  }, [dataRecipesExams])
 
   const confirmDelete = (
     rowData: IClientExamsPrescriptionType | ITemplatesExamsPrescriptionType,
@@ -350,15 +360,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
                   return
                 }
                 if (data) {
-                  if (dataRecipesExams) {
-                    dataRecipesExams.complementos_medicos =
-                      dataRecipesExams.complementos_medicos ?? []
-                    dataRecipesExams.complementos_medicos = [
-                      data,
-                      ...dataRecipesExams.complementos_medicos,
-                    ]
-                  }
-
+                  setMedicalSupplements([data, ...medicalSupplements])
                   setCurrentRowData(null)
                   setIsView(true)
                   setIsEdit(false)
@@ -441,7 +443,7 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
       ></Divider>
 
       <DataTable
-        value={dataRecipesExams?.complementos_medicos}
+        value={medicalSupplements}
         emptyMessage='No se encontraron resultados'
         size='small'
         paginator
