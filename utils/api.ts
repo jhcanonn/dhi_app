@@ -155,6 +155,8 @@ export const refreshToken = async (cookies: Cookies) => {
   const access_token: string = session ? session.access_token : undefined
   let newToken = null
 
+  if (!session) return null
+
   // If token is not expired, return it
   if (
     access_token &&
