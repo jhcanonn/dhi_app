@@ -13,7 +13,10 @@ export async function middleware(req: NextRequest) {
 
   const session = req.cookies.get(DHI_SESSION)
   const sessionInfo = session ? JSON.parse(session?.value) : undefined
-  const access_token = sessionInfo.access_token
+  const access_token = sessionInfo?.access_token
+
+  if (!sessionInfo)
+    return NextResponse.redirect(new URL(PAGE_PATH.login, req.url))
 
   try {
     if (
