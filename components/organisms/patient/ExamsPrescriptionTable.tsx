@@ -350,7 +350,15 @@ const ExamsPrescriptionTable = ({ showSuccess, showError }: Props) => {
                   return
                 }
                 if (data) {
-                  dataRecipesExams?.complementos_medicos?.unshift(data)
+                  if (dataRecipesExams) {
+                    dataRecipesExams.complementos_medicos =
+                      dataRecipesExams.complementos_medicos ?? []
+                    dataRecipesExams.complementos_medicos = [
+                      data,
+                      ...dataRecipesExams.complementos_medicos,
+                    ]
+                  }
+
                   setCurrentRowData(null)
                   setIsView(true)
                   setIsEdit(false)

@@ -121,6 +121,35 @@ export const fetchRefreshToken = async (refresh_token: string) => {
   return content?.data
 }
 
+export const fetchLogout = async (refresh_token: string) => {
+  const response = await fetch_retry(
+    `${process.env.NEXT_PUBLIC_DIRECTUS_BASE_URL}/auth/logout`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token }),
+    },
+    REQUEST_ATTEMPT_NUMBER,
+  )
+  const content = await response.json()
+  return content?.data
+}
+
+export const logout = async (cookies: Cookies) => {
+  const session = cookies?.get(DHI_SESSION)
+  if (session) {
+    try {
+      await fetchLogout(session.refresh_token)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  cookies.remove(DHI_SESSION)
+}
+
 export const refreshToken = async (cookies: Cookies) => {
   const session = cookies?.get(DHI_SESSION)
   const access_token: string = session ? session.access_token : undefined
