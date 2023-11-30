@@ -95,8 +95,8 @@ const GalleryTable = ({ hideImageDelete }: { hideImageDelete?: boolean }) => {
         user,
         tags: tags
           .sort((a, b) => a.order - b.order)
-          .filter((g) => g.tags_id.estado === StatusDirectus.PUBLISHED)
-          .map((g) => g.tags_id.nombre)
+          .filter((g) => g?.tags_id?.estado === StatusDirectus.PUBLISHED)
+          .map((g) => g?.tags_id?.nombre)
           .join(', '),
       } as GalleryType
     })

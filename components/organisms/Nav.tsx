@@ -10,17 +10,11 @@ import { directusSystemClient } from '@components/templates/Providers'
 import { Avatar } from 'primereact/avatar'
 import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
-import { getPanelsFromDirectus, refreshToken } from '@utils/api'
+import { getPanelsFromDirectus, logout, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { useGoTo } from '@hooks'
-import {
-  DHI_SESSION,
-  GET_CIE_10,
-  GET_USER_ME,
-  LocalStorageTags,
-  PAGE_PATH,
-} from '@utils'
+import { GET_CIE_10, GET_USER_ME, LocalStorageTags, PAGE_PATH } from '@utils'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const { goToPage } = useGoTo()
@@ -33,8 +27,8 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
 
   const { refetch: refetchCie10 } = useQuery(GET_CIE_10)
 
-  const handleLogout = () => {
-    cookies.remove(DHI_SESSION)
+  const handleLogout = async () => {
+    await logout(cookies)
     goToPage(PAGE_PATH.login)
   }
 
