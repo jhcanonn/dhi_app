@@ -37,12 +37,20 @@ import {
   InvoiceTypesDirectus,
   InvoiceItemsDirectus,
   InvoicePaymentWaysDirectus,
+  InvoiceSiigoDirectus,
+  InvoiceDocumentTypeDirectus,
+  User,
+  InvoicePriceDirectus,
+  InvoiceItemsTaxesDirectus,
+  FieldsPaymentWayItems,
 } from '@models'
 import {
   BLOCK_BOX,
   BLOCK_SERVICE,
   BUDGET_CODE,
   DHI_SUCRUSAL,
+  FINANCE_CODE,
+  PAYMENT_WAY_CODE,
   budgetFormCodes,
 } from './constants'
 import {
@@ -734,4 +742,83 @@ export const budgetEditMapper = (data: BudgetForm) => {
   })
 
   return { ...budgetMainData(data), ...relations }
+}
+
+export const invoiceSiigoMapper = (
+  data: Record<string, any>,
+  clientInfo: ClientDirectus | null,
+  siigoDocumentType: InvoiceDocumentTypeDirectus[],
+  user: User | null,
+) => {
+  const type = JSON.parse(data[`${FINANCE_CODE}type`]) as InvoiceTypesDirectus
+  const items: Record<string, any>[] = []
+  const payments: Record<string, any>[] = []
+
+  Object.values(BudgetItem).forEach((code) => {
+    const initCode = `${FINANCE_CODE}${code.trim().toLowerCase()}`
+    getRowIds(data, `${initCode}_`).forEach((rowId) => {
+      const item = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.L}${rowId}`],
+      ) as InvoiceTypesDirectus
+      const cantidad = data[`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]
+      const valor_unitario = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.VU}${rowId}`],
+      ) as InvoicePriceDirectus
+      const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
+      const valor_descuento =
+        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+      const impuesto = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.I}${rowId}`],
+      ) as InvoiceItemsTaxesDirectus
+      const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
+
+      const siigoItem = {
+        code: item.code,
+        description: item.description,
+        quantity: cantidad,
+        price: valor_unitario.value,
+        discount_rate: descuento,
+        discount: valor_descuento,
+        taxes: impuesto.id ? [{ id: impuesto.id }] : [],
+        total_value: valor_total,
+      }
+
+      items.push(siigoItem)
+    })
+  })
+
+  const initPaymentCode = `${FINANCE_CODE}${PAYMENT_WAY_CODE}`
+  getRowIds(data, `${initPaymentCode}_`).forEach((rowId) => {
+    const item = JSON.parse(
+      data[`${initPaymentCode}${FieldsPaymentWayItems.L}${rowId}`],
+    ) as InvoicePaymentWaysDirectus
+    const value = data[`${initPaymentCode}${FieldsPaymentWayItems.V}${rowId}`]
+    const dd = data[`${initPaymentCode}${FieldsPaymentWayItems.DD}${rowId}`]
+    const due_date = dd ? moment(dd).format('YYYY-MM-DD') : undefined
+    payments.push({ id: +item.id, value, due_date })
+  })
+
+  return {
+    document: { id: Number(type.id) },
+    date: moment(data[`${FINANCE_CODE}created_date`]).format('YYYY-MM-DD'),
+    customer: {
+      id_type: siigoDocumentType.find(
+        (dt) => dt.homologo_app === clientInfo?.tipo_documento,
+      )?.codigo,
+      identification: clientInfo?.documento,
+    },
+    seller: Number(user?.user_siigo.id),
+    stamp: { send: data[`${FINANCE_CODE}send_email_dian`] },
+    mail: { send: data[`${FINANCE_CODE}send_email_client`] },
+    observations: data[`${FINANCE_CODE}observaciones`],
+    items,
+    payments,
+    comercial: { id: data[`${FINANCE_CODE}comercial`] },
+    total_bruto: data[`${FINANCE_CODE}total_bruto`],
+    total_descuentos: data[`${FINANCE_CODE}descuentos`],
+    sub_total: data[`${FINANCE_CODE}subtotal`],
+    total_iva: data[`${FINANCE_CODE}total_iva`],
+    total_formas_pago: data[`${FINANCE_CODE}total_formas_de_pago`],
+    total_neto: data[`${FINANCE_CODE}total_neto`],
+  } as InvoiceSiigoDirectus
 }

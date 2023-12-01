@@ -11,13 +11,13 @@ import {
   getItemKeys,
   getNumberOrUUID,
 } from '@utils'
+import { UUID } from 'crypto'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { FieldsPaymentWayItems, InvoicePaymentWaysDirectus } from '@models'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { classNames as cx } from 'primereact/utils'
 import { Button } from 'primereact/button'
 import { UseFormReturn } from 'react-hook-form'
-import { UUID } from 'crypto'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { PrimeIcons } from 'primereact/api'
 import { getInvoiceTotal } from './dataCalc'
@@ -80,12 +80,13 @@ const PaymentWayTr = ({
       <td className={cx('max-w-[4.5rem]', { 'pt-2': isFirtsRow })}>
         {showDueDate && (
           <DateTimeValid
-            name={`${FINANCE_CODE}created_date`}
-            label='Fecha'
+            name={`${tag}${FieldsPaymentWayItems.DD}${rowId}`}
+            label='Fecha vencimiento'
             handleForm={handleForm}
             showIcon={false}
             showTime={false}
             className='[&_input]:text-right'
+            required
           />
         )}
       </td>

@@ -233,6 +233,7 @@ export enum FieldsCodeBudgetItems {
 
 export enum FieldsPaymentWayItems {
   L = '_list_',
+  DD = '_due_date_',
   V = '_valor_',
 }
 
@@ -255,4 +256,28 @@ export type DataSheet = {
 export type Commercial = {
   name: string
   value: UUID
+}
+
+export type InvoiceSiigoDirectus = {
+  id?: UUID
+  document: Record<string, any>
+  date: string
+  customer: Record<string, any>
+  cost_center?: number
+  currency?: Record<string, any>
+  seller: number
+  stamp: { send: boolean }
+  mail: { send: boolean }
+  observations: string
+  items: Record<string, any>
+  payments: Record<string, any>
+  additional_fields?: Record<string, any>
+  id_siigo?: UUID
+  comercial: { id: UUID }
+  total_bruto: number
+  total_descuentos: number
+  sub_total: number
+  total_iva: number
+  total_formas_pago: number
+  total_neto: number
 }

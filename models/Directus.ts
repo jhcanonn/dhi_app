@@ -302,6 +302,7 @@ export type CommercialDirectus = {
 }
 
 export type InvoiceTypesDirectus = {
+  id: number
   code: string
   name: string
   type: string
@@ -346,7 +347,15 @@ export type InvoiceItemsDirectus = {
   prices: InvoiceItemsPricesDirectus[]
 }
 
+export type InvoiceDocumentTypeDirectus = {
+  id: number
+  codigo: string
+  homologo_app: string
+  nombre: string
+}
+
 export type InvoicesDirectus = {
+  siigo_tdocumentos: InvoiceDocumentTypeDirectus[]
   siigo_voucher_types: InvoiceTypesDirectus[]
   siigo_payment_types: InvoicePaymentWaysDirectus[]
   siigo_services: InvoiceItemsDirectus[]
