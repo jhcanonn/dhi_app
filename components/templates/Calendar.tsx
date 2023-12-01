@@ -1,7 +1,7 @@
 'use client'
 
 import es from 'date-fns/locale/es'
-import { ReactNode, useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Scheduler } from 'react-scheduler-lib'
 import {
   CellRenderedProps,
@@ -45,13 +45,14 @@ import {
   PaysDirectus,
   ProfessionalDirectus,
   ResourceType,
+  User,
   ViewMode,
 } from '@models'
 import { useCalendarContext, useGlobalContext } from '@contexts'
 import { useGetResources, withToast } from '@hooks'
 import { useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner'
-import { GET_APPOINTMENTS, PAYS } from '@utils/queries'
+import { GET_APPOINTMENTS, GET_USER_ME, PAYS } from '@utils/queries'
 import {
   editAppointment,
   getCountries,
@@ -61,6 +62,7 @@ import {
 import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns'
 import moment from 'moment'
 import { Cookies, withCookies } from 'react-cookie'
+import { directusSystemClient } from './Providers'
 
 type Props = {
   cookies: Cookies
@@ -72,6 +74,7 @@ const Calendar = ({ cookies, showError }: Props) => {
   const {
     events,
     user,
+    setUser,
     holidays,
     countries,
     setEvents,
@@ -107,6 +110,12 @@ const Calendar = ({ cookies, showError }: Props) => {
 
   const { data: paysFetch, loading: paysLoading } = useQuery(PAYS)
 
+  const { refetch: refetchUser } = useQuery(GET_USER_ME, {
+    client: directusSystemClient,
+  })
+
+  const [currentUser, setCurrentUser] = useState<User>()
+
   const { data: professionalsFetch, loading: professionalsLoading } =
     useQuery(GET_PROFESSIONALS)
 
@@ -115,7 +124,6 @@ const Calendar = ({ cookies, showError }: Props) => {
   const { loading: appointmentsLoading, refetch: appointmentRefetch } =
     useQuery(GET_APPOINTMENTS)
 
-  const isProfessionalUser = user?.role.id === ROLES.dhi_profesional
   const fetchingFromDirectus =
     eventStateLoading &&
     paysLoading &&
@@ -205,6 +213,12 @@ const Calendar = ({ cookies, showError }: Props) => {
     calendarRef.current?.scheduler.handleState(false, 'loading')
   }
 
+  const fetchUser = async () => {
+    const res = await refetchUser()
+    console.log('res', res)
+    setCurrentUser(res?.data?.users_me)
+  }
+
   const updateAppointment = async (
     eventId: number,
     resourceId: number,
@@ -279,6 +293,7 @@ const Calendar = ({ cookies, showError }: Props) => {
   }
 
   useEffect(() => {
+    fetchUser()
     setCalendarScheduler(calendarRef)
     fetchHolidays()
     fetchCountries()
@@ -301,10 +316,12 @@ const Calendar = ({ cookies, showError }: Props) => {
   }, [paysFetch])
 
   useEffect(() => {
+    if (!currentUser) return
+    setUser(currentUser)
     let professionals =
       professionalsFetch?.profesionales as ProfessionalDirectus[]
     if (professionals?.length) {
-      if (isProfessionalUser) {
+      if (currentUser?.role?.id === ROLES.dhi_profesional) {
         const roleProfessional = professionals.find(
           (p) => user && +p.id === +user?.profesional?.id,
         )
@@ -317,7 +334,7 @@ const Calendar = ({ cookies, showError }: Props) => {
         mappedProfessionals?.length ? mappedProfessionals[0] : null,
       )
     }
-  }, [professionalsFetch])
+  }, [currentUser])
 
   useEffect(() => {
     const boxes = boxesFetch?.salas as BoxDirectus[]
@@ -336,6 +353,10 @@ const Calendar = ({ cookies, showError }: Props) => {
   useEffect(() => {
     countries?.length && eventStates?.length && fetchAppointments()
   }, [startDate, endDate, countries, eventStates])
+
+  useEffect(() => {
+    refetchUser()
+  }, [events])
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
