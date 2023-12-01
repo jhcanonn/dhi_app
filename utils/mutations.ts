@@ -362,3 +362,11 @@ export const SCHEDULE_DELETE = gql`
     }
   }
 `
+
+export const CREATE_INVOICE = gql`
+  mutation CreateSiigoInvoice($invoiceData: create_facturas_siigo_input!) {
+    create_facturas_siigo_item(data: $invoiceData) {
+      id
+    }
+  }
+`

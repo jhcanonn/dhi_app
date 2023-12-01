@@ -57,6 +57,14 @@ export const GET_USER_ME = gql`
         no_registro_medico
         cargo
       }
+      user_siigo {
+        id
+        identification
+        username
+        email
+        first_name
+        last_name
+      }
       avatar {
         id
       }
@@ -677,7 +685,14 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
 
 export const GET_INVOICES = gql`
   query {
+    siigo_tdocumentos(filter: { estado: { _eq: "published" } }) {
+      id
+      codigo
+      homologo_app
+      nombre
+    }
     siigo_voucher_types(filter: { active: { _eq: true } }) {
+      id
       code
       name
       type

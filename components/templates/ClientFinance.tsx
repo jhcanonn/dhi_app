@@ -1,12 +1,14 @@
 'use client'
 
 import {
+  CREATE_INVOICE,
   DHI_SUCRUSAL,
   FINANCE_CODE,
   GET_INVOICES,
   PAGE_PATH,
   invoiceItemsMapper,
   invoicePaymentWaysMapper,
+  invoiceSiigoMapper,
   invoiceTypesMapper,
   parseUrl,
   regexPatterns,
@@ -15,12 +17,13 @@ import {
   DateTimeValid,
   DropdownValid,
   InputNumberValid,
+  InputSwitchValid,
   InputTextValid,
   InputTextareaValid,
 } from '@components/atoms'
 import moment from 'moment'
 import { BudgetItem, InvoicesDirectus } from '@models'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { useGetCommercials, useGoTo, withToast } from '@hooks'
 import { Card } from 'primereact/card'
 import { ReactNode, useEffect, useState } from 'react'
@@ -28,23 +31,24 @@ import { useForm } from 'react-hook-form'
 import { BudgetItems, PaymentWayItems } from '@components/organisms'
 import { Button } from 'primereact/button'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
-import { useClientContext } from '@contexts'
+import { useClientContext, useGlobalContext } from '@contexts'
 import { validTotals } from '@components/organisms/patient/PaymentWayItems'
 
 type Props = {
-  showSuccess: (summary: ReactNode, detail: ReactNode) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
 
-const ClientFinance = ({ showSuccess, showWarning }: Props) => {
+const ClientFinance = ({ showWarning }: Props) => {
   const [loading, setLoading] = useState(false)
   const [invoices, setInvoices] = useState<InvoicesDirectus | null>(null)
   const { clientInfo } = useClientContext()
   const { commercials } = useGetCommercials()
+  const { user } = useGlobalContext()
   const { goToPage } = useGoTo()
 
   const { data: dataInvoices, loading: loadingInvoices } =
     useQuery(GET_INVOICES)
+  const [financeCreate] = useMutation(CREATE_INVOICE)
 
   const defaultValues: Record<string, any> = {
     [`${FINANCE_CODE}created_date`]: moment().toDate(),
@@ -52,20 +56,34 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
     [`${FINANCE_CODE}total_bruto`]: 0,
     [`${FINANCE_CODE}descuentos`]: 0,
     [`${FINANCE_CODE}subtotal`]: 0,
-    [`${FINANCE_CODE}iva`]: 0,
+    [`${FINANCE_CODE}total_iva`]: 0,
     [`${FINANCE_CODE}total_formas_de_pago`]: 0,
     [`${FINANCE_CODE}total_neto`]: 0,
+    [`${FINANCE_CODE}send_email_dian`]: false,
+    [`${FINANCE_CODE}send_email_client`]: false,
   }
   const handleForm = useForm({ defaultValues })
   const { handleSubmit, getValues } = handleForm
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setLoading(true)
     const saveData = validTotals(handleForm, showWarning, true)
     if (saveData) {
-      console.log({ data: getValues(), showSuccess, showWarning })
+      const invoiceSiigo = invoiceSiigoMapper(
+        getValues(),
+        clientInfo,
+        invoices?.siigo_tdocumentos || [],
+        user,
+      )
+      const createdInvoice: any = await financeCreate({
+        variables: { invoiceData: invoiceSiigo },
+      })
+      if (createdInvoice?.data?.create_facturas_siigo_item?.id) {
+        setLoading(false)
+        clientInfo &&
+          goToPage(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }))
+      }
     }
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -93,6 +111,7 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
             handleForm={handleForm}
             label='Fecha de creación'
             showIcon={false}
+            showTime={false}
             disabled
           />
           <DropdownValid
@@ -182,7 +201,7 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
             <InputNumberValid
               handleForm={handleForm}
               label='IVA'
-              name={`${FINANCE_CODE}iva`}
+              name={`${FINANCE_CODE}total_iva`}
               min={0}
               mode={InputNumberMode.CURRENCY}
               currency='COP'
@@ -223,14 +242,31 @@ const ClientFinance = ({ showSuccess, showWarning }: Props) => {
             />
           </div>
         </div>
-        <InputTextareaValid
-          handleForm={handleForm}
-          label='Observaciones'
-          name={`${FINANCE_CODE}observaciones`}
-          rows={4}
-          gridRows={4}
-          pattern={regexPatterns.onlyEmpty}
-        />
+        <div className='flex flex-col gap-2 md:flex-row md:gap-4'>
+          <div className='flex justify-end w-full md:!w-[70%]'>
+            <InputTextareaValid
+              handleForm={handleForm}
+              label='Observaciones'
+              name={`${FINANCE_CODE}observaciones`}
+              rows={4}
+              gridRows={4}
+              className='w-full'
+              pattern={regexPatterns.onlyEmpty}
+            />
+          </div>
+          <div className='flex flex-row justify-evenly flex-wrap gap-x-4 md:!flex-col md:justify-center w-full md:!w-[30%]'>
+            <InputSwitchValid
+              name={`${FINANCE_CODE}send_email_dian`}
+              handleForm={handleForm}
+              acceptMessage='Enviar correo a la DIAN'
+            />
+            <InputSwitchValid
+              name={`${FINANCE_CODE}send_email_client`}
+              handleForm={handleForm}
+              acceptMessage='Enviar correo al Cliente'
+            />
+          </div>
+        </div>
         <div className='flex flex-col md:flex-row gap-2 justify-center'>
           <Button
             type='button'

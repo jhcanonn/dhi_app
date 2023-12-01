@@ -43,7 +43,7 @@ const InputSwitchValid = <T extends FieldValues>({
         fieldState: { error },
       }) => (
         <div className={`flex flex-col justify-center ${className}`}>
-          <div className='flex gap-2'>
+          <div className='flex gap-2 items-center'>
             <InputSwitch
               inputId={name}
               checked={!!value}
