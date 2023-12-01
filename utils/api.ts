@@ -147,7 +147,7 @@ export const logout = async (cookies: Cookies) => {
       console.error(error)
     }
   }
-  cookies.remove(DHI_SESSION)
+  cookies.remove(DHI_SESSION, { path: '/' })
 }
 
 export const refreshToken = async (cookies: Cookies) => {
@@ -180,11 +180,11 @@ export const refreshToken = async (cookies: Cookies) => {
       newToken = response.access_token
       console.info('Refresh token DONE!')
     } else {
-      cookies.remove(DHI_SESSION)
+      cookies.remove(DHI_SESSION, { path: '/' })
     }
   } catch (error: any) {
     console.error(error)
-    cookies.remove(DHI_SESSION)
+    cookies.remove(DHI_SESSION, { path: '/' })
   }
 
   return newToken

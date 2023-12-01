@@ -6,7 +6,6 @@ import { Button } from 'primereact/button'
 import { useAsideContext, useGlobalContext } from '@contexts'
 import { Cookies, withCookies } from 'react-cookie'
 import { useQuery } from '@apollo/client'
-import { directusSystemClient } from '@components/templates/Providers'
 import { Avatar } from 'primereact/avatar'
 import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
@@ -14,16 +13,12 @@ import { getPanelsFromDirectus, logout, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { useGoTo } from '@hooks'
-import { GET_CIE_10, GET_USER_ME, LocalStorageTags, PAGE_PATH } from '@utils'
+import { GET_CIE_10, LocalStorageTags, PAGE_PATH } from '@utils'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const { goToPage } = useGoTo()
-  const { setUser, setPanels } = useGlobalContext()
+  const { user, setPanels } = useGlobalContext()
   const { toggleVisible } = useAsideContext()
-
-  const { data, loading } = useQuery(GET_USER_ME, {
-    client: directusSystemClient,
-  })
 
   const { refetch: refetchCie10 } = useQuery(GET_CIE_10)
 
@@ -48,10 +43,6 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
       )
     }
   }
-
-  useEffect(() => {
-    if (!loading) setUser(data.users_me)
-  }, [data])
 
   useEffect(() => {
     getPanels()
@@ -88,19 +79,15 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
         <Link href={PAGE_PATH.profile} className='h-[3rem]'>
           <Avatar
             image={
-              !loading && data?.users_me.avatar
-                ? generateURLAssetsWithToken(data.users_me.avatar?.id, {
+              user?.avatar
+                ? generateURLAssetsWithToken(user.avatar?.id, {
                     quality: '15',
                   })
                 : undefined
             }
-            label={
-              !loading && data?.users_me.first_name
-                ? data.users_me.first_name.slice(0, 1)
-                : undefined
-            }
+            label={user?.first_name ? user?.first_name.slice(0, 1) : undefined}
             className={cx('mr-2 !rounded-full', {
-              '!bg-brand text-white': !loading,
+              '!bg-brand text-white': user,
             })}
             size='large'
             shape='circle'
