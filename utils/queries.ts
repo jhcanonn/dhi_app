@@ -707,7 +707,7 @@ export const GET_TEMPLATES_RECIPES_EXAMS_BY_FICHAID = gql`
   }
 `
 
-export const GET_INVOICES = gql`
+export const GET_SIIGO_INFO = gql`
   query {
     siigo_tdocumentos(filter: { estado: { _eq: "published" } }) {
       id
@@ -755,6 +755,39 @@ export const GET_INVOICES = gql`
       taxes
       tax_included
       prices
+    }
+  }
+`
+
+export const GET_INVOICES = gql`
+  query GetInvoices($customerId: GraphQLStringOrFloat) {
+    facturas_siigo(filter: { paciente: { id: { _eq: $customerId } } }) {
+      id
+      document
+      date
+      customer
+      cost_center
+      currency
+      seller
+      stamp
+      mail
+      observations
+      items
+      payments
+      additional_fields
+      id_siigo
+      paciente {
+        id
+      }
+      comercial {
+        id
+      }
+      total_bruto
+      total_descuentos
+      sub_total
+      total_iva
+      total_formas_pago
+      total_neto
     }
   }
 `

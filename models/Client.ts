@@ -160,6 +160,15 @@ export type BudgetType = {
   }
 }
 
+export type InvoiceType = {
+  id: UUID
+  created_date: DataTableDate
+  total_neto: DataTableCurrency
+  payed: DataTableCurrency
+  debt: DataTableCurrency
+  items: Record<string, any>[]
+}
+
 export type PatientExtraData = {
   patient_extra_identidad_de_genero: string
   patient_extra_fecha_exp_documento: string
@@ -269,10 +278,11 @@ export type InvoiceSiigoDirectus = {
   stamp: { send: boolean }
   mail: { send: boolean }
   observations: string
-  items: Record<string, any>
-  payments: Record<string, any>
+  items: Record<string, any>[]
+  payments: Record<string, any>[]
   additional_fields?: Record<string, any>
   id_siigo?: UUID
+  paciente: { id: number }
   comercial: { id: UUID }
   total_bruto: number
   total_descuentos: number
