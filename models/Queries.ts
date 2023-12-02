@@ -41,6 +41,12 @@ export type AppointmentQuery = {
     ficha_id: {
       id: string
     }
+    alertas: {
+      id: number
+      descripcion: string
+      visible_agenda: boolean
+      visible_atencion: boolean
+    }[]
   }
   estado: {
     id: string

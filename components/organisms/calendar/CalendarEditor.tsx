@@ -3,6 +3,7 @@
 import { EventActions, SchedulerHelpers } from 'react-scheduler-lib/types'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { useMountEffect } from 'primereact/hooks'
 import { useForm } from 'react-hook-form'
 import {
   InputTextValid,
@@ -41,7 +42,7 @@ import {
   COMING_SOON,
   pickObjectProps,
 } from '@utils'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { useQuery } from '@apollo/client'
 import {
@@ -67,8 +68,9 @@ import { Skeleton } from 'primereact/skeleton'
 import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { classNames as cx } from 'primereact/utils'
 import { useGoTo, withToast } from '@hooks'
+import { Toast } from 'primereact/toast'
 
-const statesView = [2, 7, 8, 9]
+const statesViewAtention = [2, 7, 8, 9]
 
 type Props = {
   showError: (summary: ReactNode, detail: ReactNode) => void
@@ -76,6 +78,20 @@ type Props = {
   showInfo: (summary: ReactNode, detail: ReactNode) => void
   cookies: Cookies
   scheduler: SchedulerHelpers
+}
+
+const showAlertsPatient = (alertsShow: any[] | undefined, toast: Toast) => {
+  alertsShow
+    ?.filter((al) => al.visible_agenda)
+    .forEach(
+      (a) =>
+        toast?.show({
+          severity: 'warn',
+          summary: a.descripcion,
+          sticky: true,
+          closable: false,
+        }),
+    )
 }
 
 const CalendarEditor = ({
@@ -95,6 +111,8 @@ const CalendarEditor = ({
   const { professionals, boxes, countries, setEvents } = useGlobalContext()
   const { resourceType, eventStates, pays } = useCalendarContext()
 
+  const toast = useRef<Toast>(null)
+
   const resourceField = calendarFieldsMapper(resourceType).idField
   const event = scheduler.edited as DhiEvent | undefined
   const isEvent = !!event
@@ -102,6 +120,10 @@ const CalendarEditor = ({
   const resourceId = event
     ? Number(event[resourceField])
     : Number(scheduler[resourceField])
+
+  useMountEffect(() => {
+    showAlertsPatient(event?.alerts, toast.current!)
+  })
 
   const eventData: DhiEvent = {
     event_id: event?.event_id!,
@@ -141,6 +163,7 @@ const CalendarEditor = ({
     description: event?.description,
     eventStates,
     data_extra: event?.data_extra || undefined,
+    alerts: event?.alerts || [],
   }
 
   const {
@@ -244,7 +267,11 @@ const CalendarEditor = ({
     const box: Box = e.value
     setValue('services', [])
     resetField('end')
-    setServices(getServices(box.box_id))
+    const servicesByBox = getServices(box.box_id)
+    setServices(servicesByBox)
+    if (servicesByBox?.length === 1) {
+      setValue('services', [servicesMapper(servicesByBox)[0]])
+    }
   }
 
   const handleMultiselectService = (e: MultiSelectChangeEvent) => {
@@ -294,6 +321,7 @@ const CalendarEditor = ({
       )
       setValue('phone', patient.telefono, options)
       setValue('email', patient.correo, options)
+      showAlertsPatient(patient.alertas, toast.current!)
     } else {
       setDesabledFields(false)
     }
@@ -385,307 +413,308 @@ const CalendarEditor = ({
   }, [])
 
   return (
-    <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
-      <form
-        id='form_calendar_appointment'
-        autoComplete='off'
-        onSubmit={handleSubmit(onSubmit)}
-        className='flex flex-col gap-2'
-      >
-        <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-72'>
-          {!blocked && (
-            <div className='flex flex-col gap-2 w-full'>
-              {event && (
-                <InputTextValid
-                  name='data_sheet'
-                  label='Historia clínica'
+    <>
+      <Toast ref={toast} />
+      <Card title={<Header />} className='flex [&_.p-card-content]:pb-0'>
+        <form
+          id='form_calendar_appointment'
+          autoComplete='off'
+          onSubmit={handleSubmit(onSubmit)}
+          className='flex flex-col gap-2'
+        >
+          <div className='flex flex-col md:flex-row gap-1 md:gap-3 w-full sm:[&>div]:w-96 md:[&>div]:!w-72'>
+            {!blocked && (
+              <div className='flex flex-col gap-2 w-full'>
+                {event && (
+                  <InputTextValid
+                    name='data_sheet'
+                    label='Historia clínica'
+                    handleForm={handleForm}
+                    icon='book'
+                    disabled
+                  />
+                )}
+                <DropdownValid
+                  name='id_type'
+                  label='Tipo de identificación'
                   handleForm={handleForm}
-                  icon='book'
-                  disabled
+                  list={idTypes}
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <AutoCompleteValid
+                  name='identification'
+                  label='Identificación'
+                  handleForm={handleForm}
+                  icon='id-card'
+                  field='documento'
+                  suggestions={patients}
+                  itemTemplate={idItemTemplate}
+                  completeMethod={idSearcher}
+                  onCustomChange={handleSetFieldsForm}
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                />
+                <InputTextValid
+                  name='first_name'
+                  label='1° Nombre'
+                  handleForm={handleForm}
+                  icon='user'
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                  pattern={regexPatterns.onlyEmpty}
+                />
+                <InputTextValid
+                  name='middle_name'
+                  label='2° Nombre'
+                  handleForm={handleForm}
+                  disabled={desabledFields || isEvent}
+                  icon='user'
+                  pattern={regexPatterns.onlyEmpty}
+                />
+                <InputTextValid
+                  name='last_name'
+                  label='1° Apellido'
+                  handleForm={handleForm}
+                  icon='user'
+                  disabled={desabledFields || isEvent}
+                  required={!blocked}
+                  pattern={regexPatterns.onlyEmpty}
+                />
+                <InputTextValid
+                  name='last_name_2'
+                  label='2° Apellido'
+                  handleForm={handleForm}
+                  disabled={desabledFields || isEvent}
+                  icon='user'
+                  pattern={regexPatterns.onlyEmpty}
+                />
+              </div>
+            )}
+            <div className='flex flex-col gap-2 w-full'>
+              {blocked && (
+                <InputTextValid
+                  name='title'
+                  label='Nombre de bloqueo'
+                  handleForm={handleForm}
+                  icon='comment'
                 />
               )}
-              <DropdownValid
-                name='id_type'
-                label='Tipo de identificación'
+              <DateTimeValid
+                name='start'
+                label='Fecha inicio'
                 handleForm={handleForm}
-                list={idTypes}
-                disabled={desabledFields || isEvent}
                 required={!blocked}
+                disabled={isOldDate}
               />
-              <AutoCompleteValid
-                name='identification'
-                label='Identificación'
+              <DateTimeValid
+                name='end'
+                label='Fecha fin'
                 handleForm={handleForm}
-                icon='id-card'
-                field='documento'
-                suggestions={patients}
-                itemTemplate={idItemTemplate}
-                completeMethod={idSearcher}
-                onCustomChange={handleSetFieldsForm}
-                disabled={desabledFields || isEvent}
                 required={!blocked}
+                disabled={isOldDate}
               />
-              <InputTextValid
-                name='first_name'
-                label='1° Nombre'
-                handleForm={handleForm}
-                icon='user'
-                disabled={desabledFields || isEvent}
-                required={!blocked}
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='middle_name'
-                label='2° Nombre'
-                handleForm={handleForm}
-                disabled={desabledFields || isEvent}
-                icon='user'
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='last_name'
-                label='1° Apellido'
-                handleForm={handleForm}
-                icon='user'
-                disabled={desabledFields || isEvent}
-                required={!blocked}
-                pattern={regexPatterns.onlyEmpty}
-              />
-              <InputTextValid
-                name='last_name_2'
-                label='2° Apellido'
-                handleForm={handleForm}
-                disabled={desabledFields || isEvent}
-                icon='user'
-                pattern={regexPatterns.onlyEmpty}
-              />
-            </div>
-          )}
-          <div className='flex flex-col gap-2 w-full'>
-            {blocked && (
-              <InputTextValid
-                name='title'
-                label='Nombre de bloqueo'
-                handleForm={handleForm}
-                icon='comment'
-              />
-            )}
-            <DateTimeValid
-              name='start'
-              label='Fecha inicio'
-              handleForm={handleForm}
-              required={!blocked}
-              disabled={isOldDate}
-            />
-            <DateTimeValid
-              name='end'
-              label='Fecha fin'
-              handleForm={handleForm}
-              required={!blocked}
-              disabled={isOldDate}
-            />
-            {!blocked && (
-              <>
-                <DropdownValid
-                  name='professional'
-                  label='Profesional'
-                  handleForm={handleForm}
-                  list={professionals}
-                  required={!blocked}
-                  disabled={isOldDate}
-                />
-                <DropdownValid
-                  name='box'
-                  label='Box'
-                  handleForm={handleForm}
-                  list={boxes.filter((b) => b.name !== BLOCK_BOX)}
-                  required={!blocked}
-                  disabled={isOldDate}
-                  onCustomChange={handleBoxChange}
-                />
-                <MultiSelectValid
-                  name='services'
-                  label='Servicios'
-                  handleForm={handleForm}
-                  list={servicesMapper(services)}
-                  selectedItemsLabel='{0} servicios'
-                  placeholder='Seleccione servicios'
-                  onCustomChange={handleMultiselectService}
-                  required={!blocked}
-                  disabled={isOldDate}
-                />
-                {event && (
+              {!blocked && (
+                <>
                   <DropdownValid
-                    name='pay'
-                    label='Pago'
+                    name='professional'
+                    label='Profesional'
                     handleForm={handleForm}
-                    list={pays}
+                    list={professionals}
                     required={!blocked}
                     disabled={isOldDate}
                   />
-                )}
-              </>
-            )}
-          </div>
-          {!blocked && (
-            <div className='flex flex-col gap-2 w-full'>
-              {event && (
-                <DropdownValid
-                  name='state'
-                  label='Estado'
-                  handleForm={handleForm}
-                  list={eventStates.filter((es) => es.name !== BLOCK_BOX)}
-                  required={!blocked}
-                  itemTemplate={stateItemTemplate}
-                  valueTemplate={stateValueTemplate}
-                  disabled={isOldDate}
-                />
+                  <DropdownValid
+                    name='box'
+                    label='Box'
+                    handleForm={handleForm}
+                    list={boxes.filter((b) => b.name !== BLOCK_BOX)}
+                    required={!blocked}
+                    disabled={isOldDate}
+                    onCustomChange={handleBoxChange}
+                  />
+                  <MultiSelectValid
+                    name='services'
+                    label='Servicios'
+                    handleForm={handleForm}
+                    list={servicesMapper(services)}
+                    selectedItemsLabel='{0} servicios'
+                    placeholder='Seleccione servicios'
+                    onCustomChange={handleMultiselectService}
+                    required={!blocked}
+                    disabled={isOldDate}
+                  />
+                  {event && (
+                    <DropdownValid
+                      name='pay'
+                      label='Pago'
+                      handleForm={handleForm}
+                      list={pays}
+                      required={!blocked}
+                      disabled={isOldDate}
+                    />
+                  )}
+                </>
               )}
-              <PhoneNumberValid
-                name='phone'
-                diallingName='dialling'
-                label='Teléfono'
-                handleForm={handleForm}
-                icon='phone'
-                minLength={6}
-                required={!blocked}
-                disabled={isOldDate}
-              />
-              {(event || showDataExtra) && (
+            </div>
+            {!blocked && (
+              <div className='flex flex-col gap-2 w-full'>
+                {event && (
+                  <DropdownValid
+                    name='state'
+                    label='Estado'
+                    handleForm={handleForm}
+                    list={eventStates.filter((es) => es.name !== BLOCK_BOX)}
+                    required={!blocked}
+                    itemTemplate={stateItemTemplate}
+                    valueTemplate={stateValueTemplate}
+                    disabled={isOldDate}
+                  />
+                )}
                 <PhoneNumberValid
-                  name='phone_2'
-                  diallingName='dialling_2'
-                  label='Teléfono 2'
+                  name='phone'
+                  diallingName='dialling'
+                  label='Teléfono'
                   handleForm={handleForm}
                   icon='phone'
                   minLength={6}
+                  required={!blocked}
                   disabled={isOldDate}
                 />
-              )}
-              <InputTextValid
-                name='email'
-                label='Correo electrónico'
-                handleForm={handleForm}
-                icon='envelope'
-                required={!blocked}
-                pattern={regexPatterns.email}
-                disabled={isOldDate}
-              />
-              <InputSwitchValid
-                name='sent_email'
-                handleForm={handleForm}
-                acceptMessage='Enviar correo.'
-                disabled={isOldDate}
-              />
-              <InputTextareaValid
-                name='description'
-                label='Comentario'
-                handleForm={handleForm}
-                rows={4}
-                disabled={isOldDate}
-                pattern={regexPatterns.onlyEmpty}
-              />
+                {(event || showDataExtra) && (
+                  <PhoneNumberValid
+                    name='phone_2'
+                    diallingName='dialling_2'
+                    label='Teléfono 2'
+                    handleForm={handleForm}
+                    icon='phone'
+                    minLength={6}
+                    disabled={isOldDate}
+                  />
+                )}
+                <InputTextValid
+                  name='email'
+                  label='Correo electrónico'
+                  handleForm={handleForm}
+                  icon='envelope'
+                  required={!blocked}
+                  pattern={regexPatterns.email}
+                  disabled={isOldDate}
+                />
+                <InputSwitchValid
+                  name='sent_email'
+                  handleForm={handleForm}
+                  acceptMessage='Enviar correo.'
+                  disabled={isOldDate}
+                />
+                <InputTextareaValid
+                  name='description'
+                  label='Comentario'
+                  handleForm={handleForm}
+                  rows={4}
+                  disabled={isOldDate}
+                  pattern={regexPatterns.onlyEmpty}
+                />
+              </div>
+            )}
+          </div>
+          {showDataExtra && (
+            <div className='mt-2'>
+              <PatientDataExtra id='calendar_extra' handleForm={handleForm} />
             </div>
           )}
-        </div>
-        {showDataExtra && (
-          <div className='mt-2'>
-            <PatientDataExtra id='calendar_extra' handleForm={handleForm} />
-          </div>
-        )}
-        <section
-          className={cx(
-            'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
-            { 'mt-3': showDataExtra },
-          )}
-        >
-          {(isEvent || (!isEvent && desabledFields)) && (
-            <Button
-              label={'Perfil'}
-              type='button'
-              severity='info'
-              rounded
-              onClick={() => {
-                goToPage(
-                  parseUrl(PAGE_PATH.clientDetail, {
-                    id: getValues('client_id')!,
-                  }),
-                )
-              }}
-            />
-          )}
-          {event && (
-            <>
+          <section
+            className={cx(
+              'flex justify-center gap-2 flex-wrap [&>button]:text-[0.8rem] [&>button]:w-full [&>button]:md:w-auto mt-1',
+              { 'mt-3': showDataExtra },
+            )}
+          >
+            {(isEvent || (!isEvent && desabledFields)) && (
               <Button
-                label={'Historico'}
+                label={'Perfil'}
                 type='button'
-                severity='warning'
-                rounded
-                onClick={(e: any) =>
-                  showInfo(e.target.textContent, COMING_SOON)
-                }
-              />
-              <Button
-                label={'Pagar'}
-                type='button'
-                severity='danger'
+                severity='info'
                 rounded
                 onClick={() => {
                   goToPage(
-                    parseUrl(PAGE_PATH.finance, {
+                    parseUrl(PAGE_PATH.clientDetail, {
                       id: getValues('client_id')!,
                     }),
                   )
                 }}
               />
-
-              {console.log(getValues())}
-              {statesView.includes(event.state?.state_id!) && (
+            )}
+            {event && (
+              <>
                 <Button
-                  label={'Realizar Atención'}
+                  label={'Historico'}
                   type='button'
-                  severity='secondary'
+                  severity='warning'
+                  rounded
+                  onClick={(e: any) =>
+                    showInfo(e.target.textContent, COMING_SOON)
+                  }
+                />
+                <Button
+                  label={'Pagar'}
+                  type='button'
+                  severity='danger'
                   rounded
                   onClick={() => {
                     goToPage(
-                      parseUrl(PAGE_PATH.clientDataSheetService, {
+                      parseUrl(PAGE_PATH.finance, {
                         id: getValues('client_id')!,
-                        serviceId: getValues('services')![0].service_id,
                       }),
                     )
                   }}
                 />
-              )}
-            </>
-          )}
-          {!isOldDate && (
-            <>
-              {!event && !desabledFields && !blocked && (
-                <ToggleButton
-                  checked={showDataExtra}
-                  onLabel='Eliminar datos extra'
-                  offLabel='Incluir datos extra'
-                  onChange={(e: ToggleButtonChangeEvent) => {
-                    setShowDataExtra(e.value)
-                    showDataExtra &&
-                      Object.keys(getValues())
-                        .filter((key) => key.startsWith('patient_extra_'))
-                        .forEach((key) => unregister(key))
-                  }}
-                  className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
+                {statesViewAtention.includes(event.state?.state_id!) && (
+                  <Button
+                    label={'Realizar Atención'}
+                    type='button'
+                    severity='secondary'
+                    rounded
+                    onClick={() => {
+                      goToPage(
+                        parseUrl(PAGE_PATH.clientDataSheetService, {
+                          id: getValues('client_id')!,
+                          serviceId: getValues('services')![0].service_id,
+                        }),
+                      )
+                    }}
+                  />
+                )}
+              </>
+            )}
+            {!isOldDate && (
+              <>
+                {!event && !desabledFields && !blocked && (
+                  <ToggleButton
+                    checked={showDataExtra}
+                    onLabel='Eliminar datos extra'
+                    offLabel='Incluir datos extra'
+                    onChange={(e: ToggleButtonChangeEvent) => {
+                      setShowDataExtra(e.value)
+                      showDataExtra &&
+                        Object.keys(getValues())
+                          .filter((key) => key.startsWith('patient_extra_'))
+                          .forEach((key) => unregister(key))
+                    }}
+                    className='!text-[0.8rem] !rounded-full !w-full md:!w-fit'
+                  />
+                )}
+                <Button
+                  label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
+                  type='submit'
+                  severity='success'
+                  rounded
                 />
-              )}
-              <Button
-                label={blocked ? 'Bloquear' : event ? 'Guardar' : 'Agendar'}
-                type='submit'
-                severity='success'
-                rounded
-              />
-            </>
-          )}
-        </section>
-      </form>
-    </Card>
+              </>
+            )}
+          </section>
+        </form>
+      </Card>
+    </>
   )
 }
 

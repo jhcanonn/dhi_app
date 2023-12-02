@@ -354,6 +354,12 @@ export const GET_INFO_CLIENT = gql`
       estado_civil
       registrado
       fecha_nacimiento
+      alertas {
+        id
+        descripcion
+        visible_agenda
+        visible_atencion
+      }
     }
   }
 `
@@ -380,6 +386,12 @@ export const GET_CLIENTS = gql`
       indicativo
       registrado
       fecha_nacimiento
+      alertas {
+        id
+        descripcion
+        visible_agenda
+        visible_atencion
+      }
     }
   }
 `
@@ -445,6 +457,12 @@ export const GET_CLIENT_BY_ID = gql`
       datos_extra
       ficha_id {
         id
+      }
+      alertas {
+        id
+        descripcion
+        visible_agenda
+        visible_atencion
       }
       avatar {
         id
@@ -558,6 +576,12 @@ export const GET_APPOINTMENTS = gql`
         datos_extra
         ficha_id {
           id
+        }
+        alertas {
+          id
+          descripcion
+          visible_agenda
+          visible_atencion
         }
       }
       estado {

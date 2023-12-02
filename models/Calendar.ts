@@ -28,6 +28,12 @@ export type DhiEvent = ProcessedEvent & {
   description?: string
   eventStates?: EventState[]
   data_extra: any
+  alerts: {
+    id: number
+    descripcion: string
+    visible_agenda: boolean
+    visible_atencion: boolean
+  }[]
 }
 
 export type IdType = {
@@ -101,6 +107,12 @@ export type Patient = {
   estado_civil: string
   registrado: boolean
   fecha_nacimiento: string
+  alertas: {
+    id: number
+    descripcion: string
+    visible_agenda: boolean
+    visible_atencion: boolean
+  }[]
 }
 
 export type ServiceDHI = { box_service_id: number } & ServiceDirectus
