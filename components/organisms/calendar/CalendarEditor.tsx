@@ -70,7 +70,7 @@ import { classNames as cx } from 'primereact/utils'
 import { useGoTo, withToast } from '@hooks'
 import { Toast } from 'primereact/toast'
 
-const statesView = [2, 7, 8, 9]
+const statesViewAtention = [2, 7, 8, 9]
 
 type Props = {
   showError: (summary: ReactNode, detail: ReactNode) => void
@@ -668,9 +668,7 @@ const CalendarEditor = ({
                     )
                   }}
                 />
-
-                {console.log(getValues())}
-                {statesView.includes(event.state?.state_id!) && (
+                {statesViewAtention.includes(event.state?.state_id!) && (
                   <Button
                     label={'Realizar Atención'}
                     type='button'
