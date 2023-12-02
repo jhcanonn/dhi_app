@@ -194,6 +194,7 @@ export const dhiAppointmentMapper = (
   const dialling_2 = countries.find(
     (c) => c.dialling === clientInfo?.indicativo_2,
   )
+  const alerts = clientInfo?.alertas
 
   return {
     event_id: +data.id,
@@ -251,6 +252,7 @@ export const dhiAppointmentMapper = (
     description: data.comentario,
     eventStates,
     data_extra: clientInfo?.datos_extra,
+    alerts,
   } as DhiEvent
 }
 
