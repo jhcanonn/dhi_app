@@ -19,6 +19,7 @@ import { withToast } from '@hooks'
 import { Button } from 'primereact/button'
 
 type Props = {
+  serviceId: string | null
   showSuccess: (summary: ReactNode, detail: ReactNode) => void
   showError: (summary: ReactNode, detail: ReactNode) => void
 }
@@ -42,7 +43,7 @@ const accordionTabHeader = (panel: PanelsDirectus) => (
   </div>
 )
 
-const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
+const DataSheetAccordion = ({ serviceId, showSuccess, showError }: Props) => {
   const [accordionIndex, setAccordionIndex] = useState<number[]>([])
   const { clientInfo, dataSheets, setDataSheets } = useClientContext()
   const { user, panels } = useGlobalContext()
@@ -116,25 +117,53 @@ const DataSheetAccordion = ({ showSuccess, showError }: Props) => {
       activeIndex={accordionIndex}
       onTabChange={(e: any) => setAccordionIndex(e.index)}
     >
-      {panels
-        .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
-        .sort((a, b) => a.orden - b.orden)
-        .map((panel) => (
-          <AccordionTab
-            key={panel.code}
-            header={accordionTabHeader(panel)}
-            className='[&_.p-accordion-header-text]:w-full'
-          >
-            <PanelForm
-              formId='accordion'
-              panel={panel}
-              onFormData={(formData: any) => {
-                closeAccordionTab(panel.orden - 1)
-                onSaveAttention(formData, panel.code)
-              }}
-            />
-          </AccordionTab>
-        ))}
+      {serviceId &&
+        panels
+          .filter(
+            (p) =>
+              p.view_forms.includes(PanelTags.ATENTIONS) &&
+              p.servicios?.find(
+                (servicio) =>
+                  servicio.salas_servicios_id.servicios_id === +serviceId,
+              ),
+          )
+          .sort((a, b) => a.orden - b.orden)
+          .map((panel) => (
+            <AccordionTab
+              key={panel.code}
+              header={accordionTabHeader(panel)}
+              className='[&_.p-accordion-header-text]:w-full'
+            >
+              <PanelForm
+                formId='accordion'
+                panel={panel}
+                onFormData={(formData: any) => {
+                  closeAccordionTab(panel.orden - 1)
+                  onSaveAttention(formData, panel.code)
+                }}
+              />
+            </AccordionTab>
+          ))}
+      {!serviceId &&
+        panels
+          .filter((p) => p.view_forms.includes(PanelTags.ATENTIONS))
+          .sort((a, b) => a.orden - b.orden)
+          .map((panel) => (
+            <AccordionTab
+              key={panel.code}
+              header={accordionTabHeader(panel)}
+              className='[&_.p-accordion-header-text]:w-full'
+            >
+              <PanelForm
+                formId='accordion'
+                panel={panel}
+                onFormData={(formData: any) => {
+                  closeAccordionTab(panel.orden - 1)
+                  onSaveAttention(formData, panel.code)
+                }}
+              />
+            </AccordionTab>
+          ))}
     </Accordion>
   ) : (
     <div className='flex justify-center'>

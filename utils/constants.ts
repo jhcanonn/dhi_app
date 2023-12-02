@@ -60,6 +60,7 @@ export const PAGE_PATH = {
   clientDetail: '/client/{id}',
   clientEdit: '/client/{id}/edit',
   clientDataSheet: '/client/{id}/dataSheet',
+  clientDataSheetService: '/client/{id}/dataSheet?serviceid={serviceId}',
   clientHistorySchedule: '/client/{id}/historyschedule',
   clientGallery: '/client/{id}/gallery',
   clientBudget: '/client/{id}/budget',

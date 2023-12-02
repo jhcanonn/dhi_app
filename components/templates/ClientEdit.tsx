@@ -78,7 +78,11 @@ const ClientEdit = ({ showError }: Props) => {
         },
       })
     } catch (error: any) {
-      showError(error?.response?.data?.status, error?.response?.data?.message)
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.msg ||
+        error?.message
+      showError(error?.response?.data?.status, message)
     }
     setClientInfo({ ...clientInfo, ...client })
     setLoading(false)

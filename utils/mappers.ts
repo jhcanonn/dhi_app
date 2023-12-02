@@ -208,9 +208,9 @@ export const dhiAppointmentMapper = (
     start: moment.utc(data.inicio).toDate(),
     end: moment.utc(data.fin).toDate(),
     title: data.titulo,
-    professional_id: +data.profesional.id,
+    professional_id: +data?.profesional?.id,
     professional: {
-      professional_id: +data.profesional.id,
+      professional_id: +data?.profesional?.id,
     },
     box_id: +boxInfo.id,
     box: {
@@ -473,7 +473,7 @@ export const budgetServicesMapper = (
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         acc[key].push({
-          name: item.servicios_id.nombre,
+          name: (item.servicios_id as any).nombre,
           value: JSON.stringify(item),
         })
         return acc

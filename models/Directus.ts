@@ -269,6 +269,7 @@ export type PanelsDirectus = {
   view_forms: string[]
   budget_items: string[]
   cargo: string[]
+  servicios: { salas_servicios_id: BudgetItemsBoxService }[]
 } & DefaultFieldsDirectus
 
 export type DataSheetDirectus = {
@@ -369,11 +370,13 @@ export type BudgetItemsBoxService = {
     nombre: string
     color: string
   }
-  servicios_id: {
-    id: number
-    nombre: string
-    precio: number
-  }
+  servicios_id:
+    | {
+        id: number
+        nombre: string
+        precio: number
+      }
+    | number
 }
 
 export type BudgetItemsProducts = {
