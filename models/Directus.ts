@@ -363,6 +363,12 @@ export type InvoicesDirectus = {
   siigo_productos: InvoiceItemsDirectus[]
 }
 
+export type BudgetItemsBoxServiceId = {
+  id: number
+  nombre: string
+  precio: number
+}
+
 export type BudgetItemsBoxService = {
   id: number
   salas_id: {
@@ -370,13 +376,7 @@ export type BudgetItemsBoxService = {
     nombre: string
     color: string
   }
-  servicios_id:
-    | {
-        id: number
-        nombre: string
-        precio: number
-      }
-    | number
+  servicios_id: number | BudgetItemsBoxServiceId
 }
 
 export type BudgetItemsProducts = {
