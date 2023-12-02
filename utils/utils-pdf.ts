@@ -1,4 +1,9 @@
-import { BudgetType, FieldTypeDirectus, PanelsDirectus } from '@models'
+import {
+  BudgetItemsBoxServiceId,
+  BudgetType,
+  FieldTypeDirectus,
+  PanelsDirectus,
+} from '@models'
 import {
   Content,
   DynamicContent,
@@ -434,7 +439,8 @@ export const generateBudgetToPDF = async (
 
     const serviciosBody = panel.extraData.servicios.map((p) => [
       {
-        text: p.salas_servicios_id.servicios_id.nombre,
+        text: (p.salas_servicios_id.servicios_id as BudgetItemsBoxServiceId)
+          .nombre,
         border: [false, false, false, false],
       },
       {
