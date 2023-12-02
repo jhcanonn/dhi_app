@@ -105,6 +105,24 @@ const ClientLayout = ({ children, params }: Props) => {
               toTitleCase(data.pacientes_by_id.full_name)
             )}
           </h2>
+          {data &&
+            data.pacientes_by_id.alertas
+              .filter((alerta: any) => alerta.visible_atencion)
+              .map((alerta: any) => {
+                return (
+                  <Button
+                    icon={PrimeIcons.EXCLAMATION_TRIANGLE}
+                    outlined
+                    key={alerta.id}
+                    label={alerta.descripcion.slice(0, 20)}
+                    type='button'
+                    severity='warning'
+                    className='px-4 py-1 font-bold text-md'
+                    tooltip={alerta.descripcion}
+                    tooltipOptions={{ position: 'bottom' }}
+                  />
+                )
+              })}
           <Button
             label={`NP:1, Deuda: ${getCurrencyCOP(0)}`}
             type='button'
