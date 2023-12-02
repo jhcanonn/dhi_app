@@ -43,6 +43,7 @@ import {
   InvoicePriceDirectus,
   InvoiceItemsTaxesDirectus,
   FieldsPaymentWayItems,
+  InvoiceType,
 } from '@models'
 import {
   BLOCK_BOX,
@@ -815,6 +816,7 @@ export const invoiceSiigoMapper = (
     observations: data[`${FINANCE_CODE}observaciones`],
     items,
     payments,
+    paciente: { id: clientInfo?.id },
     comercial: { id: data[`${FINANCE_CODE}comercial`] },
     total_bruto: data[`${FINANCE_CODE}total_bruto`],
     total_descuentos: data[`${FINANCE_CODE}descuentos`],
@@ -823,4 +825,31 @@ export const invoiceSiigoMapper = (
     total_formas_pago: data[`${FINANCE_CODE}total_formas_de_pago`],
     total_neto: data[`${FINANCE_CODE}total_neto`],
   } as InvoiceSiigoDirectus
+}
+
+export const invoicesMapper = (invoices: InvoiceSiigoDirectus[]) => {
+  return invoices.map(
+    (i) =>
+      ({
+        id: i.id,
+        created_date: {
+          date: moment(i.date).toDate(),
+          timestamp: moment(i.date).valueOf(),
+          formated: getFormatedDateToEs(i.date, 'ddd ll'),
+        },
+        items: i.items,
+        total_neto: {
+          value: i.total_neto,
+          formated: getCurrencyCOP(i.total_neto),
+        },
+        payed: {
+          value: 0,
+          formated: getCurrencyCOP(0),
+        },
+        debt: {
+          value: 0,
+          formated: getCurrencyCOP(0),
+        },
+      }) as InvoiceType,
+  )
 }
