@@ -16,10 +16,12 @@ import { MenuItem } from 'primereact/menuitem'
 import { PrimeIcons } from 'primereact/api'
 import { useClientContext } from '@contexts'
 import { Divider } from 'primereact/divider'
+import { useSearchParams } from 'next/navigation'
 
 const ClientDataSheet = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const { clientInfo } = useClientContext()
+  const searchParams = useSearchParams()
 
   const items: MenuItem[] = [
     {
@@ -81,7 +83,7 @@ const ClientDataSheet = () => {
         </h2>
       </Divider>
       <Card className='custom-table-card'>
-        <DataSheetAccordion />
+        <DataSheetAccordion serviceId={searchParams.get('serviceid')} />
       </Card>
     </div>
   )

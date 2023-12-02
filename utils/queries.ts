@@ -693,6 +693,7 @@ export const GET_INVOICES = gql`
     }
     siigo_services: productos_siigo(
       filter: { active: { _eq: true }, type: { _eq: "Service" } }
+      limit: 1000
     ) {
       id
       code
@@ -705,6 +706,7 @@ export const GET_INVOICES = gql`
     }
     siigo_productos: productos_siigo(
       filter: { active: { _eq: true }, type: { _eq: "Product" } }
+      limit: 1000
     ) {
       id
       code

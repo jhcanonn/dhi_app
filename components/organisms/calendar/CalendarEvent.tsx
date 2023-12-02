@@ -109,7 +109,7 @@ const CalendarEvent = ({ event, onClick }: EventRendererProps) => {
         className='event-tooltip'
         target={`.${classEventId}`}
         position='top'
-        content={formatedTime}
+        content={first_name + ' ' + last_name + ' ' + formatedTime}
       />
       <ConfirmDialog tagKey={classEventId} />
       <ButtonBase

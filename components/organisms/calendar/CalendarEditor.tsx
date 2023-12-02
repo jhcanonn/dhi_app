@@ -68,6 +68,8 @@ import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton'
 import { classNames as cx } from 'primereact/utils'
 import { useGoTo, withToast } from '@hooks'
 
+const statesView = [2, 7, 8, 9]
+
 type Props = {
   showError: (summary: ReactNode, detail: ReactNode) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
@@ -181,7 +183,11 @@ const CalendarEditor = ({
       setEvents((preEvents) => [...preEvents, data])
       scheduler.close()
     } catch (error: any) {
-      showError(error?.response?.data?.status, error?.response?.data?.message)
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.msg ||
+        error?.message
+      showError(error?.response?.data?.status, message)
     } finally {
       scheduler.loading(false)
     }
@@ -211,7 +217,11 @@ const CalendarEditor = ({
       setEvents((preEvents) => [...preEvents, data])
       scheduler.close()
     } catch (error: any) {
-      showError(error?.response?.data?.status, error?.response?.data?.message)
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.msg ||
+        error?.message
+      showError(error?.response?.data?.status, message)
     } finally {
       scheduler.loading(false)
     }
@@ -607,27 +617,9 @@ const CalendarEditor = ({
           {event && (
             <>
               <Button
-                label={'Insumos'}
-                type='button'
-                severity='secondary'
-                rounded
-                onClick={(e: any) =>
-                  showInfo(e.target.textContent, COMING_SOON)
-                }
-              />
-              <Button
                 label={'Historico'}
                 type='button'
                 severity='warning'
-                rounded
-                onClick={(e: any) =>
-                  showInfo(e.target.textContent, COMING_SOON)
-                }
-              />
-              <Button
-                label={'Comentarios'}
-                type='button'
-                severity='help'
                 rounded
                 onClick={(e: any) =>
                   showInfo(e.target.textContent, COMING_SOON)
@@ -638,10 +630,32 @@ const CalendarEditor = ({
                 type='button'
                 severity='danger'
                 rounded
-                onClick={(e: any) =>
-                  showInfo(e.target.textContent, COMING_SOON)
-                }
+                onClick={() => {
+                  goToPage(
+                    parseUrl(PAGE_PATH.finance, {
+                      id: getValues('client_id')!,
+                    }),
+                  )
+                }}
               />
+
+              {console.log(getValues())}
+              {statesView.includes(event.state?.state_id!) && (
+                <Button
+                  label={'Realizar Atención'}
+                  type='button'
+                  severity='secondary'
+                  rounded
+                  onClick={() => {
+                    goToPage(
+                      parseUrl(PAGE_PATH.clientDataSheetService, {
+                        id: getValues('client_id')!,
+                        serviceId: getValues('services')![0].service_id,
+                      }),
+                    )
+                  }}
+                />
+              )}
             </>
           )}
           {!isOldDate && (

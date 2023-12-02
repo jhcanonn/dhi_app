@@ -215,7 +215,6 @@ const Calendar = ({ cookies, showError }: Props) => {
 
   const fetchUser = async () => {
     const res = await refetchUser()
-    console.log('res', res)
     setCurrentUser(res?.data?.users_me)
   }
 
@@ -224,7 +223,8 @@ const Calendar = ({ cookies, showError }: Props) => {
     resourceId: number,
     start: Date,
   ) => {
-    const currentEvent = events.find((e) => +e.event_id === eventId)
+    const eventsMutable = [...events]
+    const currentEvent = eventsMutable.find((e) => +e.event_id === eventId)
     if (currentEvent) {
       const eventCopy = { ...currentEvent }
       calendarRef.current?.scheduler.handleState(true, 'loading')
@@ -236,10 +236,17 @@ const Calendar = ({ cookies, showError }: Props) => {
       try {
         const access_token = await refreshToken(cookies)
         await editAppointment(eventId, appointment, access_token)
-        setEvents((preEvents) => [...preEvents, currentEvent])
+        setEvents(() => [...eventsMutable])
       } catch (error: any) {
-        calendarRef.current?.scheduler.confirmEvent(eventCopy, 'edit')
-        showError(error?.response?.data?.status, error?.response?.data?.message)
+        const message =
+          error?.response?.data?.message ||
+          error?.response?.data?.msg ||
+          error?.message
+        calendarRef.current?.scheduler.confirmEvent(
+          eventCopy as DhiEvent,
+          'edit',
+        )
+        showError(error?.response?.data?.status, message)
       } finally {
         calendarRef.current?.scheduler.handleState(false, 'loading')
       }
@@ -318,6 +325,10 @@ const Calendar = ({ cookies, showError }: Props) => {
   useEffect(() => {
     if (!currentUser) return
     setUser(currentUser)
+  }, [currentUser])
+
+  useEffect(() => {
+    if (!currentUser) return
     let professionals =
       professionalsFetch?.profesionales as ProfessionalDirectus[]
     if (professionals?.length) {
@@ -334,7 +345,7 @@ const Calendar = ({ cookies, showError }: Props) => {
         mappedProfessionals?.length ? mappedProfessionals[0] : null,
       )
     }
-  }, [currentUser])
+  }, [user, professionalsFetch])
 
   useEffect(() => {
     const boxes = boxesFetch?.salas as BoxDirectus[]
@@ -353,10 +364,6 @@ const Calendar = ({ cookies, showError }: Props) => {
   useEffect(() => {
     countries?.length && eventStates?.length && fetchAppointments()
   }, [startDate, endDate, countries, eventStates])
-
-  useEffect(() => {
-    refetchUser()
-  }, [events])
 
   return (
     <section className='scheduler [&>div]:w-full flex justify-center grow px-1'>
