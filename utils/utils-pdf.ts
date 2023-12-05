@@ -13,6 +13,24 @@ import {
 } from '@components/organisms/patient/ExamsPrescriptionTable'
 import { generateURLAssetsWithToken } from './url-access-token'
 import { getCurrencyCOP } from './helpers'
+import {
+  FieldsCodeFZD,
+  zonaDonanteRows,
+} from '@components/molecules/panel/customGroups/foliculosZonaDonanteTable/dataFZDT'
+import { PanelGroupCustomCodes } from './settings'
+import {
+  FieldsCodeFC,
+  capilarRows,
+} from '@components/molecules/panel/customGroups/foliculosCapilarTable/dataFCT'
+import {
+  FieldsCodeFB,
+  barbaRows,
+} from '@components/molecules/panel/customGroups/foliculosBarbaTable/dataFBT'
+import {
+  FieldsCodeFCJ,
+  cejaRows,
+} from '@components/molecules/panel/customGroups/foliculosCejaTable/dataFCT'
+import { FieldsCodeED } from '@components/molecules/panel/customGroups/extractionDays/dataED'
 ;(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs
 
 export interface IDataHeader {
@@ -179,6 +197,281 @@ const headerDataAndLogoDHI = (
   }
 }
 
+const TABLE_COLUMNS_CALCULO_FOLICULOS = [
+  '25%',
+  '20%',
+  '20%',
+  '5%',
+  '5%',
+  '10%',
+  '15%',
+]
+const HEADER_STYLE = { style: 'tableHeader', alignment: 'center' }
+
+const createHeaderRow = (texts: any[]) =>
+  texts
+    .map((text) => ({ ...text, ...HEADER_STYLE }))
+    .reduce((acc: any, cell: any) => {
+      acc.push(cell)
+      if (cell.colSpan && cell.colSpan > 1) {
+        for (let i = 1; i < cell.colSpan; i++) {
+          acc.push({ _span: true })
+        }
+      }
+      return acc
+    }, [])
+
+const formatFloat = (value: any) => {
+  if (value?.toString()?.includes('.')) {
+    return parseFloat(value).toFixed(0)
+  }
+  return value
+}
+
+const buildDataRow = (dataKey: any, data: any) => {
+  return [
+    { text: dataKey.title, style: 'tableHeader' },
+    ...dataKey.fields
+      .map((key: any) => {
+        let value = data[key.code]
+        if (Array.isArray(value)) {
+          value = value.map((v) => v.value).join('/')
+        } else {
+          value = formatFloat(value) || value?.toString() || ' '
+        }
+        return {
+          text: value,
+          colSpan: key.colspan || undefined,
+          alignment: 'center',
+        }
+      })
+      .reduce((acc: any, cell: any) => {
+        acc.push(cell)
+        if (cell.colSpan && cell.colSpan > 1) {
+          for (let i = 1; i < cell.colSpan; i++) {
+            acc.push({ _span: true })
+          }
+        }
+        return acc
+      }, []),
+  ]
+}
+
+const buildTotalesRows = (data: any, group: any, bodyTable: any[]): any => {
+  switch (group.code) {
+    case PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE:
+      bodyTable.push([
+        {
+          text: `Promedio`,
+          style: 'tableHeader',
+        },
+        {
+          text: `${data[FieldsCodeFZD.FZD_TF]}`,
+          style: 'tableHeader',
+          alignment: 'center',
+        },
+
+        {
+          text: `Total folículos`,
+          style: 'tableHeader',
+          alignment: 'right',
+          colSpan: 4,
+        },
+        {},
+        {},
+        {},
+        {
+          text: ` ${data[FieldsCodeFZD.FZD_TF]}`,
+          style: 'tableHeader',
+          alignment: 'center',
+        },
+      ])
+
+      bodyTable.push([
+        {
+          text: `No. de pelo para donar`,
+          style: 'tableHeader',
+          colSpan: 6,
+          alignment: 'right',
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          text: formatFloat(data[FieldsCodeFZD.FZD_FD]),
+          style: 'tableHeader',
+          alignment: 'center',
+        },
+      ])
+      break
+    case PanelGroupCustomCodes.FOLICULOS_CAPILAR:
+    case PanelGroupCustomCodes.FOLICULOS_BARBA:
+    case PanelGroupCustomCodes.FOLICULOS_CEJA:
+      bodyTable.push([
+        {
+          text: `No. de pelos totales`,
+          style: 'tableHeader',
+          colSpan: 6,
+          alignment: 'right',
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          text: formatFloat(data[pelosTotalsRows[group.code]]),
+          style: 'tableHeader',
+          alignment: 'center',
+        },
+      ])
+      break
+  }
+}
+
+const createDataTable = (widths: any[]) => ({
+  table: {
+    widths,
+    body: [],
+    layout: 'lightHorizontalLines',
+    headerRows: 1,
+    dontBreakRows: true,
+  },
+})
+
+const buildTableGroupCustom = (data: any, group: any, content: any) => {
+  if (group.es_personalizado) {
+    let dataTable = createDataTable(TABLE_COLUMNS_CALCULO_FOLICULOS) as any
+
+    // Procesar según el código de grupo
+    const stackObs: any = []
+    switch (group.code) {
+      case PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE:
+      case PanelGroupCustomCodes.FOLICULOS_CAPILAR:
+      case PanelGroupCustomCodes.FOLICULOS_BARBA:
+      case PanelGroupCustomCodes.FOLICULOS_CEJA: {
+        // Configuración del encabezado común
+        const headerRow = createHeaderRow([
+          { text: '' },
+          { text: 'Densidad existente' },
+          { text: 'Densidad restante' },
+          { text: 'Áreas', colSpan: 2 },
+          { text: 'Área total' },
+          {
+            text:
+              PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE === group.code
+                ? 'No. Folículos'
+                : 'No. Pelos',
+          },
+        ])
+        dataTable.table.body.push(headerRow)
+        if (objetivoRows[group.code]) {
+          content.push({
+            text: `Objetivo de densidad promedio: ${
+              data[objetivoRows[group.code]] ?? ''
+            }`,
+            margin: [0, 0, 0, 5],
+          })
+        }
+
+        const rows = groupRows[group.code].map((dataKey: any) =>
+          buildDataRow(dataKey, data),
+        )
+
+        dataTable.table.body.push(...rows)
+        buildTotalesRows(data, group, dataTable.table.body)
+
+        stackObs.push({
+          text: data[obsRows[group.code]] ?? '',
+          margin: [0, 10],
+        })
+        break
+      }
+      case PanelGroupCustomCodes.EXTRACCION_DIAS: {
+        console.log('EXTRACCION_DIAS', data)
+
+        let columnsRow = []
+        let columnsRowTwo = []
+        const bodyTable = []
+        for (let index = 1; index <= 7; index++) {
+          const rowTable = []
+          columnsRow = []
+          columnsRowTwo = []
+          for (let day = 1; day <= data[FieldsCodeED.ED_CDE]; day++) {
+            const dayCode = `_dia${day}`
+            const keyGraft = `${FieldsCodeED.ED_G}${index}${dayCode}`
+            const keyFoliculos = `${FieldsCodeED.ED_GF}${index}${dayCode}`
+            rowTable.push({ text: `${data[keyGraft]}`, alignment: 'center' })
+            columnsRowTwo.push({ text: `Graft` })
+            rowTable.push({
+              text: `${data[keyFoliculos]}`,
+              alignment: 'center',
+            })
+            columnsRowTwo.push({ text: `Foliculos` })
+            columnsRow.push({ text: `Día ${day}`, colSpan: 2 })
+          }
+          const keyFoliculosTotal = `${FieldsCodeED.ED_GF}${index}_total`
+          const keyGraftTotal = `${FieldsCodeED.ED_G}${index}_total`
+          rowTable.push({
+            text: `${data[keyFoliculosTotal]}`,
+            alignment: 'center',
+          })
+          columnsRowTwo.push({ text: `Graft` })
+          rowTable.push({ text: `${data[keyGraftTotal]}`, alignment: 'center' })
+          columnsRowTwo.push({ text: `Foliculos` })
+          columnsRow.push({ text: `Total`, colSpan: 2 })
+          bodyTable.push(rowTable)
+        }
+
+        //hc_implantecm_gfoliculos_total_dia1
+
+        const headerRow = createHeaderRow(columnsRow)
+        const headerRowTwo = createHeaderRow(columnsRowTwo)
+        const withs = headerRow.map(() => '*')
+        dataTable = createDataTable(withs) as any
+        dataTable.table.body.push(headerRow)
+        dataTable.table.body.push(headerRowTwo)
+        dataTable.table.body.push(...bodyTable)
+
+        // Procesamiento específico para este caso si es necesario
+        break
+      }
+    }
+
+    if (dataTable.table.body.length > 0) content.push(dataTable)
+    if (stackObs.length > 0) content.push(stackObs)
+  }
+}
+
+const groupRows = {
+  // Definir las filas para cada grupo específico
+  [PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE]: zonaDonanteRows,
+  [PanelGroupCustomCodes.FOLICULOS_CAPILAR]: capilarRows,
+  [PanelGroupCustomCodes.FOLICULOS_BARBA]: barbaRows,
+  [PanelGroupCustomCodes.FOLICULOS_CEJA]: cejaRows,
+}
+
+const obsRows = {
+  [PanelGroupCustomCodes.FOLICULOS_ZONA_DONANTE]: FieldsCodeFZD.FZD_OBS,
+  [PanelGroupCustomCodes.FOLICULOS_CAPILAR]: FieldsCodeFC.FC_OBS,
+  [PanelGroupCustomCodes.FOLICULOS_BARBA]: FieldsCodeFB.FB_OBS,
+  [PanelGroupCustomCodes.FOLICULOS_CEJA]: FieldsCodeFCJ.FCJ_OBS,
+}
+
+const objetivoRows = {
+  [PanelGroupCustomCodes.FOLICULOS_CAPILAR]: FieldsCodeFC.FC_ODP,
+  [PanelGroupCustomCodes.FOLICULOS_BARBA]: FieldsCodeFB.FB_ODP,
+  [PanelGroupCustomCodes.FOLICULOS_CEJA]: FieldsCodeFCJ.FCJ_ODP,
+}
+
+const pelosTotalsRows = {
+  [PanelGroupCustomCodes.FOLICULOS_CAPILAR]: FieldsCodeFC.FC_PT,
+  [PanelGroupCustomCodes.FOLICULOS_BARBA]: FieldsCodeFB.FB_PT,
+  [PanelGroupCustomCodes.FOLICULOS_CEJA]: FieldsCodeFCJ.FCJ_PT,
+}
+
 export const generatePanelToPDF = async (
   panel: PanelsDirectus | undefined,
   data: any,
@@ -202,98 +495,102 @@ export const generatePanelToPDF = async (
           style: 'sectionHeader',
         }
         if (groupLabel) content.push(headerGroup)
-
-        const dataTable: any = {
-          table: {
-            widths: ['50%', '50%'],
-            body: [],
-            layout: 'lightHorizontalLines',
-          },
-        }
-
-        for (const key in data) {
-          const field = group.campos_id.find((c) => c.campos_id.codigo === key)
-          if (field) {
-            switch (field.campos_id.tipo) {
-              /* case FieldTypeDirectus.TEXT:
-                break
-              case FieldTypeDirectus.NUMBER:
-                break
-              case FieldTypeDirectus.DROPDOWN:
-                break
-              case FieldTypeDirectus.DATE:
-                break
-              case FieldTypeDirectus.CHECKBOX:
-                break
-              case FieldTypeDirectus.PHONE:
-                break
-              case FieldTypeDirectus.AUTOCOMPLETE:
-                break*/
-              case FieldTypeDirectus.DATETIME:
-                dataTable.table.body.push([
-                  {
-                    text: field?.campos_id?.etiqueta ?? ' ',
-                    bold: true,
-                    border: [false, false, false, false],
-                  },
-                  {
-                    text: new Date(data[key]).toLocaleString('es-CO', {
-                      hour12: true,
-                    }),
-                    border: [false, false, false, false],
-                  },
-                ])
-                break
-              case FieldTypeDirectus.TEXTAREA:
-                dataTable.table.body.push([
-                  {
-                    text: field?.campos_id?.etiqueta ?? ' ',
-                    bold: true,
-                    colSpan: 2,
-                    border: [false, false, false, false],
-                  },
-                  {
-                    text: ' ',
-                    border: [false, false, false, false],
-                  },
-                ])
-                dataTable.table.body.push([
-                  {
-                    text: data[key]
-                      ? data[key] && Array.isArray(data[key])
-                        ? data[key].map((v: any) => v.value).join('/')
-                        : data[key].toString()
-                      : ' ',
-                    colSpan: 2,
-                    border: [false, false, false, false],
-                  },
-                  {
-                    text: ' ',
-                    border: [false, false, false, false],
-                  },
-                ])
-                break
-              default:
-                dataTable.table.body.push([
-                  {
-                    text: field?.campos_id?.etiqueta ?? ' ',
-                    bold: true,
-                    border: [false, false, false, false],
-                  },
-                  {
-                    text: data[key]
-                      ? data[key] && Array.isArray(data[key])
-                        ? data[key].map((v: any) => v.value).join('/')
-                        : data[key].toString()
-                      : ' ',
-                    border: [false, false, false, false],
-                  },
-                ])
-                break
+        if (group.es_personalizado) {
+          buildTableGroupCustom(data, group, content)
+        } else {
+          const dataTable: any = {
+            table: {
+              widths: ['50%', '50%'],
+              body: [],
+              layout: 'lightHorizontalLines',
+            },
+          }
+          for (const key in data) {
+            const field = group.campos_id.find(
+              (c) => c.campos_id.codigo === key,
+            )
+            if (field) {
+              switch (field.campos_id.tipo) {
+                /* case FieldTypeDirectus.TEXT:
+                  break
+                case FieldTypeDirectus.NUMBER:
+                  break
+                case FieldTypeDirectus.DROPDOWN:
+                  break
+                case FieldTypeDirectus.DATE:
+                  break
+                case FieldTypeDirectus.CHECKBOX:
+                  break
+                case FieldTypeDirectus.PHONE:
+                  break
+                case FieldTypeDirectus.AUTOCOMPLETE:
+                  break*/
+                case FieldTypeDirectus.DATETIME:
+                  dataTable.table.body.push([
+                    {
+                      text: field?.campos_id?.etiqueta ?? ' ',
+                      bold: true,
+                      border: [false, false, false, false],
+                    },
+                    {
+                      text: new Date(data[key]).toLocaleString('es-CO', {
+                        hour12: true,
+                      }),
+                      border: [false, false, false, false],
+                    },
+                  ])
+                  break
+                case FieldTypeDirectus.TEXTAREA:
+                  dataTable.table.body.push([
+                    {
+                      text: field?.campos_id?.etiqueta ?? ' ',
+                      bold: true,
+                      colSpan: 2,
+                      border: [false, false, false, false],
+                    },
+                    {
+                      text: ' ',
+                      border: [false, false, false, false],
+                    },
+                  ])
+                  dataTable.table.body.push([
+                    {
+                      text: data[key]
+                        ? data[key] && Array.isArray(data[key])
+                          ? data[key].map((v: any) => v.value).join('/')
+                          : data[key].toString()
+                        : ' ',
+                      colSpan: 2,
+                      border: [false, false, false, false],
+                    },
+                    {
+                      text: ' ',
+                      border: [false, false, false, false],
+                    },
+                  ])
+                  break
+                default:
+                  dataTable.table.body.push([
+                    {
+                      text: field?.campos_id?.etiqueta ?? ' ',
+                      bold: true,
+                      border: [false, false, false, false],
+                    },
+                    {
+                      text: data[key]
+                        ? data[key] && Array.isArray(data[key])
+                          ? data[key].map((v: any) => v.value).join('/')
+                          : data[key].toString()
+                        : ' ',
+                      border: [false, false, false, false],
+                    },
+                  ])
+                  break
+              }
             }
           }
+          if (dataTable.table.body.length > 0) content.push(dataTable)
         }
-        if (dataTable.table.body.length > 0) content.push(dataTable)
       })
 
     const pageMargins: Margins = !repeaterHeader
@@ -434,7 +731,7 @@ export const generateBudgetToPDF = async (
 
     const serviciosBody = panel.extraData.servicios.map((p) => [
       {
-        text: p.salas_servicios_id.servicios_id.nombre,
+        text: (p.salas_servicios_id.servicios_id as any).nombre,
         border: [false, false, false, false],
       },
       {
@@ -641,7 +938,7 @@ const createOpenPDF = async (
               text: 'Página  ' + currentPage.toString() + ' de ' + pageCount,
               margin: [0, 100, 0, 0],
             },
-            signatureFooter,
+            currentPage === pageCount ? signatureFooter : {},
           ],
         ],
       },
@@ -682,6 +979,7 @@ const createOpenPDF = async (
       },
     },
   }
+  console.log('props', props)
   const pdfDocGenerator = pdfMake.createPdf(props)
   pdfDocGenerator.open({})
 }
