@@ -7,6 +7,7 @@ import {
 import {
   DropdownOption,
   FieldsCodeBudgetItems,
+  InvoiceForm,
   InvoiceItemsDirectus,
   InvoiceItemsTaxesDirectus,
 } from '@models'
@@ -56,6 +57,7 @@ type BudgetItemsTrProps = {
   listGrouped?: ListGroupType[]
   disabledData?: boolean
   invoiceForm?: boolean
+  initialData?: InvoiceForm
   tag: string
   rowIds: (UUID | number)[]
   rowId: UUID | number
@@ -75,6 +77,7 @@ const BudgetItemsTr = ({
   listGrouped,
   disabledData,
   invoiceForm,
+  initialData,
   tag,
   rowId,
   rowIds,
@@ -119,7 +122,7 @@ const BudgetItemsTr = ({
   }
 
   useEffect(() => {
-    if (invoiceForm) {
+    if (invoiceForm && !initialData) {
       setInvoicePriceList(defaultPriceList)
       setInvoiceTaxList(defaultTaxList)
     }
@@ -145,6 +148,48 @@ const BudgetItemsTr = ({
       handleInputChange(rowId)
     }
   }, [invoiceTaxList])
+
+  const setSelectedPrice = (
+    item: InvoiceItemsDirectus,
+    initialData: InvoiceForm,
+  ) => {
+    const precioKey = `${tag}${FieldsCodeBudgetItems.VU}${rowId}`
+    const selectedPrice = item.prices
+      ?.find((price) => price.currency_code === 'COP')
+      ?.price_list?.find((pl) => pl.value === +initialData[precioKey])
+    selectedPrice && setValue(precioKey, JSON.stringify(selectedPrice || ''))
+  }
+
+  const setSelectedTax = (
+    item: InvoiceItemsDirectus,
+    initialData: InvoiceForm,
+  ) => {
+    const impuestoKey = `${tag}${FieldsCodeBudgetItems.I}${rowId}`
+    const selectedTax = JSON.stringify(
+      item.taxes?.find((t) => t.id === +initialData[impuestoKey]),
+    )
+    selectedTax && setValue(impuestoKey, selectedTax)
+  }
+
+  useEffect(() => {
+    if (initialData && list && list.length > 0) {
+      const itemCode: string = getValues(
+        `${tag}${FieldsCodeBudgetItems.L}${rowId}`,
+      )
+      const selectedItem = JSON.parse(
+        itemCode.charAt(0) === '{'
+          ? itemCode
+          : list.find((item) => item.code === itemCode)?.value,
+      ) as InvoiceItemsDirectus
+
+      setInvoicePriceList(
+        invoicePriceListMapper(selectedItem) || defaultPriceList,
+      )
+      setSelectedPrice(selectedItem, initialData)
+      setInvoiceTaxList(invoiceTaxListMapper(selectedItem) || defaultTaxList)
+      setSelectedTax(selectedItem, initialData)
+    }
+  }, [list])
 
   return (
     <tr>
@@ -198,6 +243,7 @@ const BudgetItemsTr = ({
             onCustomChange={() => handleInputChange(rowId)}
             className='[&_span.p-inputtext]:text-right'
             required
+            disabled={disabledData}
           />
         </td>
       ) : (
@@ -256,6 +302,7 @@ const BudgetItemsTr = ({
             }}
             className='[&_span.p-inputtext]:text-right'
             required
+            disabled={disabledData}
           />
         </td>
       )}

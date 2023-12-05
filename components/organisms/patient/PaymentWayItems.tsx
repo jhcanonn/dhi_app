@@ -1,16 +1,23 @@
 'use client'
 
-import { FINANCE_CODE, PAYMENT_WAY_CODE } from '@utils'
+import {
+  DropdownOption,
+  FieldsPaymentWayItems,
+  InvoiceForm,
+  InvoicePaymentWaysDirectus,
+} from '@models'
+import { FINANCE_CODE, PAYMENT_WAY_CODE, getRowIds } from '@utils'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { Fieldset } from 'primereact/fieldset'
 import { ReactNode, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
-import { FieldsPaymentWayItems } from '@models'
 import { withToast } from '@hooks'
-import { getInvoiceTotal } from '@components/molecules/patient/dataCalc'
+import { getInvoiceTotalNeto } from '@components/molecules/patient/dataCalc'
 import PaymentWayTr from '@components/molecules/patient/PaymentWayTr'
+import moment from 'moment'
+import { classNames as cx } from 'primereact/utils'
 
 const sumPreviousPaymentWays = (data: Record<string, any>, rowId: string) =>
   Object.entries(data)
@@ -62,6 +69,7 @@ type PaymentWayItemsProps = {
   buttonLabel: string
   list?: any[]
   disabledData?: boolean
+  initialData?: InvoiceForm
   onListChange?: (value: any, tag: string, rowId: UUID | number) => void
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
@@ -72,6 +80,7 @@ const PaymentWayItems = ({
   buttonLabel,
   list,
   disabledData,
+  initialData,
   onListChange,
   showWarning,
 }: PaymentWayItemsProps) => {
@@ -101,9 +110,30 @@ const PaymentWayItems = ({
     if (restPayment > 0) {
       const id = getLastRowId(rowIds)
       setValue(`${tag}${FieldsPaymentWayItems.V}${id}`, restPayment)
-      setValue(totalFDPCode, getInvoiceTotal(getValues(), valueFDPCodes))
+      setValue(totalFDPCode, getInvoiceTotalNeto(getValues(), valueFDPCodes))
     }
   }, [restPayment])
+
+  useEffect(() => {
+    if (initialData && list && list.length > 0) {
+      const initItemsCode = `${FINANCE_CODE}${PAYMENT_WAY_CODE}`
+      getRowIds(initialData, `${initItemsCode}_`).forEach((rowId) => {
+        const itemKey = `${initItemsCode}${FieldsPaymentWayItems.L}${rowId}`
+        const selectedItem = list.find((fp: DropdownOption) => {
+          const fpId: InvoicePaymentWaysDirectus = JSON.parse(fp.value)
+          return +fpId.id === +initialData[itemKey]
+        })?.value
+        selectedItem && setValue(itemKey, selectedItem)
+        const dueDateKey = `${initItemsCode}${FieldsPaymentWayItems.DD}${rowId}`
+        const dueDate = initialData[dueDateKey]
+        dueDate && setValue(dueDateKey, moment(dueDate).toDate())
+      })
+    }
+  }, [list])
+
+  useEffect(() => {
+    setRowIds(getRowIds(getValues(), `${tag}_`))
+  }, [])
 
   return (
     <Fieldset legend={legend} className='relative min-w-0 h-full'>
@@ -127,7 +157,7 @@ const PaymentWayItems = ({
               setRowAdded(true)
               setValue(
                 totalFDPCode,
-                getInvoiceTotal(getValues(), valueFDPCodes),
+                getInvoiceTotalNeto(getValues(), valueFDPCodes),
               )
             }
           }}
@@ -144,7 +174,13 @@ const PaymentWayItems = ({
                   {legend}
                 </th>
                 <th className='min-w-[10rem]' />
-                <th className='min-w-[10rem]'>Valor</th>
+                <th
+                  className={cx('min-w-[10rem]', {
+                    'rounded-r-md': disabledData,
+                  })}
+                >
+                  Valor
+                </th>
                 {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
@@ -160,6 +196,7 @@ const PaymentWayItems = ({
                   setRowAdded={setRowAdded}
                   list={list}
                   disabledData={disabledData}
+                  initialData={initialData}
                   onListChange={onListChange}
                 />
               ))}

@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
-import { ClientFinanceCreate } from '@components/templates'
+import { ClientFinanceForm } from '@components/templates'
 
 export const metadata: Metadata = {
   title: 'DHI | Crear factura del Paciente',
 }
 
-const FinanceCreatePage = () => <ClientFinanceCreate />
+const FinanceCreatePage = () => <ClientFinanceForm />
 
 export default FinanceCreatePage

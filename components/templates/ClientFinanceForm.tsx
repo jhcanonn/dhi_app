@@ -22,7 +22,7 @@ import {
   InputTextareaValid,
 } from '@components/atoms'
 import moment from 'moment'
-import { BudgetItem, InvoicesDirectus } from '@models'
+import { BudgetItem, InvoiceForm, InvoicesDirectus } from '@models'
 import { useMutation, useQuery } from '@apollo/client'
 import { useGetCommercials, useGoTo, withToast } from '@hooks'
 import { Card } from 'primereact/card'
@@ -35,10 +35,11 @@ import { useClientContext, useGlobalContext } from '@contexts'
 import { validTotals } from '@components/organisms/patient/PaymentWayItems'
 
 type Props = {
+  initialData?: InvoiceForm
   showWarning: (summary: ReactNode, detail: ReactNode) => void
 }
 
-const ClientFinanceCreate = ({ showWarning }: Props) => {
+const ClientFinanceForm = ({ showWarning, initialData }: Props) => {
   const [loading, setLoading] = useState(false)
   const [invoices, setInvoices] = useState<InvoicesDirectus | null>(null)
   const { clientInfo } = useClientContext()
@@ -50,20 +51,21 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
     useQuery(GET_SIIGO_INFO)
   const [financeCreate] = useMutation(CREATE_INVOICE)
 
-  const defaultValues: Record<string, any> = {
-    [`${FINANCE_CODE}created_date`]: moment().toDate(),
-    [`${FINANCE_CODE}sucursal`]: DHI_SUCRUSAL,
-    [`${FINANCE_CODE}total_bruto`]: 0,
-    [`${FINANCE_CODE}descuentos`]: 0,
-    [`${FINANCE_CODE}subtotal`]: 0,
-    [`${FINANCE_CODE}total_iva`]: 0,
-    [`${FINANCE_CODE}total_formas_de_pago`]: 0,
-    [`${FINANCE_CODE}total_neto`]: 0,
-    [`${FINANCE_CODE}send_email_dian`]: false,
-    [`${FINANCE_CODE}send_email_client`]: false,
+  let defaultValues: InvoiceForm & Record<string, any> = {
+    finance_created_date: moment().toDate(),
+    finance_sucursal: DHI_SUCRUSAL,
+    finance_total_bruto: 0,
+    finance_descuentos: 0,
+    finance_subtotal: 0,
+    finance_total_iva: 0,
+    finance_total_formas_de_pago: 0,
+    finance_total_neto: 0,
+    finance_send_email_dian: false,
+    finance_send_email_client: false,
   }
+  if (initialData) defaultValues = initialData
   const handleForm = useForm({ defaultValues })
-  const { handleSubmit, getValues } = handleForm
+  const { handleSubmit, setValue, getValues } = handleForm
 
   const onSubmit = async () => {
     setLoading(true)
@@ -79,16 +81,26 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
         variables: { invoiceData: invoiceSiigo },
       })
       if (createdInvoice?.data?.create_facturas_siigo_item?.id) {
-        setLoading(false)
         clientInfo &&
           goToPage(parseUrl(PAGE_PATH.finance, { id: clientInfo.id }))
       }
     }
+    setLoading(false)
+  }
+
+  const setInvoiceTypes = (typeId: number | undefined) => {
+    const invoiceTypes = invoiceTypesMapper(invoices?.siigo_voucher_types || [])
+    const financeType = invoiceTypes.find((it) => +it.id === typeId)?.value
+    setValue(`${FINANCE_CODE}type`, financeType)
   }
 
   useEffect(() => {
     !loadingInvoices && setInvoices(dataInvoices)
   }, [dataInvoices])
+
+  useEffect(() => {
+    initialData && setInvoiceTypes(initialData.finance_type_id)
+  }, [invoices])
 
   return (
     <Card className='custom-table-card'>
@@ -105,13 +117,13 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
             label='Tipo de Factura'
             list={invoiceTypesMapper(invoices?.siigo_voucher_types || [])}
             required
+            disabled={!!initialData}
           />
           <DateTimeValid
             name={`${FINANCE_CODE}created_date`}
             handleForm={handleForm}
             label='Fecha de creación'
             showIcon={false}
-            showTime={false}
             disabled
           />
           <DropdownValid
@@ -120,6 +132,7 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
             handleForm={handleForm}
             list={commercials}
             required
+            disabled={!!initialData}
           />
           <InputTextValid
             name={`${FINANCE_CODE}sucursal`}
@@ -137,6 +150,8 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
             buttonLabel='Agregar producto'
             list={invoiceItemsMapper(invoices?.siigo_productos || [])}
             invoiceForm
+            initialData={initialData}
+            disabledData={!!initialData}
           />
           <BudgetItems
             key={`${FINANCE_CODE}services_items`}
@@ -146,6 +161,8 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
             buttonLabel='Agregar servicio'
             list={invoiceItemsMapper(invoices?.siigo_services || [])}
             invoiceForm
+            initialData={initialData}
+            disabledData={!!initialData}
           />
         </div>
         <div className='flex flex-col md:flex-row md:gap-4 mt-3'>
@@ -158,6 +175,8 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
               list={invoicePaymentWaysMapper(
                 invoices?.siigo_payment_types || [],
               )}
+              initialData={initialData}
+              disabledData={!!initialData}
             />
             <div className='h-5' />
           </div>
@@ -252,6 +271,7 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
               gridRows={4}
               className='w-full'
               pattern={regexPatterns.onlyEmpty}
+              disabled={!!initialData}
             />
           </div>
           <div className='flex flex-row justify-evenly flex-wrap gap-x-4 md:!flex-col md:justify-center w-full md:!w-[30%]'>
@@ -259,38 +279,42 @@ const ClientFinanceCreate = ({ showWarning }: Props) => {
               name={`${FINANCE_CODE}send_email_dian`}
               handleForm={handleForm}
               acceptMessage='Enviar correo a la DIAN'
+              disabled={!!initialData}
             />
             <InputSwitchValid
               name={`${FINANCE_CODE}send_email_client`}
               handleForm={handleForm}
               acceptMessage='Enviar correo al Cliente'
+              disabled={!!initialData}
             />
           </div>
         </div>
-        <div className='flex flex-col md:flex-row gap-2 justify-center'>
-          <Button
-            type='button'
-            label='Cancelar'
-            icon='pi pi-times'
-            severity='danger'
-            className='w-full md:w-fit'
-            onClick={() =>
-              clientInfo &&
-              goToPage(parseUrl(PAGE_PATH.finance, { id: clientInfo.id }))
-            }
-          />
-          <Button
-            type='submit'
-            label='Pagar'
-            icon='pi pi-dollar'
-            severity='success'
-            className='w-full md:w-fit'
-            loading={loading}
-          />
-        </div>
+        {!initialData && (
+          <div className='flex flex-col md:flex-row gap-2 justify-center'>
+            <Button
+              type='button'
+              label='Cancelar'
+              icon='pi pi-times'
+              severity='danger'
+              className='w-full md:w-fit'
+              onClick={() =>
+                clientInfo &&
+                goToPage(parseUrl(PAGE_PATH.finance, { id: clientInfo.id }))
+              }
+            />
+            <Button
+              type='submit'
+              label='Pagar'
+              icon='pi pi-dollar'
+              severity='success'
+              className='w-full md:w-fit'
+              loading={loading}
+            />
+          </div>
+        )}
       </form>
     </Card>
   )
 }
 
-export default withToast(ClientFinanceCreate)
+export default withToast(ClientFinanceForm)

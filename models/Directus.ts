@@ -487,6 +487,24 @@ export type BudgetEditRelationsDirectus = {
   terapias: (BudgetRelationProps | BudgetCreateRelTherapies)[]
 }
 
+export type InvoiceForm = {
+  finance_id?: UUID
+  finance_type?: string
+  finance_type_id?: number
+  finance_created_date: Date
+  finance_comercial?: UUID
+  finance_sucursal: string
+  finance_total_bruto: number
+  finance_descuentos: number
+  finance_subtotal: number
+  finance_total_iva: number
+  finance_total_formas_de_pago: number
+  finance_total_neto: number
+  finance_observaciones?: string
+  finance_send_email_dian: boolean
+  finance_send_email_client: boolean
+} & Record<string, any>
+
 export type BudgetForm = {
   presupuesto_id: UUID
   presupuesto_planilla: string
