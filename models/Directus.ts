@@ -303,6 +303,7 @@ export type CommercialDirectus = {
 }
 
 export type InvoiceTypesDirectus = {
+  id: number
   code: string
   name: string
   type: string
@@ -347,11 +348,25 @@ export type InvoiceItemsDirectus = {
   prices: InvoiceItemsPricesDirectus[]
 }
 
+export type InvoiceDocumentTypeDirectus = {
+  id: number
+  codigo: string
+  homologo_app: string
+  nombre: string
+}
+
 export type InvoicesDirectus = {
+  siigo_tdocumentos: InvoiceDocumentTypeDirectus[]
   siigo_voucher_types: InvoiceTypesDirectus[]
   siigo_payment_types: InvoicePaymentWaysDirectus[]
   siigo_services: InvoiceItemsDirectus[]
   siigo_productos: InvoiceItemsDirectus[]
+}
+
+export type BudgetItemsBoxServiceId = {
+  id: number
+  nombre: string
+  precio: number
 }
 
 export type BudgetItemsBoxService = {
@@ -361,13 +376,7 @@ export type BudgetItemsBoxService = {
     nombre: string
     color: string
   }
-  servicios_id:
-    | {
-        id: number
-        nombre: string
-        precio: number
-      }
-    | number
+  servicios_id: number | BudgetItemsBoxServiceId
 }
 
 export type BudgetItemsProducts = {
@@ -477,6 +486,24 @@ export type BudgetEditRelationsDirectus = {
   productos: (BudgetRelationProps | BudgetCreateRelProducts)[]
   terapias: (BudgetRelationProps | BudgetCreateRelTherapies)[]
 }
+
+export type InvoiceForm = {
+  finance_id?: UUID
+  finance_type?: string
+  finance_type_id?: number
+  finance_created_date: Date
+  finance_comercial?: UUID
+  finance_sucursal: string
+  finance_total_bruto: number
+  finance_descuentos: number
+  finance_subtotal: number
+  finance_total_iva: number
+  finance_total_formas_de_pago: number
+  finance_total_neto: number
+  finance_observaciones?: string
+  finance_send_email_dian: boolean
+  finance_send_email_client: boolean
+} & Record<string, any>
 
 export type BudgetForm = {
   presupuesto_id: UUID

@@ -1,8 +1,8 @@
-import ClientFinance from '@components/templates/ClientFinance'
+import { ClientFinance } from '@components/templates'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'DHI | Finanzas',
+  title: 'DHI | Resumen financiero',
 }
 
 const Finance = () => <ClientFinance />

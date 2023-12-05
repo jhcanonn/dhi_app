@@ -1,5 +1,14 @@
 'use client'
 
+import {
+  BudgetItem,
+  BudgetPanelCodes,
+  BudgetState,
+  DropdownOption,
+  FieldsCodeBudgetItems,
+  InvoiceForm,
+  InvoiceItemType,
+} from '@models'
 import { UUID } from 'crypto'
 import { Button } from 'primereact/button'
 import { Fieldset } from 'primereact/fieldset'
@@ -7,8 +16,8 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
 import { BudgetItemsTr } from '@components/molecules'
-import { budgetFormCodes, getItemKeys, getRowIds } from '@utils'
-import { BudgetPanelCodes, BudgetState, FieldsCodeBudgetItems } from '@models'
+import { FINANCE_CODE, budgetFormCodes, getItemKeys, getRowIds } from '@utils'
+import { classNames as cx } from 'primereact/utils'
 
 export type ListGroupType = {
   label: string
@@ -71,6 +80,7 @@ type BudgetItemsProps = {
   listGrouped?: ListGroupType[]
   disabledData?: boolean
   invoiceForm?: boolean
+  initialData?: InvoiceForm
   onListChange?: (value: any, tag: string, rowId: UUID | number) => void
 }
 
@@ -83,6 +93,7 @@ const BudgetItems = ({
   listGrouped,
   disabledData,
   invoiceForm,
+  initialData,
   onListChange,
 }: BudgetItemsProps) => {
   const [rowIds, setRowIds] = useState<(UUID | number)[]>([])
@@ -91,6 +102,33 @@ const BudgetItems = ({
   const { setValue, getValues, unregister } = handleForm
 
   const tag = `${fieldsStartCode}${legend.trim().toLowerCase()}`
+
+  const setInvoiceItems = (
+    initialData: InvoiceForm,
+    items: (DropdownOption & { code: string })[] = [],
+    itemTag: BudgetItem,
+  ) => {
+    const initItemsCode = `${FINANCE_CODE}${itemTag.toLocaleLowerCase()}`
+    getRowIds(initialData, `${initItemsCode}_`).forEach((rowId) => {
+      const itemKey = `${initItemsCode}${FieldsCodeBudgetItems.L}${rowId}`
+      const itemCode = initialData[itemKey] as string
+      const selectedItem = items.find((item) => item.code === itemCode)?.value
+      selectedItem && setValue(itemKey, selectedItem)
+    })
+  }
+
+  useEffect(() => {
+    if (initialData && list && list.length > 0) {
+      const itemType = JSON.parse(list[0].value).type
+      setInvoiceItems(
+        initialData,
+        list,
+        itemType === InvoiceItemType.PRODUCT
+          ? BudgetItem.PRODUCTS
+          : BudgetItem.SERVICES,
+      )
+    }
+  }, [list])
 
   useEffect(() => {
     if (rowAdded && rowIds.length > 0) {
@@ -162,8 +200,22 @@ const BudgetItems = ({
                   <th className='min-w-[10rem]'>Valor con descuento</th>
                 )}
                 {invoiceForm && <th className='min-w-[12rem]'>Impuestos</th>}
-                <th className='min-w-[10rem]'>Valor total</th>
-                {!invoiceForm && <th className='min-w-[4.5rem]'>Aceptado</th>}
+                <th
+                  className={cx('min-w-[10rem]', {
+                    'rounded-r-md': invoiceForm && initialData,
+                  })}
+                >
+                  Valor total
+                </th>
+                {!invoiceForm && (
+                  <th
+                    className={cx('min-w-[4.5rem]', {
+                      'rounded-r-md': disabledData,
+                    })}
+                  >
+                    Aceptado
+                  </th>
+                )}
                 {!disabledData && <th className='rounded-r-md'></th>}
               </tr>
             </thead>
@@ -178,8 +230,9 @@ const BudgetItems = ({
                   tag={tag}
                   list={list}
                   listGrouped={listGrouped}
-                  disabledData={disabledData}
+                  disabledData={!!initialData || disabledData}
                   invoiceForm={invoiceForm}
+                  initialData={initialData}
                   setRowIds={setRowIds}
                   setRowAdded={setRowAdded}
                   onListChange={onListChange}

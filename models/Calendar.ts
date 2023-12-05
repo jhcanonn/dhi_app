@@ -77,6 +77,14 @@ export type User = {
     no_registro_medico: string
     cargo: string
   }
+  user_siigo: {
+    id: number
+    identification: string
+    username: string
+    email: string
+    first_name: string
+    last_name: string
+  }
   avatar: {
     id: string
   }

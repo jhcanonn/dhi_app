@@ -11,7 +11,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { EventStateItemColor } from '@components/molecules'
 import { useClientContext } from '@contexts'
 import { withToast } from '@hooks'
-import { OptionType, ScheduleType } from '@models'
+import { BudgetItemsBoxServiceId, OptionType, ScheduleType } from '@models'
 import { FilterMatchMode, PrimeIcons } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -40,7 +40,11 @@ const paymentStateBodyTemplate = (schedule: ScheduleType) => (
 const servicesBodyTemplate = (schedule: ScheduleType) => (
   <p>
     {schedule.services
-      .map((s) => s.salas_servicios_id.servicios_id.nombre)
+      .map((s) => {
+        const serviceId = s.salas_servicios_id
+          .servicios_id as BudgetItemsBoxServiceId
+        return serviceId.nombre
+      })
       .join(', ')}
   </p>
 )
@@ -222,14 +226,18 @@ const ClientHistorySchedule = ({ showSuccess }: Props) => {
         <h2 className='font-bold text-md'>Servicios:</h2>
         <div>
           <ol className='list-decimal pl-12'>
-            {currentSchedule?.services.map((s) => (
-              <li key={s.id}>
-                {s.salas_servicios_id.servicios_id.nombre}
-                <span className='ml-2'>
-                  {getCurrencyCOP(s.salas_servicios_id.servicios_id.precio)}
-                </span>
-              </li>
-            ))}
+            {currentSchedule?.services.map((s) => {
+              const serviceId = s.salas_servicios_id
+                .servicios_id as BudgetItemsBoxServiceId
+              return (
+                <li key={s.id}>
+                  {serviceId.nombre}
+                  <span className='ml-2'>
+                    {getCurrencyCOP(serviceId.precio)}
+                  </span>
+                </li>
+              )
+            })}
           </ol>
         </div>
       </Dialog>

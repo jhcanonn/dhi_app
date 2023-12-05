@@ -11,16 +11,20 @@ import {
   getItemKeys,
   getNumberOrUUID,
 } from '@utils'
-import { Dispatch, SetStateAction, useState } from 'react'
-import { FieldsPaymentWayItems, InvoicePaymentWaysDirectus } from '@models'
+import {
+  FieldsPaymentWayItems,
+  InvoiceForm,
+  InvoicePaymentWaysDirectus,
+} from '@models'
+import { UUID } from 'crypto'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
 import { classNames as cx } from 'primereact/utils'
 import { Button } from 'primereact/button'
 import { UseFormReturn } from 'react-hook-form'
-import { UUID } from 'crypto'
 import { InputNumberMode } from '@components/atoms/InputNumberValid'
 import { PrimeIcons } from 'primereact/api'
-import { getInvoiceTotal } from './dataCalc'
+import { getInvoiceTotalNeto } from './dataCalc'
 import { getLastRowId } from '@components/organisms/patient/PaymentWayItems'
 
 type Props = {
@@ -36,6 +40,7 @@ type Props = {
   setRowAdded: Dispatch<SetStateAction<boolean>>
   list?: any[]
   disabledData?: boolean
+  initialData?: InvoiceForm
   onListChange?: (value: any, tag: string, rowId: UUID | number) => void
 }
 
@@ -48,6 +53,7 @@ const PaymentWayTr = ({
   setRowAdded,
   list,
   disabledData,
+  initialData,
   onListChange,
 }: Props) => {
   const [showDueDate, setShowDueDate] = useState<boolean>(false)
@@ -58,6 +64,14 @@ const PaymentWayTr = ({
   const valueFDPCodes = `${PAYMENT_WAY_CODE}${FieldsPaymentWayItems.V}`
 
   const { setValue, getValues, unregister, trigger } = handleForm
+
+  useEffect(() => {
+    if (initialData) {
+      const dueDateKey = `${FINANCE_CODE}${PAYMENT_WAY_CODE}${FieldsPaymentWayItems.DD}${rowId}`
+      const dueDate = initialData[dueDateKey]
+      dueDate && setShowDueDate(true)
+    }
+  }, [])
 
   return (
     <tr key={`${tag}_${rowId}`}>
@@ -80,12 +94,14 @@ const PaymentWayTr = ({
       <td className={cx('max-w-[4.5rem]', { 'pt-2': isFirtsRow })}>
         {showDueDate && (
           <DateTimeValid
-            name={`${FINANCE_CODE}created_date`}
-            label='Fecha'
+            name={`${tag}${FieldsPaymentWayItems.DD}${rowId}`}
+            label='Fecha vencimiento'
             handleForm={handleForm}
             showIcon={false}
             showTime={false}
             className='[&_input]:text-right'
+            required
+            disabled={disabledData}
           />
         )}
       </td>
@@ -103,7 +119,10 @@ const PaymentWayTr = ({
           validate={(value) => value !== 0}
           onCustomChange={() => {
             trigger(valueCode)
-            setValue(totalFDPCode, getInvoiceTotal(getValues(), valueFDPCodes))
+            setValue(
+              totalFDPCode,
+              getInvoiceTotalNeto(getValues(), valueFDPCodes),
+            )
           }}
           disabled={disabledData || getLastRowId(rowIds) !== rowId}
         />
@@ -129,7 +148,7 @@ const PaymentWayTr = ({
                 .forEach((key) => unregister(key))
               setValue(
                 totalFDPCode,
-                getInvoiceTotal(getValues(), valueFDPCodes),
+                getInvoiceTotalNeto(getValues(), valueFDPCodes),
               )
             }}
             outlined

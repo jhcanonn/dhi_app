@@ -72,7 +72,7 @@ const ClientLayout = ({ children, params }: Props) => {
       command: () => goToPage(parseUrl(PAGE_PATH.clientBudget, { id })),
     },
     {
-      label: 'Facturación',
+      label: 'Resumen financiero',
       icon: 'pi pi-calculator',
       command: () => goToPage(parseUrl(PAGE_PATH.finance, { id })),
     },

@@ -160,6 +160,55 @@ export type BudgetType = {
   }
 }
 
+export enum InvoiceItemType {
+  SERVICE = 'Service',
+  PRODUCT = 'Product',
+}
+
+export type InvoiceItem = {
+  code: string
+  type: InvoiceItemType
+  description: string
+  quantity: number
+  price: number
+  discount_rate: number
+  discount: number
+  taxes: {
+    id: number
+  }[]
+  total_value: number
+}
+
+export type InvoicePaymentMethod = {
+  id: number
+  value: number
+  due_date: string
+}
+
+export type InvoiceType = {
+  id: UUID
+  created_date: DataTableDate
+  items: InvoiceItem[]
+  monto: DataTableCurrency
+  payed: DataTableCurrency
+  debt: DataTableCurrency
+  extraData: {
+    typeId: number
+    comercial: UUID
+    vendedor: string
+    paymentMethods: InvoicePaymentMethod[]
+    total_bruto: number
+    total_descuentos: number
+    sub_total: number
+    total_iva: number
+    total_formas_pago: number
+    total_neto: number
+    stamp: boolean
+    mail: boolean
+    observations: string
+  }
+}
+
 export type PatientExtraData = {
   patient_extra_identidad_de_genero: string
   patient_extra_fecha_exp_documento: string
@@ -233,6 +282,7 @@ export enum FieldsCodeBudgetItems {
 
 export enum FieldsPaymentWayItems {
   L = '_list_',
+  DD = '_due_date_',
   V = '_valor_',
 }
 
@@ -255,4 +305,30 @@ export type DataSheet = {
 export type Commercial = {
   name: string
   value: UUID
+}
+
+export type InvoiceSiigoDirectus = {
+  id?: UUID
+  document: Record<string, any>
+  date: string
+  customer: Record<string, any>
+  cost_center?: number
+  currency?: Record<string, any>
+  seller: number
+  stamp: { send: boolean }
+  mail: { send: boolean }
+  observations: string
+  items: Record<string, any>[]
+  payments: Record<string, any>[]
+  additional_fields?: Record<string, any>
+  id_siigo?: UUID
+  paciente: { id: number }
+  comercial: { id: UUID }
+  total_bruto: number
+  total_descuentos: number
+  sub_total: number
+  total_iva: number
+  total_formas_pago: number
+  total_neto: number
+  fecha_hora: string
 }

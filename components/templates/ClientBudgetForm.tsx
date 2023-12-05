@@ -18,6 +18,7 @@ import {
   BudgetForm,
   BudgetItem,
   BudgetItemsBoxService,
+  BudgetItemsBoxServiceId,
   BudgetItemsDirectus,
   BudgetItemsProducts,
   BudgetItemsTherapies,
@@ -260,9 +261,10 @@ const ClientBudgetForm = ({
               listGrouped={budgetServicesMapper(
                 budgetItems?.salas_servicios || [],
               )}
-              onListChange={(value: BudgetItemsBoxService, tag, rowId) =>
-                handleListChange(+value.servicios_id.precio, tag, rowId)
-              }
+              onListChange={(value: BudgetItemsBoxService, tag, rowId) => {
+                const serviceId = value.servicios_id as BudgetItemsBoxServiceId
+                handleListChange(+serviceId.precio, tag, rowId)
+              }}
               disabledData={disabledData}
             />
           )}

@@ -37,12 +37,24 @@ import {
   InvoiceTypesDirectus,
   InvoiceItemsDirectus,
   InvoicePaymentWaysDirectus,
+  InvoiceSiigoDirectus,
+  InvoiceDocumentTypeDirectus,
+  User,
+  InvoicePriceDirectus,
+  InvoiceItemsTaxesDirectus,
+  FieldsPaymentWayItems,
+  InvoiceType,
+  InvoiceForm,
+  InvoiceItem,
+  InvoiceItemType,
 } from '@models'
 import {
   BLOCK_BOX,
   BLOCK_SERVICE,
   BUDGET_CODE,
   DHI_SUCRUSAL,
+  FINANCE_CODE,
+  PAYMENT_WAY_CODE,
   budgetFormCodes,
 } from './constants'
 import {
@@ -419,18 +431,20 @@ export const invoiceTypesMapper = (items: InvoiceTypesDirectus[]) =>
   items.map(
     (item) =>
       ({
+        id: item.id,
         name: `${item.type} - ${item.code} - ${item.name}`,
         value: JSON.stringify(item),
-      }) as DropdownOption,
+      }) as DropdownOption & { id: number },
   )
 
 export const invoiceItemsMapper = (items: InvoiceItemsDirectus[]) =>
   items.map(
     (item) =>
       ({
+        code: item.code,
         name: `${item.code} - ${item.name}`,
         value: JSON.stringify(item),
-      }) as DropdownOption,
+      }) as DropdownOption & { code: string },
   )
 
 export const invoicePriceListMapper = (item: InvoiceItemsDirectus) => {
@@ -438,9 +452,10 @@ export const invoicePriceListMapper = (item: InvoiceItemsDirectus) => {
   return prices?.price_list.map(
     (price) =>
       ({
+        price: price.value,
         name: getCurrencyCOP(price.value),
         value: JSON.stringify(price),
-      }) as DropdownOption,
+      }) as DropdownOption & { price: number },
   )
 }
 
@@ -448,9 +463,10 @@ export const invoiceTaxListMapper = (item: InvoiceItemsDirectus) =>
   item.taxes?.map(
     (tax) =>
       ({
+        id: tax.id,
         name: tax.name,
         value: JSON.stringify(tax),
-      }) as DropdownOption,
+      }) as DropdownOption & { id: number },
   )
 
 export const budgetServicesMapper = (
@@ -736,4 +752,192 @@ export const budgetEditMapper = (data: BudgetForm) => {
   })
 
   return { ...budgetMainData(data), ...relations }
+}
+
+export const invoiceSiigoMapper = (
+  data: Record<string, any>,
+  clientInfo: ClientDirectus | null,
+  siigoDocumentType: InvoiceDocumentTypeDirectus[],
+  user: User | null,
+) => {
+  const type = JSON.parse(data[`${FINANCE_CODE}type`]) as InvoiceTypesDirectus
+  const items: Record<string, any>[] = []
+  const payments: Record<string, any>[] = []
+
+  Object.values(BudgetItem).forEach((code) => {
+    const initCode = `${FINANCE_CODE}${code.trim().toLowerCase()}`
+    getRowIds(data, `${initCode}_`).forEach((rowId) => {
+      const item = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.L}${rowId}`],
+      ) as InvoiceTypesDirectus
+      const cantidad = data[`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]
+      const valor_unitario = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.VU}${rowId}`],
+      ) as InvoicePriceDirectus
+      const descuento = data[`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]
+      const valor_descuento =
+        data[`${initCode}${FieldsCodeBudgetItems.VD}${rowId}`]
+      const impuesto = JSON.parse(
+        data[`${initCode}${FieldsCodeBudgetItems.I}${rowId}`],
+      ) as InvoiceItemsTaxesDirectus
+      const valor_total = data[`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]
+
+      const siigoItem = {
+        code: item.code,
+        type: item.type as InvoiceItemType,
+        description: item.description,
+        quantity: cantidad,
+        price: valor_unitario.value,
+        discount_rate: descuento,
+        discount: valor_descuento,
+        taxes: impuesto.id ? [{ id: impuesto.id }] : [],
+        total_value: valor_total,
+      } as InvoiceItem
+
+      items.push(siigoItem)
+    })
+  })
+
+  const initPaymentCode = `${FINANCE_CODE}${PAYMENT_WAY_CODE}`
+  getRowIds(data, `${initPaymentCode}_`).forEach((rowId) => {
+    const item = JSON.parse(
+      data[`${initPaymentCode}${FieldsPaymentWayItems.L}${rowId}`],
+    ) as InvoicePaymentWaysDirectus
+    const value = data[`${initPaymentCode}${FieldsPaymentWayItems.V}${rowId}`]
+    const dd = data[`${initPaymentCode}${FieldsPaymentWayItems.DD}${rowId}`]
+    const due_date = dd ? moment(dd).format('YYYY-MM-DD') : undefined
+    payments.push({ id: +item.id, value, due_date })
+  })
+
+  const invoiceDate = data[`${FINANCE_CODE}created_date`]
+
+  return {
+    document: { id: Number(type.id) },
+    date: moment(invoiceDate).format('YYYY-MM-DD'),
+    customer: {
+      id_type: siigoDocumentType.find(
+        (dt) => dt.homologo_app === clientInfo?.tipo_documento,
+      )?.codigo,
+      identification: clientInfo?.documento,
+    },
+    seller: Number(user?.user_siigo.id),
+    stamp: { send: data[`${FINANCE_CODE}send_email_dian`] },
+    mail: { send: data[`${FINANCE_CODE}send_email_client`] },
+    observations: data[`${FINANCE_CODE}observaciones`],
+    items,
+    payments,
+    paciente: { id: clientInfo?.id },
+    comercial: { id: data[`${FINANCE_CODE}comercial`] },
+    total_bruto: data[`${FINANCE_CODE}total_bruto`],
+    total_descuentos: data[`${FINANCE_CODE}descuentos`],
+    sub_total: data[`${FINANCE_CODE}subtotal`],
+    total_iva: data[`${FINANCE_CODE}total_iva`],
+    total_formas_pago: data[`${FINANCE_CODE}total_formas_de_pago`],
+    total_neto: data[`${FINANCE_CODE}total_neto`],
+    fecha_hora: invoiceDate,
+  } as InvoiceSiigoDirectus
+}
+
+export const invoicesMapper = (invoices: InvoiceSiigoDirectus[]) =>
+  invoices.map(
+    (i) =>
+      ({
+        id: i.id,
+        created_date: {
+          date: moment(i.fecha_hora).toDate(),
+          timestamp: moment(i.fecha_hora).valueOf(),
+          formated: getFormatedDateToEs(i.fecha_hora, 'ddd ll'),
+        },
+        items: i.items,
+        monto: {
+          value: i.total_neto,
+          formated: getCurrencyCOP(i.total_neto),
+        },
+        payed: {
+          value: 0,
+          formated: getCurrencyCOP(0),
+        },
+        debt: {
+          value: 0,
+          formated: getCurrencyCOP(0),
+        },
+        extraData: {
+          typeId: +i.document.id,
+          comercial: i.comercial.id,
+          vendedor: DHI_SUCRUSAL,
+          paymentMethods: i.payments,
+          total_bruto: i.total_bruto,
+          total_descuentos: i.total_descuentos,
+          sub_total: i.sub_total,
+          total_iva: i.total_iva,
+          total_formas_pago: i.total_formas_pago,
+          total_neto: i.total_neto,
+          observations: i.observations,
+          stamp: i.stamp.send,
+          mail: i.mail.send,
+        },
+      }) as InvoiceType,
+  )
+
+export const invoiceInitialDataMapper = (invoice: InvoiceType) => {
+  const extraData = invoice.extraData
+  const items = {}
+  const paymentMethods = {}
+
+  const populateItems = (tag: InvoiceItemType) => {
+    invoice.items
+      .filter((item) => item.type === tag)
+      .forEach((item, i) => {
+        const rowId = i + 1
+        const typeTag =
+          item.type === InvoiceItemType.PRODUCT
+            ? BudgetItem.PRODUCTS
+            : BudgetItem.SERVICES
+        const initCode = `${FINANCE_CODE}${typeTag.toLocaleLowerCase()}`
+        const itemObj = {
+          [`${initCode}${FieldsCodeBudgetItems.L}${rowId}`]: item.code,
+          [`${initCode}${FieldsCodeBudgetItems.C}${rowId}`]: item.quantity,
+          [`${initCode}${FieldsCodeBudgetItems.VU}${rowId}`]: item.price,
+          [`${initCode}${FieldsCodeBudgetItems.D}${rowId}`]: item.discount_rate,
+          [`${initCode}${FieldsCodeBudgetItems.I}${rowId}`]: item.taxes[0]?.id,
+          [`${initCode}${FieldsCodeBudgetItems.VT}${rowId}`]: item.total_value,
+        }
+        Object.assign(items, itemObj)
+      })
+  }
+
+  populateItems(InvoiceItemType.PRODUCT)
+  populateItems(InvoiceItemType.SERVICE)
+
+  extraData.paymentMethods.forEach((pm, i) => {
+    const rowId = i + 1
+    const initCode = `${FINANCE_CODE}${PAYMENT_WAY_CODE}`
+    const pmObj = {
+      [`${initCode}${FieldsPaymentWayItems.L}${rowId}`]: pm.id,
+      [`${initCode}${FieldsPaymentWayItems.DD}${rowId}`]: pm.due_date
+        ? moment(pm.due_date).toDate()
+        : undefined,
+      [`${initCode}${FieldsPaymentWayItems.V}${rowId}`]: pm.value,
+    }
+    Object.assign(paymentMethods, pmObj)
+  })
+
+  return {
+    finance_id: invoice.id,
+    finance_type_id: invoice.extraData.typeId,
+    finance_created_date: invoice.created_date.date,
+    finance_comercial: extraData.comercial,
+    finance_sucursal: extraData.vendedor,
+    finance_total_bruto: extraData.total_bruto,
+    finance_descuentos: extraData.total_descuentos,
+    finance_subtotal: extraData.sub_total,
+    finance_total_iva: extraData.total_iva,
+    finance_total_formas_de_pago: extraData.total_formas_pago,
+    finance_total_neto: extraData.total_neto,
+    finance_observaciones: extraData.observations,
+    finance_send_email_dian: extraData.stamp,
+    finance_send_email_client: extraData.mail,
+    ...items,
+    ...paymentMethods,
+  } as InvoiceForm
 }

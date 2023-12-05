@@ -1,260 +1,223 @@
 'use client'
 
 import {
-  DHI_SUCRUSAL,
   FINANCE_CODE,
   GET_INVOICES,
   PAGE_PATH,
-  invoiceItemsMapper,
-  invoicePaymentWaysMapper,
-  invoiceTypesMapper,
+  invoiceInitialDataMapper,
+  invoicesMapper,
   parseUrl,
-  regexPatterns,
 } from '@utils'
-import {
-  DateTimeValid,
-  DropdownValid,
-  InputNumberValid,
-  InputTextValid,
-  InputTextareaValid,
-} from '@components/atoms'
-import moment from 'moment'
-import { BudgetItem, InvoicesDirectus } from '@models'
-import { useQuery } from '@apollo/client'
-import { useGetCommercials, useGoTo, withToast } from '@hooks'
+import { useEffect, useState } from 'react'
+import { useGoTo } from '@hooks'
 import { Card } from 'primereact/card'
-import { ReactNode, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { BudgetItems, PaymentWayItems } from '@components/organisms'
 import { Button } from 'primereact/button'
-import { InputNumberMode } from '@components/atoms/InputNumberValid'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
 import { useClientContext } from '@contexts'
-import { validTotals } from '@components/organisms/patient/PaymentWayItems'
+import { useQuery } from '@apollo/client'
+import { InvoiceType } from '@models'
+import { ConfirmDialog } from 'primereact/confirmdialog'
+import { PrimeIcons } from 'primereact/api'
+import { Dialog } from 'primereact/dialog'
+import ClientFinanceForm from './ClientFinanceForm'
 
-type Props = {
-  showSuccess: (summary: ReactNode, detail: ReactNode) => void
-  showWarning: (summary: ReactNode, detail: ReactNode) => void
-}
+const createdDateBodyTemplate = (invoice: InvoiceType) => (
+  <p>{invoice.created_date.formated}</p>
+)
 
-const ClientFinance = ({ showSuccess, showWarning }: Props) => {
-  const [loading, setLoading] = useState(false)
-  const [invoices, setInvoices] = useState<InvoicesDirectus | null>(null)
+const itemsBodyTemplate = (invoice: InvoiceType) => (
+  <div className='flex flex-wrap gap-2'>
+    {invoice.items.map((i) => (
+      <span key={i.code}>
+        <strong>{i.quantity} x</strong> {i.description}
+      </span>
+    ))}
+  </div>
+)
+
+const totalNetoBodyTemplate = (invoice: InvoiceType) => (
+  <p>{invoice.monto.formated}</p>
+)
+
+const payedBodyTemplate = (invoice: InvoiceType) => (
+  <p>{invoice.payed.formated}</p>
+)
+
+const debtBodyTemplate = (invoice: InvoiceType) => (
+  <p>{invoice.debt.formated}</p>
+)
+
+const ClientFinance = () => {
+  const [visibleView, setVisibleView] = useState<boolean>(false)
+  const [invoices, setInvoices] = useState<InvoiceType[]>([])
+  const [currentInvoice, setCurrentInvoice] = useState<InvoiceType | null>(null)
+
   const { clientInfo } = useClientContext()
-  const { commercials } = useGetCommercials()
   const { goToPage } = useGoTo()
 
-  const { data: dataInvoices, loading: loadingInvoices } =
-    useQuery(GET_INVOICES)
+  const {
+    data: dataInvoices,
+    loading: loadingInvoices,
+    refetch: refetchInvoices,
+  } = useQuery(GET_INVOICES, {
+    variables: { customerId: clientInfo?.id },
+  })
 
-  const defaultValues: Record<string, any> = {
-    [`${FINANCE_CODE}created_date`]: moment().toDate(),
-    [`${FINANCE_CODE}sucursal`]: DHI_SUCRUSAL,
-    [`${FINANCE_CODE}total_bruto`]: 0,
-    [`${FINANCE_CODE}descuentos`]: 0,
-    [`${FINANCE_CODE}subtotal`]: 0,
-    [`${FINANCE_CODE}iva`]: 0,
-    [`${FINANCE_CODE}total_formas_de_pago`]: 0,
-    [`${FINANCE_CODE}total_neto`]: 0,
-  }
-  const handleForm = useForm({ defaultValues })
-  const { handleSubmit, getValues } = handleForm
+  const headerDialog = (
+    <section className='flex flex-wrap gap-x-4 text-base md:text-xl'>
+      <h2>
+        Paciente: <span className='font-normal'>{clientInfo?.full_name}</span>
+      </h2>
+      <h3>
+        Monto:{' '}
+        <span className='font-normal'>{currentInvoice?.monto.formated}</span>
+      </h3>
+    </section>
+  )
 
-  const onSubmit = () => {
-    setLoading(true)
-    const saveData = validTotals(handleForm, showWarning, true)
-    if (saveData) {
-      console.log({ data: getValues(), showSuccess, showWarning })
-    }
-    setLoading(false)
+  const footerDialog = (
+    <div className='flex flex-col md:flex-row gap-2 justify-center'>
+      <Button
+        type='button'
+        label='Cerrar'
+        icon={PrimeIcons.TIMES}
+        severity='danger'
+        className='w-full md:w-fit'
+        onClick={() => setVisibleView(false)}
+      />
+    </div>
+  )
+
+  const optionsBodyTemplate = (invoice: InvoiceType) => {
+    const tagKey = `${FINANCE_CODE}item_${invoice.id}`
+    return (
+      <div key={tagKey}>
+        <ConfirmDialog tagKey={tagKey} />
+        <section className='flex gap-2 justify-center'>
+          <Button
+            icon={PrimeIcons.EYE}
+            severity='help'
+            tooltip='Ver'
+            tooltipOptions={{ position: 'bottom' }}
+            outlined
+            onClick={() => {
+              setVisibleView(true)
+              setCurrentInvoice(invoice)
+            }}
+          />
+        </section>
+      </div>
+    )
   }
+
+  const refreshDataTable = async () =>
+    clientInfo && (await refetchInvoices({ patientId: clientInfo.id }))
 
   useEffect(() => {
-    !loadingInvoices && setInvoices(dataInvoices)
+    refreshDataTable()
+  }, [])
+
+  useEffect(() => {
+    !loadingInvoices &&
+      setInvoices(invoicesMapper(dataInvoices.facturas_siigo || []))
   }, [dataInvoices])
 
   return (
-    <Card className='custom-table-card'>
-      <form
-        id={`form_${FINANCE_CODE}create`}
-        autoComplete='off'
-        onSubmit={handleSubmit(onSubmit)}
-        className='flex flex-col gap-2 text-sm items-center [&>*]:w-full'
+    <>
+      <Dialog
+        draggable={false}
+        visible={visibleView}
+        onHide={() => setVisibleView(false)}
+        header={headerDialog}
+        footer={footerDialog}
+        className='w-[90vw] max-w-[100rem]'
       >
-        <div className='!grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-4 px-2 pt-2'>
-          <DropdownValid
-            name={`${FINANCE_CODE}type`}
-            handleForm={handleForm}
-            label='Tipo de Factura'
-            list={invoiceTypesMapper(invoices?.siigo_voucher_types || [])}
-            required
-          />
-          <DateTimeValid
-            name={`${FINANCE_CODE}created_date`}
-            handleForm={handleForm}
-            label='Fecha de creación'
-            showIcon={false}
-            disabled
-          />
-          <DropdownValid
-            name={`${FINANCE_CODE}comercial`}
-            label='Comercial'
-            handleForm={handleForm}
-            list={commercials}
-            required
-          />
-          <InputTextValid
-            name={`${FINANCE_CODE}sucursal`}
-            handleForm={handleForm}
-            label='Vendedor'
-            disabled
-          />
-        </div>
-        <div className='flex flex-col gap-4'>
-          <BudgetItems
-            key={`${FINANCE_CODE}products_items`}
-            handleForm={handleForm}
-            fieldsStartCode={FINANCE_CODE}
-            legend={BudgetItem.PRODUCTS}
-            buttonLabel='Agregar producto'
-            list={invoiceItemsMapper(invoices?.siigo_productos || [])}
-            invoiceForm
-          />
-          <BudgetItems
-            key={`${FINANCE_CODE}services_items`}
-            handleForm={handleForm}
-            fieldsStartCode={FINANCE_CODE}
-            legend={BudgetItem.SERVICES}
-            buttonLabel='Agregar servicio'
-            list={invoiceItemsMapper(invoices?.siigo_services || [])}
-            invoiceForm
-          />
-        </div>
-        <div className='flex flex-col md:flex-row md:gap-4 mt-3'>
-          <div className='flex flex-col w-full md:!w-[70%]'>
-            <PaymentWayItems
-              key={`${FINANCE_CODE}payment_ways_items`}
-              handleForm={handleForm}
-              legend={'Formas de Pago'}
-              buttonLabel='Agregar forma de pago'
-              list={invoicePaymentWaysMapper(
-                invoices?.siigo_payment_types || [],
-              )}
-            />
-            <div className='h-5' />
-          </div>
-          <div className='flex flex-col order-first md:order-last w-full md:!w-[30%] mt-3'>
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Total bruto'
-              name={`${FINANCE_CODE}total_bruto`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='[&_input]:text-right'
-              disabled
-            />
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Descuentos'
-              name={`${FINANCE_CODE}descuentos`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='[&_input]:text-right'
-              disabled
-            />
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Subtotal'
-              name={`${FINANCE_CODE}subtotal`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='[&_input]:text-right'
-              disabled
-            />
-            <InputNumberValid
-              handleForm={handleForm}
-              label='IVA'
-              name={`${FINANCE_CODE}iva`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='[&_input]:text-right'
-              disabled
-            />
-          </div>
-        </div>
-        <div className='flex flex-col gap-2 md:flex-row md:gap-4 mt-3'>
-          <div className='flex justify-end w-full md:!w-[70%]'>
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Total formas de pago'
-              name={`${FINANCE_CODE}total_formas_de_pago`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='w-full lg:!w-[30rem] [&_input]:text-right [&_input]:font-bold [&_input]:!text-[1rem] [&_label]:font-bold [&_label]:!text-[1rem]'
-              disabled
-            />
-          </div>
-          <div className='flex w-full md:!w-[30%]'>
-            <InputNumberValid
-              handleForm={handleForm}
-              label='Total neto'
-              name={`${FINANCE_CODE}total_neto`}
-              min={0}
-              mode={InputNumberMode.CURRENCY}
-              currency='COP'
-              locale='es-CO'
-              useGrouping={true}
-              className='w-full [&_input]:text-right [&_input]:font-bold [&_input]:!text-[1rem] [&_label]:font-bold [&_label]:!text-[1rem]'
-              disabled
-            />
-          </div>
-        </div>
-        <InputTextareaValid
-          handleForm={handleForm}
-          label='Observaciones'
-          name={`${FINANCE_CODE}observaciones`}
-          rows={4}
-          gridRows={4}
-          pattern={regexPatterns.onlyEmpty}
+        <ClientFinanceForm
+          initialData={
+            currentInvoice
+              ? invoiceInitialDataMapper(currentInvoice)
+              : undefined
+          }
         />
-        <div className='flex flex-col md:flex-row gap-2 justify-center'>
-          <Button
-            type='button'
-            label='Cancelar'
-            icon='pi pi-times'
-            severity='danger'
-            className='w-full md:w-fit'
-            onClick={() =>
-              clientInfo &&
-              goToPage(parseUrl(PAGE_PATH.clientDetail, { id: clientInfo.id }))
-            }
+      </Dialog>
+      <Card className='custom-table-card flex flex-col gap-4'>
+        <Button
+          className='text-sm w-full md:!w-fit min-w-[13rem]'
+          icon='pi pi-plus'
+          label='Crear factura'
+          type='button'
+          severity='success'
+          onClick={() => {
+            clientInfo?.id &&
+              goToPage(parseUrl(PAGE_PATH.financeCreate, { id: clientInfo.id }))
+          }}
+          outlined
+        />
+        <DataTable
+          value={invoices}
+          emptyMessage='No se encontraron resultados'
+          size='small'
+          paginator
+          rows={5}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          tableStyle={{ minWidth: '40rem' }}
+          className='custom-table'
+          loading={loadingInvoices}
+          removableSort
+          sortField='created_date.timestamp'
+          sortOrder={-1}
+        >
+          <Column
+            key='created_date'
+            field='created_date.timestamp'
+            header='Fecha Creación'
+            body={createdDateBodyTemplate}
+            style={{ minWidth: '10rem', width: '15%' }}
+            sortable
           />
-          <Button
-            type='submit'
-            label='Pagar'
-            icon='pi pi-dollar'
-            severity='success'
-            className='w-full md:w-fit'
-            loading={loading}
+          <Column
+            key='items'
+            field='items'
+            header='Items'
+            body={itemsBodyTemplate}
+            style={{ minWidth: '20rem', width: '45%' }}
           />
-        </div>
-      </form>
-    </Card>
+          <Column
+            key='total_neto'
+            field='total_neto.formated'
+            header='Monto'
+            body={totalNetoBodyTemplate}
+            style={{ minWidth: '9rem', width: '10%' }}
+            sortable
+          />
+          <Column
+            key='payed'
+            field='payed.formated'
+            header='Monto Pagado'
+            body={payedBodyTemplate}
+            style={{ minWidth: '9rem', width: '10%' }}
+            sortable
+          />
+          <Column
+            key='debt'
+            field='debt.formated'
+            header='Deuda'
+            body={debtBodyTemplate}
+            style={{ minWidth: '9rem', width: '10%' }}
+            sortable
+          />
+          <Column
+            key='options'
+            header='Acciones'
+            align={'center'}
+            style={{ minWidth: '4rem', width: '10%' }}
+            body={optionsBodyTemplate}
+          />
+        </DataTable>
+      </Card>
+    </>
   )
 }
 
-export default withToast(ClientFinance)
+export default ClientFinance
