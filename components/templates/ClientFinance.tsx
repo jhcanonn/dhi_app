@@ -4,6 +4,7 @@ import {
   FINANCE_CODE,
   GET_INVOICES,
   PAGE_PATH,
+  invoiceInitialDataMapper,
   invoicesMapper,
   parseUrl,
 } from '@utils'
@@ -19,6 +20,7 @@ import { InvoiceType } from '@models'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { PrimeIcons } from 'primereact/api'
 import { Dialog } from 'primereact/dialog'
+import ClientFinanceForm from './ClientFinanceForm'
 
 const createdDateBodyTemplate = (invoice: InvoiceType) => (
   <p>{invoice.created_date.formated}</p>
@@ -35,7 +37,7 @@ const itemsBodyTemplate = (invoice: InvoiceType) => (
 )
 
 const totalNetoBodyTemplate = (invoice: InvoiceType) => (
-  <p>{invoice.total_neto.formated}</p>
+  <p>{invoice.monto.formated}</p>
 )
 
 const payedBodyTemplate = (invoice: InvoiceType) => (
@@ -63,10 +65,15 @@ const ClientFinance = () => {
   })
 
   const headerDialog = (
-    <h2>
-      Monto:{' '}
-      <span className='font-normal'>{currentInvoice?.total_neto.formated}</span>
-    </h2>
+    <section className='flex flex-wrap gap-x-4 text-base md:text-xl'>
+      <h2>
+        Paciente: <span className='font-normal'>{clientInfo?.full_name}</span>
+      </h2>
+      <h3>
+        Monto:{' '}
+        <span className='font-normal'>{currentInvoice?.monto.formated}</span>
+      </h3>
+    </section>
   )
 
   const footerDialog = (
@@ -126,7 +133,13 @@ const ClientFinance = () => {
         footer={footerDialog}
         className='w-[90vw] max-w-[100rem]'
       >
-        <p>Invoice: {currentInvoice?.id}</p>
+        <ClientFinanceForm
+          initialData={
+            currentInvoice
+              ? invoiceInitialDataMapper(currentInvoice)
+              : undefined
+          }
+        />
       </Dialog>
       <Card className='custom-table-card flex flex-col gap-4'>
         <Button

@@ -6,7 +6,7 @@ import {
 import { getBudgetTotal } from '@components/organisms/patient/BudgetItems'
 import { getCurrencyCOP } from '@utils'
 import { UUID } from 'crypto'
-import { UseFormReturn } from 'react-hook-form'
+import { UseFormGetValues, UseFormReturn } from 'react-hook-form'
 
 export const defaultPriceList = [
   {
@@ -31,15 +31,31 @@ export const defaultTaxList = [
   },
 ]
 
-export const getInvoiceTotalValorUnitario = (formData: any) =>
-  Object.entries(formData)
+export const getInvoiceTotalValorUnitario = (
+  getValues: UseFormGetValues<any>,
+) =>
+  Object.entries(getValues())
     .filter(([key]) => key.includes(FieldsCodeBudgetItems.VU))
-    .reduce((acc, [, value]) => {
+    .reduce((acc, [key, value]) => {
+      const cantidad = getValues(
+        key.replace(FieldsCodeBudgetItems.VU, FieldsCodeBudgetItems.C),
+      )
       const valueInfo: InvoicePriceDirectus = JSON.parse(value as any)
-      return acc + (valueInfo.value ? Number(valueInfo.value) : 0)
+      return acc + (valueInfo.value ? cantidad * Number(valueInfo.value) : 0)
     }, 0)
 
 export const getInvoiceTotal = (
+  getValues: UseFormGetValues<any>,
+  code: FieldsCodeBudgetItems,
+) =>
+  Object.entries(getValues())
+    .filter(([key]) => key.includes(code))
+    .reduce((acc, [key, value]) => {
+      const cantidad = getValues(key.replace(code, FieldsCodeBudgetItems.C))
+      return acc + (value ? cantidad * Number(value) : 0)
+    }, 0)
+
+export const getInvoiceTotalNeto = (
   formData: any,
   code: FieldsCodeBudgetItems | string,
 ) =>
@@ -79,28 +95,29 @@ export const calcInvoiceValues = (
   setValue(
     valorTotalCode,
     cantidad > 0
-      ? cantidad * getValues(valorConDctoCode) + getValues(valorImpuestoCode)
+      ? cantidad * getValues(valorConDctoCode) +
+          cantidad * getValues(valorImpuestoCode)
       : 0,
   )
   setValue(
     `${fieldsStartCode}total_bruto`,
-    getInvoiceTotalValorUnitario(getValues()),
+    getInvoiceTotalValorUnitario(getValues),
   )
   setValue(
     `${fieldsStartCode}descuentos`,
-    getInvoiceTotal(getValues(), FieldsCodeBudgetItems.VD),
+    getInvoiceTotal(getValues, FieldsCodeBudgetItems.VD),
   )
   setValue(
     `${fieldsStartCode}subtotal`,
-    getInvoiceTotal(getValues(), FieldsCodeBudgetItems.VCD),
+    getInvoiceTotal(getValues, FieldsCodeBudgetItems.VCD),
   )
   setValue(
-    `${fieldsStartCode}iva`,
-    getInvoiceTotal(getValues(), FieldsCodeBudgetItems.VI),
+    `${fieldsStartCode}total_iva`,
+    getInvoiceTotal(getValues, FieldsCodeBudgetItems.VI),
   )
   setValue(
     `${fieldsStartCode}total_neto`,
-    getInvoiceTotal(getValues(), FieldsCodeBudgetItems.VT),
+    getInvoiceTotalNeto(getValues(), FieldsCodeBudgetItems.VT),
   )
 }
 

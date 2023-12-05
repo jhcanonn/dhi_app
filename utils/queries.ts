@@ -788,6 +788,7 @@ export const GET_INVOICES = gql`
       total_iva
       total_formas_pago
       total_neto
+      fecha_hora
     }
   }
 `

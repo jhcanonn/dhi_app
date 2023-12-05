@@ -160,13 +160,53 @@ export type BudgetType = {
   }
 }
 
+export enum InvoiceItemType {
+  SERVICE = 'Service',
+  PRODUCT = 'Product',
+}
+
+export type InvoiceItem = {
+  code: string
+  type: InvoiceItemType
+  description: string
+  quantity: number
+  price: number
+  discount_rate: number
+  discount: number
+  taxes: {
+    id: number
+  }[]
+  total_value: number
+}
+
+export type InvoicePaymentMethod = {
+  id: number
+  value: number
+  due_date: string
+}
+
 export type InvoiceType = {
   id: UUID
   created_date: DataTableDate
-  total_neto: DataTableCurrency
+  items: InvoiceItem[]
+  monto: DataTableCurrency
   payed: DataTableCurrency
   debt: DataTableCurrency
-  items: Record<string, any>[]
+  extraData: {
+    typeId: number
+    comercial: UUID
+    vendedor: string
+    paymentMethods: InvoicePaymentMethod[]
+    total_bruto: number
+    total_descuentos: number
+    sub_total: number
+    total_iva: number
+    total_formas_pago: number
+    total_neto: number
+    stamp: boolean
+    mail: boolean
+    observations: string
+  }
 }
 
 export type PatientExtraData = {
@@ -290,4 +330,5 @@ export type InvoiceSiigoDirectus = {
   total_iva: number
   total_formas_pago: number
   total_neto: number
+  fecha_hora: string
 }
