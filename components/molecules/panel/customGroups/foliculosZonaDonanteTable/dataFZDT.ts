@@ -59,32 +59,30 @@ const calcAverageDensidadExistente = (
 const occipitalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_ODE,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'T', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_ODR, required: true },
+  { code: FieldsCodeFZD.FZD_ODR, defaultValue: 0 },
   {
     code: FieldsCodeFZD.FZD_OAA,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAB,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_O, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_OAT,
-    required: true,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFZD.FZD_OC,
-    required: true,
     defaultValue: 0,
     disabled: true,
   },
@@ -93,32 +91,30 @@ const occipitalFields: FoliculosField[] = [
 const temporalFields: FoliculosField[] = [
   {
     code: FieldsCodeFZD.FZD_TDE,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcAverageDensidadExistente(e.value || 0, 'O', handleForm),
   },
-  { code: FieldsCodeFZD.FZD_TDR, required: true },
+  { code: FieldsCodeFZD.FZD_TDR, defaultValue: 0 },
   {
     code: FieldsCodeFZD.FZD_TAA,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'b', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAB,
-    required: true,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(e.value || 0, 'a', RowsCodeFZD.FZD_T, handleForm),
   },
   {
     code: FieldsCodeFZD.FZD_TAT,
-    required: true,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFZD.FZD_TC,
-    required: true,
     defaultValue: 0,
     disabled: true,
   },

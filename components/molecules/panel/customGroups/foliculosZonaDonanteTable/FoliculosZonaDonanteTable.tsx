@@ -75,7 +75,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                   name={FieldsCodeFZD.FZD_PDE}
                   min={0}
                   disabled
-                  required
                 />
               </td>
               <TdTitle colspan={4} right>
@@ -87,7 +86,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                   name={FieldsCodeFZD.FZD_TF}
                   min={0}
                   disabled
-                  required
                 />
               </td>
             </tr>
@@ -101,7 +99,6 @@ const FoliculosZonaDonanteTable = ({ handleForm, disabledData }: Props) => {
                   name={FieldsCodeFZD.FZD_FD}
                   min={0}
                   disabled
-                  required
                 />
               </td>
             </tr>

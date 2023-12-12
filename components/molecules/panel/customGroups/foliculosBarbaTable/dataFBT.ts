@@ -81,7 +81,7 @@ export enum FieldsCodeFB {
 const lateralDerechoFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_LD_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -92,13 +92,12 @@ const lateralDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LD_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_LD_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -110,7 +109,7 @@ const lateralDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LD_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -122,13 +121,11 @@ const lateralDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LD_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_LD_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -137,7 +134,7 @@ const lateralDerechoFields: FoliculosField[] = [
 const lateralIzquierdoFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_LI_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -148,13 +145,12 @@ const lateralIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LI_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_LI_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -166,7 +162,7 @@ const lateralIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LI_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -178,13 +174,11 @@ const lateralIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_LI_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_LI_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -193,7 +187,7 @@ const lateralIzquierdoFields: FoliculosField[] = [
 const candadoDerechoFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_CD_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -204,13 +198,12 @@ const candadoDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CD_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_CD_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -222,7 +215,7 @@ const candadoDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CD_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -234,13 +227,11 @@ const candadoDerechoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CD_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_CD_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -249,7 +240,7 @@ const candadoDerechoFields: FoliculosField[] = [
 const candadoIzquierdoFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_CI_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -260,13 +251,12 @@ const candadoIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CI_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_CI_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -278,7 +268,7 @@ const candadoIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CI_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -290,13 +280,11 @@ const candadoIzquierdoFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_CI_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_CI_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -305,7 +293,7 @@ const candadoIzquierdoFields: FoliculosField[] = [
 const bigoteFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_B_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -316,13 +304,12 @@ const bigoteFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_B_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_B_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -334,7 +321,7 @@ const bigoteFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_B_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -346,13 +333,11 @@ const bigoteFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_B_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_B_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -361,7 +346,7 @@ const bigoteFields: FoliculosField[] = [
 const mentonFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_M_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -372,13 +357,12 @@ const mentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_M_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_M_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -390,7 +374,7 @@ const mentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_M_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -402,13 +386,11 @@ const mentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_M_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_M_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -417,7 +399,7 @@ const mentonFields: FoliculosField[] = [
 const medioMentonFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_MM_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -428,13 +410,12 @@ const medioMentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_MM_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_MM_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -446,7 +427,7 @@ const medioMentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_MM_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -458,13 +439,11 @@ const medioMentonFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_MM_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_MM_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -473,7 +452,7 @@ const medioMentonFields: FoliculosField[] = [
 const patillaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_PD_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -484,13 +463,12 @@ const patillaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PD_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_PD_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -502,7 +480,7 @@ const patillaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PD_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -514,13 +492,11 @@ const patillaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PD_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_PD_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -529,7 +505,7 @@ const patillaDerechaFields: FoliculosField[] = [
 const patillaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFB.FB_PI_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -540,13 +516,12 @@ const patillaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PI_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_PI_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -558,7 +533,7 @@ const patillaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PI_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -570,13 +545,11 @@ const patillaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFB.FB_PI_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFB.FB_PI_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },

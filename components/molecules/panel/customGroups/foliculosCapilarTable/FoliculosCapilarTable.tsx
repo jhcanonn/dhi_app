@@ -58,7 +58,6 @@ const FoliculosCapilarTable = ({ handleForm, disabledData }: Props) => {
         label='Objetivo de densidad promedio'
         min={0}
         disabled={disabledData}
-        required
         onCustomChange={(e) => {
           const currentValue = e.value || 0
           Object.values(RowsCodeFC).forEach((code) => {
@@ -105,7 +104,6 @@ const FoliculosCapilarTable = ({ handleForm, disabledData }: Props) => {
                   name={FieldsCodeFC.FC_PT}
                   min={0}
                   disabled
-                  required
                 />
               </td>
             </tr>
