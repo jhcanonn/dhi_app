@@ -39,7 +39,10 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
         .forEach(([key, value]) => setValue(key, value))
     } else {
       graftFields.forEach((field) =>
-        setValue(`${field.code}${endCode}`, isTotal ? 0 : field.defaultValue),
+        setValue(
+          `${field.code}${endCode}`,
+          isTotal || day !== 1 ? 0 : field.defaultValue,
+        ),
       )
       setValue(`${FieldsCodeED.ED_GT}${totalCode}`, 0)
       setValue(`${FieldsCodeED.ED_GFT}${totalCode}`, 0)
@@ -94,7 +97,7 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
               mode={field.mode ?? InputNumberMode.DECIMAL}
               min={0}
               disabled={field.disabled || isTotal || disabledData}
-              required
+              required={day === 1}
               onCustomChange={(e) =>
                 field.onCustomChange && field.onCustomChange(e, handleForm, day)
               }
@@ -108,7 +111,6 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
           mode={InputNumberMode.DECIMAL}
           min={0}
           disabled
-          required
         />
         <InputNumberValid
           name={`${FieldsCodeED.ED_GFT}${totalCode}`}
@@ -117,7 +119,6 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
           mode={InputNumberMode.DECIMAL}
           min={0}
           disabled
-          required
         />
         <InputNumberValid
           name={`${FieldsCodeED.ED_R}${endCode}`}
@@ -126,7 +127,6 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
           mode={InputNumberMode.DECIMAL}
           min={0}
           disabled
-          required
           className='col-span-2'
         />
         {!isTotal && (
@@ -136,7 +136,7 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
               handleForm={handleForm}
               label='Fecha de inicio'
               disabled={disabledData}
-              required
+              required={day === 1}
               stepMinute={1}
               className='col-span-2'
             />
@@ -145,7 +145,7 @@ const ExtDay = ({ handleForm, disabledData, day = 1, isTotal }: Props) => {
               handleForm={handleForm}
               label='Fecha de fin'
               disabled={disabledData}
-              required
+              required={day === 1}
               stepMinute={1}
               className='col-span-2'
             />

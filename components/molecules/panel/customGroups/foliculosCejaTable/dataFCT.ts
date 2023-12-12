@@ -32,7 +32,7 @@ export enum FieldsCodeFCJ {
 const cejaDerechaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CD_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -43,13 +43,12 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -61,7 +60,7 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -73,13 +72,11 @@ const cejaDerechaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CD_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
@@ -88,7 +85,7 @@ const cejaDerechaFields: FoliculosField[] = [
 const cejaIzquierdaFields: FoliculosField[] = [
   {
     code: FieldsCodeFCJ.FCJ_CI_DE,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcDensidadRestante(
         e.value || 0,
@@ -99,13 +96,12 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_DR,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AA,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -117,7 +113,7 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AB,
-    required: false,
+    defaultValue: 0,
     onCustomChange: (e, handleForm) =>
       calcTotalArea(
         e.value || 0,
@@ -129,13 +125,11 @@ const cejaIzquierdaFields: FoliculosField[] = [
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_AT,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
   {
     code: FieldsCodeFCJ.FCJ_CI_C,
-    required: false,
     defaultValue: 0,
     disabled: true,
   },
