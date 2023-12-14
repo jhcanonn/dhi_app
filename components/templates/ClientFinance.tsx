@@ -114,11 +114,11 @@ const ClientFinance = () => {
 
   useEffect(() => {
     refreshDataTable()
-  }, [])
+  }, [clientInfo])
 
   useEffect(() => {
     !loadingInvoices &&
-      setInvoices(invoicesMapper(dataInvoices.facturas_siigo || []))
+      setInvoices(invoicesMapper(dataInvoices?.facturas_siigo || []))
   }, [dataInvoices])
 
   return (
