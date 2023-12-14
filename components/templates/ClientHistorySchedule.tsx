@@ -7,7 +7,7 @@ import {
   removeDuplicates,
   schedulesMapper,
 } from '@utils'
-import { useMutation, useQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { EventStateItemColor } from '@components/molecules'
 import { useClientContext } from '@contexts'
 import { withToast } from '@hooks'
@@ -88,13 +88,10 @@ const ClientHistorySchedule = ({ showSuccess }: Props) => {
 
   const [scheduleDelete] = useMutation(SCHEDULE_DELETE)
 
-  const {
-    data: dataSchedules,
-    loading: loadingSchedules,
-    refetch: refetchSchedules,
-  } = useQuery(GET_SCHEDULES, {
-    variables: { patientId: clientInfo?.id },
-  })
+  const [refetchSchedules, { data: dataSchedules, loading: loadingSchedules }] =
+    useLazyQuery(GET_SCHEDULES, {
+      variables: { patientId: clientInfo?.id },
+    })
 
   const footerDialog = (
     <div className='flex flex-col md:flex-row gap-2 justify-center'>
@@ -169,7 +166,8 @@ const ClientHistorySchedule = ({ showSuccess }: Props) => {
   }
 
   const refreshDataTable = async () =>
-    clientInfo && (await refetchSchedules({ patientId: clientInfo.id }))
+    clientInfo &&
+    (await refetchSchedules({ variables: { patientId: clientInfo.id } }))
 
   useEffect(() => {
     initFilters()

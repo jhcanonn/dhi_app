@@ -15,7 +15,7 @@ import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { useClientContext } from '@contexts'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { InvoiceType } from '@models'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { PrimeIcons } from 'primereact/api'
@@ -56,13 +56,10 @@ const ClientFinance = () => {
   const { clientInfo } = useClientContext()
   const { goToPage } = useGoTo()
 
-  const {
-    data: dataInvoices,
-    loading: loadingInvoices,
-    refetch: refetchInvoices,
-  } = useQuery(GET_INVOICES, {
-    variables: { customerId: clientInfo?.id },
-  })
+  const [refetchInvoices, { data: dataInvoices, loading: loadingInvoices }] =
+    useLazyQuery(GET_INVOICES, {
+      variables: { customerId: clientInfo?.id },
+    })
 
   const headerDialog = (
     <section className='flex flex-wrap gap-x-4 text-base md:text-xl'>
@@ -112,7 +109,8 @@ const ClientFinance = () => {
   }
 
   const refreshDataTable = async () =>
-    clientInfo && (await refetchInvoices({ patientId: clientInfo.id }))
+    clientInfo &&
+    (await refetchInvoices({ variables: { patientId: clientInfo.id } }))
 
   useEffect(() => {
     refreshDataTable()

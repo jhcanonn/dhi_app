@@ -50,7 +50,7 @@ import {
 } from '@models'
 import { useCalendarContext, useGlobalContext } from '@contexts'
 import { useGetResources, withToast } from '@hooks'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { GET_APPOINTMENTS, GET_USER_ME, PAYS } from '@utils/queries'
 import {
@@ -83,6 +83,7 @@ const Calendar = ({ cookies, showError }: Props) => {
     setProfessionals,
     setBoxes,
   } = useGlobalContext()
+
   const {
     setCalendarScheduler,
     calendarType,
@@ -110,19 +111,19 @@ const Calendar = ({ cookies, showError }: Props) => {
 
   const { data: paysFetch, loading: paysLoading } = useQuery(PAYS)
 
-  const { refetch: refetchUser } = useQuery(GET_USER_ME, {
+  const [refetchUser] = useLazyQuery(GET_USER_ME, {
     client: directusSystemClient,
   })
-
-  const [currentUser, setCurrentUser] = useState<User>()
 
   const { data: professionalsFetch, loading: professionalsLoading } =
     useQuery(GET_PROFESSIONALS)
 
   const { data: boxesFetch, loading: boxesLoading } = useQuery(GET_BOXES)
 
-  const { loading: appointmentsLoading, refetch: appointmentRefetch } =
-    useQuery(GET_APPOINTMENTS)
+  const [appointmentRefetch, { loading: appointmentsLoading }] =
+    useLazyQuery(GET_APPOINTMENTS)
+
+  const [currentUser, setCurrentUser] = useState<User>()
 
   const fetchingFromDirectus =
     eventStateLoading &&
@@ -201,7 +202,7 @@ const Calendar = ({ cookies, showError }: Props) => {
     const end = endDate?.toISOString()
     if (!start || !end) return
     calendarRef.current?.scheduler.handleState(true, 'loading')
-    const res = await appointmentRefetch({ start, end })
+    const res = await appointmentRefetch({ variables: { start, end } })
     const resAppointments: AppointmentQuery[] = res?.data?.citas
     if (resAppointments?.length) {
       const appointments = resAppointments.map((c) =>
@@ -213,9 +214,18 @@ const Calendar = ({ cookies, showError }: Props) => {
     calendarRef.current?.scheduler.handleState(false, 'loading')
   }
 
-  const fetchUser = async () => {
-    const res = await refetchUser()
-    setCurrentUser(res?.data?.users_me)
+  const getUser = async () => {
+    const userMe = window.sessionStorage.getItem(LocalStorageTags.USER)
+    if (!userMe) {
+      const res = await refetchUser()
+      setCurrentUser(res?.data?.users_me)
+      window.sessionStorage.setItem(
+        LocalStorageTags.USER,
+        JSON.stringify(res?.data?.users_me),
+      )
+    } else {
+      setCurrentUser(JSON.parse(userMe))
+    }
   }
 
   const updateAppointment = async (
@@ -300,7 +310,7 @@ const Calendar = ({ cookies, showError }: Props) => {
   }
 
   useEffect(() => {
-    fetchUser()
+    getUser()
     setCalendarScheduler(calendarRef)
     fetchHolidays()
     fetchCountries()
@@ -332,9 +342,12 @@ const Calendar = ({ cookies, showError }: Props) => {
     let professionals =
       professionalsFetch?.profesionales as ProfessionalDirectus[]
     if (professionals?.length) {
-      if (currentUser?.role?.id === ROLES.dhi_profesional) {
+      if (
+        currentUser?.role?.name === ROLES.dhi_profesional ||
+        currentUser?.role?.name === ROLES.dhi_enfermeria
+      ) {
         const roleProfessional = professionals.find(
-          (p) => user && +p.id === +user?.profesional?.id,
+          (p) => currentUser && +p.id === +currentUser?.profesional?.id,
         )
         professionals = roleProfessional ? [roleProfessional] : []
       }

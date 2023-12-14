@@ -25,7 +25,7 @@ import {
   dhiDataSheetMapper,
   removeDuplicates,
 } from '@utils'
-import { useMutation, useQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { useClientContext, useGlobalContext } from '@contexts'
 import { EditDataSheet, RowExpansionDataSheet } from '@components/molecules'
 import { Dialog } from 'primereact/dialog'
@@ -65,11 +65,10 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
 
   const fichaId = clientInfo?.ficha_id?.id
 
-  const {
-    data: dataSheetsData,
-    loading: dataSheetsLoading,
-    refetch: dataSheetsRefetch,
-  } = useQuery(GET_DATASHEETS_BY_ID, {
+  const [
+    dataSheetsRefetch,
+    { data: dataSheetsData, loading: dataSheetsLoading },
+  ] = useLazyQuery(GET_DATASHEETS_BY_ID, {
     variables: { fichaId },
   })
 
@@ -269,11 +268,12 @@ const MenuDataSheet = ({ showSuccess, showError }: Props) => {
     }
   }, [dataSheetsData])
 
-  const fetchData = async () => await dataSheetsRefetch({ fichaId })
+  const fetchData = async () =>
+    await dataSheetsRefetch({ variables: { fichaId } })
 
   useEffect(() => {
     fichaId ? fetchData() : setDataSheets([])
-  }, [])
+  }, [fichaId])
 
   return (
     <>

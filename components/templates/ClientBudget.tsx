@@ -27,7 +27,7 @@ import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { ReactNode, useEffect, useState } from 'react'
 import { useGoTo, withToast } from '@hooks'
-import { useMutation, useQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { PrimeIcons } from 'primereact/api'
 import { BudgetStateTag } from '@components/molecules'
 import { generateBudgetToPDF } from '@utils/utils-pdf'
@@ -99,13 +99,10 @@ const ClientBudget = ({ showSuccess }: Props) => {
 
   const [budgetDelete] = useMutation(BUDGET_DELETE)
 
-  const {
-    data: dataBudgets,
-    loading: loadingBudgets,
-    refetch: refetchBudgets,
-  } = useQuery(GET_BUDGETS, {
-    variables: { patientId: clientInfo?.id },
-  })
+  const [refetchBudgets, { data: dataBudgets, loading: loadingBudgets }] =
+    useLazyQuery(GET_BUDGETS, {
+      variables: { patientId: clientInfo?.id },
+    })
 
   const headerDialog = (
     <h2>
@@ -212,7 +209,8 @@ const ClientBudget = ({ showSuccess }: Props) => {
   }
 
   const refreshDataTable = async () =>
-    clientInfo && (await refetchBudgets({ patientId: clientInfo.id }))
+    clientInfo &&
+    (await refetchBudgets({ variables: { patientId: clientInfo.id } }))
 
   useEffect(() => {
     refreshDataTable()
