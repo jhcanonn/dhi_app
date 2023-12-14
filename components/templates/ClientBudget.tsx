@@ -214,14 +214,14 @@ const ClientBudget = ({ showSuccess }: Props) => {
 
   useEffect(() => {
     refreshDataTable()
-  }, [])
+  }, [clientInfo])
 
   useEffect(() => {
     if (!loadingBudgets) {
-      setBudgets(budgetsMapper(dataBudgets.presupuesto || []))
-      setBudgetState(budgetStateMapper(dataBudgets.presupuesto_estado || []))
+      setBudgets(budgetsMapper(dataBudgets?.presupuesto || []))
+      setBudgetState(budgetStateMapper(dataBudgets?.presupuesto_estado || []))
       setBudgetPaymentState(
-        budgetStateMapper(dataBudgets.presupuesto_estado_pago || []),
+        budgetStateMapper(dataBudgets?.presupuesto_estado_pago || []),
       )
     }
   }, [dataBudgets])
