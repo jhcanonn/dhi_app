@@ -96,7 +96,7 @@ export const CalendarProvider = ({
   children: React.ReactNode
 }) => {
   const { user } = useGlobalContext()
-  const isProfessionalUser = user?.role.id === ROLES.dhi_profesional
+  const isProfessionalUser = user?.role.name === ROLES.dhi_profesional
 
   const [calendarScheduler, setCalendarScheduler] =
     useState<RefObject<SchedulerRef> | null>(null)

@@ -13,14 +13,14 @@ const useGetCommercials = () => {
     {
       client: directusSystemClient,
       variables: {
-        roleId: ROLES.dhi_comercial,
+        roleName: ROLES.dhi_comercial,
       },
     },
   )
 
   useEffect(() => {
     if (!loadingCommercials) {
-      const commercials: CommercialDirectus[] = dataCommercials.users
+      const commercials: CommercialDirectus[] = dataCommercials?.users ?? []
       setCommercials(
         commercials.map((comm) => ({
           name: `${comm.first_name} ${comm.last_name}`.trim(),
