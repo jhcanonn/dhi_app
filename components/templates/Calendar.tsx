@@ -342,10 +342,7 @@ const Calendar = ({ cookies, showError }: Props) => {
     let professionals =
       professionalsFetch?.profesionales as ProfessionalDirectus[]
     if (professionals?.length) {
-      if (
-        currentUser?.role?.name === ROLES.dhi_profesional ||
-        currentUser?.role?.name === ROLES.dhi_enfermeria
-      ) {
+      if (currentUser?.role?.name === ROLES.dhi_profesional) {
         const roleProfessional = professionals.find(
           (p) => currentUser && +p.id === +currentUser?.profesional?.id,
         )
