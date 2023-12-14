@@ -117,9 +117,9 @@ export const GET_SCHEDULES = gql`
 `
 
 export const GET_COMMERCIALS = gql`
-  query ($roleId: String) {
+  query ($roleName: String) {
     users(
-      filter: { status: { _eq: "active" }, role: { id: { _eq: $roleId } } }
+      filter: { status: { _eq: "active" }, role: { name: { _eq: $roleName } } }
     ) {
       id
       first_name

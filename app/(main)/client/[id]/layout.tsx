@@ -102,7 +102,7 @@ const ClientLayout = ({ children, params }: Props) => {
             {loading ? (
               <Skeleton height='2rem' borderRadius='16px'></Skeleton>
             ) : (
-              toTitleCase(data.pacientes_by_id.full_name)
+              toTitleCase(data?.pacientes_by_id?.full_name ?? '')
             )}
           </h2>
           {data &&

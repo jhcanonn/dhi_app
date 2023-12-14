@@ -863,7 +863,7 @@ export const invoicesMapper = (invoices: InvoiceSiigoDirectus[]) =>
         },
         extraData: {
           typeId: +i.document.id,
-          comercial: i.comercial.id,
+          comercial: i.comercial?.id,
           vendedor: DHI_SUCRUSAL,
           paymentMethods: i.payments,
           total_bruto: i.total_bruto,
