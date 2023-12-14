@@ -350,6 +350,8 @@ const Calendar = ({ cookies, showError }: Props) => {
           (p) => currentUser && +p.id === +currentUser?.profesional?.id,
         )
         professionals = roleProfessional ? [roleProfessional] : []
+      } else {
+        professionals = professionals.filter((p) => p.disponible_agenda == true)
       }
       const mappedProfessionals = professionalsMapper(professionals)
       setProfessionals(mappedProfessionals)
