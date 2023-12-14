@@ -365,7 +365,7 @@ const CalendarEditor = ({
           (patientLoading ? (
             <Skeleton shape='circle' size='2.4rem'></Skeleton>
           ) : (
-            <UploadProfileImage clientInfo={patientInfo.pacientes_by_id} />
+            <UploadProfileImage clientInfo={patientInfo?.pacientes_by_id} />
           ))}
         <Button
           icon='pi pi-times'
@@ -403,12 +403,12 @@ const CalendarEditor = ({
   )
 
   const fetchData = async () =>
-    eventData?.client_id &&
-    (await patientRefetch({ variables: { id: eventData.client_id } }))
+    event?.client_id &&
+    (await patientRefetch({ variables: { id: event?.client_id } }))
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [event])
 
   return (
     <>
