@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Button } from 'primereact/button'
 import { useAsideContext, useGlobalContext } from '@contexts'
 import { Cookies, withCookies } from 'react-cookie'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { Avatar } from 'primereact/avatar'
 import { classNames as cx } from 'primereact/utils'
 import { useEffect } from 'react'
@@ -13,16 +13,22 @@ import { getPanelsFromDirectus, logout, refreshToken } from '@utils/api'
 import { PanelsDirectus } from '@models'
 import { generateURLAssetsWithToken } from '@utils/url-access-token'
 import { useGoTo } from '@hooks'
-import { GET_CIE_10, LocalStorageTags, PAGE_PATH } from '@utils'
+import { GET_CIE_10, GET_USER_ME, LocalStorageTags, PAGE_PATH } from '@utils'
+import { directusSystemClient } from '@components/templates/Providers'
 
 const Nav = ({ cookies }: { cookies: Cookies }) => {
   const { goToPage } = useGoTo()
-  const { user, setPanels } = useGlobalContext()
+  const { user, setUser, setPanels } = useGlobalContext()
   const { toggleVisible } = useAsideContext()
 
-  const { refetch: refetchCie10 } = useQuery(GET_CIE_10)
+  const [refetchCie10] = useLazyQuery(GET_CIE_10)
+
+  const [refetchUser] = useLazyQuery(GET_USER_ME, {
+    client: directusSystemClient,
+  })
 
   const handleLogout = async () => {
+    window.sessionStorage.removeItem(LocalStorageTags.USER)
     await logout(cookies)
     goToPage(PAGE_PATH.login)
   }
@@ -44,9 +50,25 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
     }
   }
 
+  const getUser = async () => {
+    const userMe = window.sessionStorage.getItem(LocalStorageTags.USER)
+    console.log('userMe Nav', userMe)
+    if (!userMe) {
+      const res = await refetchUser()
+      setUser(res?.data?.users_me)
+      window.sessionStorage.setItem(
+        LocalStorageTags.USER,
+        JSON.stringify(res?.data?.users_me),
+      )
+    } else {
+      setUser(JSON.parse(userMe))
+    }
+  }
+
   useEffect(() => {
     getPanels()
     getCie10()
+    getUser()
   }, [])
 
   return (

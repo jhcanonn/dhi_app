@@ -44,7 +44,7 @@ import {
 } from '@utils'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { DropdownChangeEvent } from 'primereact/dropdown'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import {
   AutoCompleteChangeEvent,
   AutoCompleteCompleteEvent,
@@ -166,11 +166,8 @@ const CalendarEditor = ({
     alerts: event?.alerts || [],
   }
 
-  const {
-    data: patientInfo,
-    loading: patientLoading,
-    refetch: patientRefetch,
-  } = useQuery(GET_CLIENT_BY_ID, { variables: { id: eventData.client_id } })
+  const [patientRefetch, { data: patientInfo, loading: patientLoading }] =
+    useLazyQuery(GET_CLIENT_BY_ID, { variables: { id: eventData.client_id } })
 
   const getServices = (boxId: number) =>
     boxes.find((b) => b.box_id === boxId)?.services!
@@ -406,7 +403,8 @@ const CalendarEditor = ({
   )
 
   const fetchData = async () =>
-    eventData?.client_id && (await patientRefetch({ id: eventData.client_id }))
+    eventData?.client_id &&
+    (await patientRefetch({ variables: { id: eventData.client_id } }))
 
   useEffect(() => {
     fetchData()
