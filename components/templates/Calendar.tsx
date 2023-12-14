@@ -216,7 +216,6 @@ const Calendar = ({ cookies, showError }: Props) => {
 
   const getUser = async () => {
     const userMe = window.sessionStorage.getItem(LocalStorageTags.USER)
-    console.log('userMe', userMe)
     if (!userMe) {
       const res = await refetchUser()
       setCurrentUser(res?.data?.users_me)

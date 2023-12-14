@@ -52,7 +52,6 @@ const Nav = ({ cookies }: { cookies: Cookies }) => {
 
   const getUser = async () => {
     const userMe = window.sessionStorage.getItem(LocalStorageTags.USER)
-    console.log('userMe Nav', userMe)
     if (!userMe) {
       const res = await refetchUser()
       setUser(res?.data?.users_me)
